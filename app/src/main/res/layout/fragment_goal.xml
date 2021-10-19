@@ -8,12 +8,14 @@
     android:id="@+id/goalFragment"
     tools:context=".GoalFragment">
 
+<!-- goal upper view-->
     <androidx.cardview.widget.CardView
         android:id="@+id/simpleGoal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_marginTop="30dp"
+        android:layout_marginBottom="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -38,9 +40,9 @@
                 android:id="@+id/textView22"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:includeFontPadding="false"
                 android:text="33%"
                 android:textSize="25pt"
-                android:includeFontPadding="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/lstMiniGoal"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -132,46 +134,45 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                android:id="@+id/miniGoal3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/miniGoal3"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="3dp">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
 
-                    <ImageView
-                        android:id="@+id/miniGoal3ImgCheckBox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@android:drawable/checkbox_on_background"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="3dp">
 
-                    <TextView
-                        android:id="@+id/miniGoal3Content"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="책 읽기"
-                        app:layout_constraintStart_toEndOf="@+id/miniGoal3ImgCheckBox"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        <ImageView
+                            android:id="@+id/miniGoal3ImgCheckBox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/checkbox_on_background"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/miniGoal3Count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="30장"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        <TextView
+                            android:id="@+id/miniGoal3Content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="책 읽기"
+                            app:layout_constraintStart_toEndOf="@+id/miniGoal3ImgCheckBox"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                        <TextView
+                            android:id="@+id/miniGoal3Count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="30장"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-            </androidx.cardview.widget.CardView>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -181,35 +182,11 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:orientation="vertical"
         android:paddingHorizontal="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/simpleGoal">
-
-        <LinearLayout
-            android:id="@+id/small_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/btnAddGoal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:src="@android:drawable/ic_menu_add" />
-
-            <ImageView
-                android:id="@+id/btnGoalMenu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:src="@android:drawable/ic_menu_more" />
-
-        </LinearLayout>
 
         <ScrollView
             android:layout_width="match_parent"
@@ -223,6 +200,124 @@
                 android:paddingBottom="75dp"
                 android:orientation="vertical">
 
+            <!--weekly, monthly calendar-->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/weeklyCalendar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/monday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textAlignment="center"
+                            android:text="월" />
+
+                        <TextView
+                            android:id="@+id/tuesday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textAlignment="center"
+                            android:text="화" />
+
+                        <TextView
+                            android:id="@+id/wednesday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textAlignment="center"
+                            android:text="수" />
+
+                        <TextView
+                            android:id="@+id/thursday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textAlignment="center"
+                            android:text="목" />
+
+                        <TextView
+                            android:id="@+id/friday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textAlignment="center"
+                            android:text="금" />
+
+                        <TextView
+                            android:id="@+id/saturday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textAlignment="center"
+                            android:text="토" />
+
+                        <TextView
+                            android:id="@+id/sunday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textAlignment="center"
+                            android:text="일" />
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!--card 이용한 날짜 선택 버튼 생성 자리-->
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/monthlyCalendar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <CalendarView
+                            android:id="@+id/calendarView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            <!--goal adder and menu-->
+                <LinearLayout
+                    android:id="@+id/small_menu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/btnAddGoal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:src="@android:drawable/ic_menu_add" />
+
+                    <ImageView
+                        android:id="@+id/btnGoalMenu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:src="@android:drawable/ic_menu_more" />
+
+                </LinearLayout>
+
+            <!--goal lists-->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/goal1"
                     android:layout_width="match_parent"
