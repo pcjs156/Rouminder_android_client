@@ -50,7 +50,7 @@ public abstract class Action<D extends BaseDataFormat<?, D>> implements Comparab
      * @param data a data to be set
      */
     public void setData(D data) {
-        this.data.set(data.value);
+        this.data.set(data);
     }
 
     public ActionInstance<D> createInstance() {
