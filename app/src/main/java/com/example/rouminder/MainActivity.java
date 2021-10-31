@@ -25,9 +25,12 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
 
-        goalFragment = (GoalFragment) getSupportFragmentManager().findFragmentById(R.id.mainFragment);
+        goalFragment = new GoalFragment();
         statisticsFragment = new StatisticsFragment();
         profileFragment = new ProfileFragment();
+
+        //첫 화면 띄우기
+        getSupportFragmentManager().beginTransaction().add(R.id.mainLayoutContainer, goalFragment).commit();
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
