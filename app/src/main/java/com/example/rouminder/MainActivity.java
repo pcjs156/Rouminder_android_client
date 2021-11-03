@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.example.rouminder.firebase.Manager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         });
-
     }
 
 }

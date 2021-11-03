@@ -7,20 +7,21 @@
     tools:context=".LoginActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="로그인"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:text="로그인" />
 
         <EditText
             android:id="@+id/editTextId"
@@ -53,6 +54,18 @@
             android:text="로그인" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/addIdBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ID 추가"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.507" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
