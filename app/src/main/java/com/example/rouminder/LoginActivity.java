@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.rouminder.firebase.Manager;
 import com.example.rouminder.firebase.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -45,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (isLoggedBefore) {
             User.getInstance().setInfo(uid);
+            Manager.getInstance().writeUserInstance(uid);
             Intent mainActivityIntent = new Intent(this, MainActivity.class);
             startActivity(mainActivityIntent);
         } else {
@@ -102,6 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             String uid = user.getUid();
                             User.getInstance().setInfo(uid);
+                            Manager.getInstance().writeUserInstance(uid);
 
                             SharedPreferences prefs = getPreferences(MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();
