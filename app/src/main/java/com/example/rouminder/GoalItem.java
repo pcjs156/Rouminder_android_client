@@ -1,5 +1,8 @@
 package com.example.rouminder;
 
+import android.view.View;
+import android.widget.Toast;
+
 public class GoalItem {
     private String goalContent;
     private String goalRestTime;

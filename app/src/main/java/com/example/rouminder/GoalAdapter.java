@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 
 
 public class GoalAdapter extends RecyclerView.Adapter<Holder> {
-    ArrayList<GoalItem> list;
+    static ArrayList<GoalItem> list;
 
     GoalAdapter(ArrayList<GoalItem> list) {
         this.list = list;
@@ -61,7 +62,22 @@ class Holder extends RecyclerView.ViewHolder {
         goalCount = itemView.findViewById(R.id.goalCount);
         goalTime = itemView.findViewById(R.id.goalTime);
         goalImgCheckBox = itemView.findViewById(R.id.goalImgCheckBox);
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int pos = getAdapterPosition();
+                if(pos != RecyclerView.NO_POSITION) {
+                    if(GoalAdapter.list.get(pos).isGoalImgCheckBoxChecked())  {
+                        goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+                        GoalAdapter.list.get(pos).setGoalImgCheckBoxChecked(false);
+                    }
+                    else {
+                        goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                        GoalAdapter.list.get(pos).setGoalImgCheckBoxChecked(true);
+                    }
+                }
+                }
+        });
     }
 }
-
 
