@@ -62,7 +62,7 @@ class Holder extends RecyclerView.ViewHolder {
         goalCount = itemView.findViewById(R.id.goalCount);
         goalTime = itemView.findViewById(R.id.goalTime);
         goalImgCheckBox = itemView.findViewById(R.id.goalImgCheckBox);
-        itemView.setOnClickListener(new View.OnClickListener() {
+        goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int pos = getAdapterPosition();
@@ -76,7 +76,7 @@ class Holder extends RecyclerView.ViewHolder {
                         GoalAdapter.list.get(pos).setGoalImgCheckBoxChecked(true);
                     }
                 }
-                }
+            }
         });
     }
 }
