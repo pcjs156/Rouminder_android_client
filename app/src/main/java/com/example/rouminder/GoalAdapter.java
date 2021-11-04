@@ -14,9 +14,9 @@ import java.util.ArrayList;
 
 
 public class GoalAdapter extends RecyclerView.Adapter<Holder> {
-    ArrayList<String> list;
+    ArrayList<GoalItem> list;
 
-    GoalAdapter(ArrayList<String> list) {
+    GoalAdapter(ArrayList<GoalItem> list) {
         this.list = list;
     }
 
@@ -31,7 +31,11 @@ public class GoalAdapter extends RecyclerView.Adapter<Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-        holder.tv.setText(list.get(position));
+        GoalItem goalItem = list.get(position);
+        holder.goalContent.setText(goalItem.getGoalContent());
+        holder.goalRestTime.setText(goalItem.getGoalRestTime());
+        holder.goalCount.setText(goalItem.getGoalCount());
+        holder.goalTime.setText(goalItem.getGoalTime());
     }
 
     @Override
@@ -42,10 +46,17 @@ public class GoalAdapter extends RecyclerView.Adapter<Holder> {
 }
 
 class Holder extends RecyclerView.ViewHolder {
-    TextView tv;
+    TextView goalContent;
+    TextView goalRestTime;
+    TextView goalCount;
+    TextView goalTime;
+
     public Holder(@NonNull View itemView) {
         super(itemView);
-        tv = itemView.findViewById(R.id.goalContent);
+        goalContent = itemView.findViewById(R.id.goalContent);
+        goalRestTime = itemView.findViewById(R.id.goalRestTime);
+        goalCount = itemView.findViewById(R.id.goalCount);
+        goalTime = itemView.findViewById(R.id.goalTime);
     }
 }
 

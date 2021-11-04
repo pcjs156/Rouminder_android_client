@@ -484,7 +484,7 @@
 
             <!--goal lists-->
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/goal1"
+                    android:id="@+id/goalCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
@@ -498,7 +498,7 @@
                         android:padding="10dp">
 
                         <ImageView
-                            android:id="@+id/goal1ImgCheckBox"
+                            android:id="@+id/goalImgCheckBox"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:clickable="true"
@@ -507,37 +507,37 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/goal1Content"
+                            android:id="@+id/goalContent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
                             android:text="물 마시기"
                             android:textSize="12pt"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/goal1ImgCheckBox" />
+                            app:layout_constraintTop_toBottomOf="@+id/goalImgCheckBox" />
 
                         <TextView
-                            android:id="@+id/goal1RestTime"
+                            android:id="@+id/goalRestTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="10dp"
                             android:text="2시간 남음"
                             android:textSize="9pt"
-                            app:layout_constraintBottom_toTopOf="@+id/goal1Time"
+                            app:layout_constraintBottom_toTopOf="@+id/goalTime"
                             app:layout_constraintEnd_toEndOf="parent" />
 
                         <TextView
-                            android:id="@+id/goal1Count"
+                            android:id="@+id/goalCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:text="600/350ml"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/goal1Content" />
+                            app:layout_constraintTop_toBottomOf="@+id/goalContent" />
 
                         <TextView
-                            android:id="@+id/goal1Time"
+                            android:id="@+id/goalTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="~오늘 15:00"
