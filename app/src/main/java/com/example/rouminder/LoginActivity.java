@@ -36,13 +36,14 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
-        signInButton = findViewById(R.id.signInButton);
 
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         String uid = prefs.getString("uid", null);
         boolean isLoggedBefore = uid != null;
+
+        setContentView(R.layout.activity_login);
+
+        signInButton = findViewById(R.id.signInButton);
 
         if (isLoggedBefore) {
             User.getInstance().setInfo(uid);
