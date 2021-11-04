@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,7 @@ public class GoalAdapter extends RecyclerView.Adapter<Holder> {
         holder.goalRestTime.setText(goalItem.getGoalRestTime());
         holder.goalCount.setText(goalItem.getGoalCount());
         holder.goalTime.setText(goalItem.getGoalTime());
+        holder.goalImgCheckBox.setImageResource((goalItem.isGoalImgCheckBoxChecked() ? R.drawable.checkbox_on_background : R.drawable.checkbox_off_background));
     }
 
     @Override
@@ -50,6 +52,7 @@ class Holder extends RecyclerView.ViewHolder {
     TextView goalRestTime;
     TextView goalCount;
     TextView goalTime;
+    ImageView goalImgCheckBox;
 
     public Holder(@NonNull View itemView) {
         super(itemView);
@@ -57,6 +60,7 @@ class Holder extends RecyclerView.ViewHolder {
         goalRestTime = itemView.findViewById(R.id.goalRestTime);
         goalCount = itemView.findViewById(R.id.goalCount);
         goalTime = itemView.findViewById(R.id.goalTime);
+        goalImgCheckBox = itemView.findViewById(R.id.goalImgCheckBox);
     }
 }
 

@@ -5,12 +5,14 @@ public class GoalItem {
     private String goalRestTime;
     private String goalCount;
     private String goalTime;
+    private boolean goalImgCheckBoxChecked;
 
-    public GoalItem(String goalContent, String goalRestTime, String goalCount, String goalTime) {
+    public GoalItem(String goalContent, String goalRestTime, String goalCount, String goalTime, boolean goalImgCheckBoxChecked) {
         this.goalContent = goalContent;
         this.goalRestTime = goalRestTime;
         this.goalCount = goalCount;
         this.goalTime = goalTime;
+        this.goalImgCheckBoxChecked = goalImgCheckBoxChecked;
     }
 
     public String getGoalContent() {
@@ -43,5 +45,13 @@ public class GoalItem {
 
     public void setGoalTime(String goalTime) {
         this.goalTime = goalTime;
+    }
+
+    public boolean isGoalImgCheckBoxChecked() {
+        return goalImgCheckBoxChecked;
+    }
+
+    public void setGoalImgCheckBoxChecked(boolean goalImgCheckBoxChecked) {
+        this.goalImgCheckBoxChecked = goalImgCheckBoxChecked;
     }
 }

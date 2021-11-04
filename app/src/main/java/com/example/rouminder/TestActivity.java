@@ -24,15 +24,18 @@ public class TestActivity extends AppCompatActivity {
         list.add(new GoalItem("밥먹기"
                 ,"2시간 남음"
                 ,"90%"
-                ,"~오늘 23:59"));
+                ,"~오늘 23:59"
+                , true));
         list.add(new GoalItem("숨쉬기"
                 ,"3시간 남음"
                 ,"80%"
-                ,"~오늘 22:59"));
+                ,"~오늘 22:59"
+                , false));
         list.add(new GoalItem( "잠자기"
                 ,"4시간 남음"
                 ,"70%"
-                ,"~오늘 21:59"));
+                ,"~오늘 21:59"
+                , false));
 
 
         // 어댑터 객체 생성
