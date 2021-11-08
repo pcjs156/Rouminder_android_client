@@ -16,7 +16,7 @@ public class TitleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_title);
 
-        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("global", MODE_PRIVATE);
         String uid = prefs.getString("uid", null);
         boolean isLoggedBefore = uid != null;
 

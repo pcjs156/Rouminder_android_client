@@ -1,7 +1,6 @@
 package com.example.rouminder;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.rouminder.firebase.Manager;
 import com.example.rouminder.firebase.model.User;
@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("global", MODE_PRIVATE);
         String uid = prefs.getString("uid", null);
         boolean isLoggedBefore = uid != null;
 
@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (isLoggedBefore) {
             User.getInstance().setInfo(uid);
-            Manager.getInstance().writeUserInstance(uid);
+            Manager.getInstance().createUser(uid);
             Intent mainActivityIntent = new Intent(this, MainActivity.class);
             startActivity(mainActivityIntent);
         } else {
@@ -105,9 +105,9 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             String uid = user.getUid();
                             User.getInstance().setInfo(uid);
-                            Manager.getInstance().writeUserInstance(uid);
+                            Manager.getInstance().createUser(uid);
 
-                            SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+                            SharedPreferences prefs = getSharedPreferences("global", MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putString("uid", uid);
                             editor.apply();

@@ -4,14 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.rouminder.firebase.Manager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
+    String uid;
 
     BottomNavigationView bottomNavigationView;
 
@@ -23,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        SharedPreferences prefs = getSharedPreferences("global", MODE_PRIVATE);
+        uid = prefs.getString("uid", null);
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
 
@@ -36,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.main_menu_item_goal:
+                    Manager manager = Manager.getInstance();
+                    manager.createAction(uid, "TYPE1", "unit1");
                     getSupportFragmentManager().beginTransaction().replace(R.id.mainLayoutContainer, goalFragment).commit();
                     break;
                 case R.id.main_menu_item_statistics:
