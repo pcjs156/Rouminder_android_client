@@ -5,8 +5,9 @@ import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.nex3z.togglebuttongroup.button.CircularToggle;
+
+import java.util.ArrayList;
 
 public class GoalFragment extends Fragment {
 
@@ -34,7 +37,6 @@ public class GoalFragment extends Fragment {
         choiceDay = (CircularToggle) rootView.findViewById(R.id.choiceDay);
         choiceWeek = (CircularToggle) rootView.findViewById(R.id.choiceWeek);
         choiceMonth = (CircularToggle) rootView.findViewById(R.id.choiceMonth);
-
 
         LinearLayout weeklyCalendar = (LinearLayout) rootView.findViewById(R.id.weeklyCalendar);
         CardView monthlyCalendar = (CardView) rootView.findViewById(R.id.monthlyCalendar);
@@ -78,6 +80,33 @@ public class GoalFragment extends Fragment {
                 monthlyCalendar.setVisibility(View.VISIBLE);
             }
         });
+
+        // 데이터 생성
+        ArrayList<GoalItem> list = new ArrayList<>();
+        list.add(new GoalItem("밥먹기"
+                ,"2시간 남음"
+                ,"90%"
+                ,"~오늘 23:59"
+                , true));
+        list.add(new GoalItem("숨쉬기"
+                ,"3시간 남음"
+                ,"80%"
+                ,"~오늘 22:59"
+                , false));
+        list.add(new GoalItem( "잠자기"
+                ,"4시간 남음"
+                ,"70%"
+                ,"~오늘 21:59"
+                , false));
+
+
+        // 어댑터 객체 생성
+        GoalAdapter adapter = new GoalAdapter(list);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.viewGoal);
+
+        // 어댑터 설정
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        recyclerView.setAdapter(adapter);
 
         return rootView;
     }
