@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
                     Manager manager = Manager.getInstance();
                     String actionId = manager.createAction(uid, "ACTION_TYPE_1", "UNIT_1");
                     String conditionId = manager.createCondition(uid, actionId, "COND_TYPE_1");
+                    String goalId = manager.createGoal(uid, conditionId, "GOAL_NAME_1");
                     getSupportFragmentManager().beginTransaction().replace(R.id.mainLayoutContainer, goalFragment).commit();
                     break;
                 case R.id.main_menu_item_statistics:

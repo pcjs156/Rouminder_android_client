@@ -32,12 +32,14 @@ public class Manager {
     private DatabaseReference userRef;
     private DatabaseReference actionRef;
     private DatabaseReference conditionRef;
+    private DatabaseReference goalRef;
 
     private Manager() {
         db = FirebaseDatabase.getInstance();
         userRef = db.getReference("user");
         actionRef = db.getReference("action");
         conditionRef = db.getReference("condition");
+        goalRef = db.getReference("goal");
     }
 
     public String getRandomId() {
@@ -83,6 +85,18 @@ public class Manager {
         conditionRef.child("data").child(randomId).child("action").setValue(actionId);
         conditionRef.child("data").child(randomId).child("created_at").setValue(created_at);
         conditionRef.child("data").child(randomId).child("type").setValue(condType);
+
+        return randomId;
+    }
+
+    public String createGoal(String uid, String conditionId, String goalName) {
+        String created_at = getTimeStampString();
+        String randomId = getRandomId();
+
+        goalRef.child("data").child(randomId).child("author").setValue(uid);
+        goalRef.child("data").child(randomId).child("goal").setValue(conditionId);
+        goalRef.child("data").child(randomId).child("created_at").setValue(created_at);
+        goalRef.child("data").child(randomId).child("name").setValue(goalName);
 
         return randomId;
     }
