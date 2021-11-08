@@ -24,11 +24,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "로그인", Toast.LENGTH_SHORT).show();
 
                 // 테스트를 위해 주석처리, 테스트가 끝난 후 주석 해제 요망
-                //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                //startActivity(intent);
-
-                // 테스트를 위해 생성한 코드, 테스트가 끝난 후 삭제 요망
-                Intent intent = new Intent(getApplicationContext(), TestActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
 
                 finish();
