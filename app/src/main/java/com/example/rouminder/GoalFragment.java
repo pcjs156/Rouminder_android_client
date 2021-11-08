@@ -41,7 +41,7 @@ public class GoalFragment extends Fragment {
         btnAddGoal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "로그인", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "목표 추가 창", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(getActivity().getApplicationContext(), AddGoalActivity.class);
                 startActivity(intent);

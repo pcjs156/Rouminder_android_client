@@ -7,16 +7,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 
 public class AddGoalActivity extends AppCompatActivity {
+    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+
     public EditText goalName;
     public Spinner categoriesSpinner;
     public Spinner highlightsSpinner;
@@ -28,9 +29,9 @@ public class AddGoalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_goal);
 
-        LinearLayout methodLinear = (LinearLayout) findViewById(R.id.method);
-        LinearLayout countLinear = (LinearLayout) findViewById(R.id.count);
-        LinearLayout mapLinear = (LinearLayout) findViewById(R.id.map);
+        LinearLayout methodLayout = (LinearLayout) findViewById(R.id.method);
+        LinearLayout countLayout = (LinearLayout) findViewById(R.id.count);
+        RelativeLayout mapLayout = (RelativeLayout) findViewById(R.id.map);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.custom_bar_add_goal);
@@ -55,13 +56,13 @@ public class AddGoalActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(SingleSelectToggleGroup group, int checkedId) {
                 if (checkedId == R.id.choiceGeneral) {
-                    methodLinear.setVisibility(View.VISIBLE);
+                    methodLayout.setVisibility(View.VISIBLE);
                 }
                 else if (checkedId == R.id.choiceRepeat) {
-                    methodLinear.setVisibility(View.VISIBLE);
+                    methodLayout.setVisibility(View.VISIBLE);
                 }
                 else if (checkedId == R.id.choiceComplex) {
-                    methodLinear.setVisibility(View.GONE);
+                    methodLayout.setVisibility(View.GONE);
                 }
             }
         });
@@ -69,16 +70,16 @@ public class AddGoalActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(SingleSelectToggleGroup group, int checkedId) {
                 if (checkedId == R.id.choiceCheck) {
-                    countLinear.setVisibility(View.GONE);
-                    mapLinear.setVisibility(View.GONE);
+                    countLayout.setVisibility(View.GONE);
+                    mapLayout.setVisibility(View.GONE);
                 }
                 else if (checkedId == R.id.choiceCount) {
-                    countLinear.setVisibility(View.VISIBLE);
-                    mapLinear.setVisibility(View.GONE);
+                    countLayout.setVisibility(View.VISIBLE);
+                    mapLayout.setVisibility(View.GONE);
                 }
                 else if (checkedId == R.id.choiceLocation) {
-                    countLinear.setVisibility(View.GONE);
-                    mapLinear.setVisibility(View.VISIBLE);
+                    countLayout.setVisibility(View.GONE);
+                    mapLayout.setVisibility(View.VISIBLE);
                 }
             }
         });
