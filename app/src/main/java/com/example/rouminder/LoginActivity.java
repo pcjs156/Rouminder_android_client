@@ -23,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "로그인", Toast.LENGTH_SHORT).show();
 
+                // 테스트를 위해 주석처리, 테스트가 끝난 후 주석 해제 요망
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
 
