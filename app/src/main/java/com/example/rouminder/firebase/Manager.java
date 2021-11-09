@@ -75,6 +75,7 @@ public class Manager {
         actionRef.child("data").child(randomId).child("created_at").setValue(created_at);
         actionRef.child("data").child(randomId).child("type").setValue(type);
         actionRef.child("data").child(randomId).child("unit").setValue(unit);
+        actionRef.child("data").child(randomId).child("modified_at").setValue("");
 
         return randomId;
     }
@@ -87,6 +88,7 @@ public class Manager {
         conditionRef.child("data").child(randomId).child("action").setValue(actionId);
         conditionRef.child("data").child(randomId).child("created_at").setValue(created_at);
         conditionRef.child("data").child(randomId).child("type").setValue(condType);
+        conditionRef.child("data").child(randomId).child("modified_at").setValue("");
 
         return randomId;
     }
@@ -100,6 +102,7 @@ public class Manager {
         goalRef.child("data").child(randomId).child("created_at").setValue(created_at);
         goalRef.child("data").child(randomId).child("name").setValue(goalName);
         goalRef.child("data").child(randomId).child("category").setValue(categoryId);
+        goalRef.child("data").child(randomId).child("modified_at").setValue("");
 
         return randomId;
     }
@@ -111,6 +114,7 @@ public class Manager {
         categoryRef.child("data").child(randomId).child("author").setValue(uid);
         categoryRef.child("data").child(randomId).child("name").setValue(categoryName);
         categoryRef.child("data").child(randomId).child("created_at").setValue(created_at);
+        categoryRef.child("data").child(randomId).child("modified_at").setValue("");
 
         return randomId;
     }
