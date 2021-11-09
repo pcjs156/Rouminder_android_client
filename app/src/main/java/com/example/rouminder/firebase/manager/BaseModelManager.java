@@ -1,4 +1,4 @@
-package com.example.rouminder.firebase;
+package com.example.rouminder.firebase.manager;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;

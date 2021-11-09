@@ -1,8 +1,10 @@
-package com.example.rouminder.firebase;
+package com.example.rouminder.firebase.manager;
+
+import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidInitialized;
 
 import androidx.annotation.NonNull;
 
-import com.example.rouminder.firebase.model.ActionModel;
+import com.example.rouminder.firebase.model.ConditionModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -13,46 +15,48 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
-public class ActionManager {
-    private static ActionManager instance = new ActionManager();
+public class ConditionManager {
+    private static ConditionManager instance = new ConditionManager();
 
     private final BaseModelManager baseModelManager = BaseModelManager.getInstance();
     private final DatabaseReference ref;
-    private ArrayList<ActionModel> actions;
+    private ArrayList<ConditionModel> conditions;
     private final String uid;
 
-    private ActionManager() {
+    private ConditionManager() {
         FirebaseDatabase db = baseModelManager.db;
         uid = baseModelManager.uid;
-        ref = db.getReference("action");
-        actions = new ArrayList<>();
+        ref = db.getReference("condition");
+        conditions = new ArrayList<>();
     }
 
-    public static ActionManager getInstance() {
+    public static ConditionManager getInstance() {
         return instance;
     }
 
-    public ActionModel create(String type, String unit) {
+    public ConditionModel create(String actionId, String condType) {
         baseModelManager.checkUidInitialized();
 
         String created_at = baseModelManager.getTimeStampString();
-
         String randomId = baseModelManager.getRandomId();
 
-        ref.child("data").child(randomId).child("author").setValue(baseModelManager.uid);
+        ref.child("data").child(randomId).child("author").setValue(uid);
+        ref.child("data").child(randomId).child("action").setValue(actionId);
         ref.child("data").child(randomId).child("created_at").setValue(created_at);
-        ref.child("data").child(randomId).child("type").setValue(type);
-        ref.child("data").child(randomId).child("unit").setValue(unit);
+        ref.child("data").child(randomId).child("type").setValue(condType);
         ref.child("data").child(randomId).child("modified_at").setValue("");
 
-        ActionModel newAction = new ActionModel(randomId, uid, created_at, "", type, unit);
+        ConditionModel newCondition = new ConditionModel(
+                randomId, uid, created_at, "", condType
+        );
 
-        return newAction;
+        return newCondition;
     }
 
-    public void syncActionModels() {
-        baseModelManager.checkUidInitialized();
+    ;
+
+    public void syncConditionModels() {
+        checkUidInitialized();
 
         Query select = ref.child("data");
         select.addValueEventListener(new ValueEventListener() {
@@ -61,15 +65,15 @@ public class ActionManager {
                 HashMap<String, HashMap<String, String>> result =
                         (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
 
-                actions = new ArrayList<>();
+                conditions = new ArrayList<>();
                 for (String id : result.keySet()) {
                     HashMap<String, String> data = result.get(id);
                     String author = data.get("author");
 
                     if (author.equals(uid)) {
-                        actions.add(new ActionModel(
+                        conditions.add(new ConditionModel(
                                 id, uid, data.get("created_at"), data.get("modified_at"),
-                                data.get("type"), data.get("unit")));
+                                data.get("type")));
                     }
                 }
             }
@@ -82,7 +86,7 @@ public class ActionManager {
         });
     }
 
-    public ArrayList<ActionModel> getActionModels() {
-        return actions;
+    public ArrayList<ConditionModel> getActionModels() {
+        return conditions;
     }
 }

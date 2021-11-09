@@ -6,9 +6,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.rouminder.firebase.ActionManager;
-import com.example.rouminder.firebase.BaseModelManager;
-import com.example.rouminder.firebase.ConditionManager;
+import com.example.rouminder.firebase.manager.ActionManager;
+import com.example.rouminder.firebase.manager.BaseModelManager;
+import com.example.rouminder.firebase.manager.ConditionManager;
 import com.example.rouminder.firebase.model.ActionModel;
 import com.example.rouminder.firebase.model.ConditionModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
