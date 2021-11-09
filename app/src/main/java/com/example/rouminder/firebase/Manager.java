@@ -29,13 +29,10 @@ import java.util.HashMap;
 public class Manager {
     private static Manager instance = new Manager();
 
-    private static Long nextActionId = null;
-
     private String uid;
     private boolean isUidInitialized = false;
 
     private FirebaseDatabase db;
-    private DatabaseReference rootRef;
     private DatabaseReference userRef;
     private DatabaseReference actionRef;
     private DatabaseReference conditionRef;
