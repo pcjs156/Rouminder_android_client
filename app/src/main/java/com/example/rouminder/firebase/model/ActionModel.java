@@ -1,6 +1,6 @@
 package com.example.rouminder.firebase.model;
 
-public class Action {
+public class ActionModel {
     public final String id;
     public final String uid;
     public final String created_at;
@@ -8,7 +8,7 @@ public class Action {
     public final String type;
     public final String unit;
 
-    public Action(String id, String uid, String created_at, String modified_at, String type, String unit) {
+    public ActionModel(String id, String uid, String created_at, String modified_at, String type, String unit) {
         this.id = id;
         this.uid = uid;
         this.created_at = created_at;

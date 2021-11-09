@@ -1,19 +1,14 @@
 package com.example.rouminder;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
+import com.example.rouminder.firebase.ActionManager;
 import com.example.rouminder.firebase.Manager;
-import com.example.rouminder.firebase.model.Action;
+import com.example.rouminder.firebase.model.ActionModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -44,22 +39,23 @@ public class MainActivity extends AppCompatActivity {
         //첫 화면 띄우기
         getSupportFragmentManager().beginTransaction().add(R.id.mainLayoutContainer, goalFragment).commit();
 
-        Manager manager = Manager.getInstance();
         Manager.setUid(uid);
+        Manager manager = Manager.getInstance();
+        ActionManager aManager = ActionManager.getInstance();
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.main_menu_item_goal:
-                    Action newAction = manager.createAction("ACTION_TYPE_1", "UNIT_1");
+                    ActionModel newAction = aManager.create("ACTION_TYPE_1", "UNIT_1");
                     String actionId = newAction.id;
 
                     String conditionId = manager.createCondition(actionId, "COND_TYPE_1");
                     String categoryId = manager.createCategory("CATEGORY_1");
                     String goalId = manager.createGoal(conditionId, categoryId, "GOAL_NAME_1");
 
-                    manager.syncActions();
-                    ArrayList<Action> actions = manager.getActions();
-                    for(Action action: actions) {
+                    aManager.syncActionModels();
+                    ArrayList<ActionModel> actions = aManager.getActionModels();
+                    for(ActionModel action: actions) {
                         Log.d("Hello", action.toString(true));
                     }
 
