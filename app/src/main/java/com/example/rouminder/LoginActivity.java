@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (isLoggedBefore) {
             User.getInstance().setInfo(uid);
-            Manager.getInstance().createUser(uid);
+            Manager.getInstance().createUser();
             Intent mainActivityIntent = new Intent(this, MainActivity.class);
             startActivity(mainActivityIntent);
         } else {
@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             String uid = user.getUid();
                             User.getInstance().setInfo(uid);
-                            Manager.getInstance().createUser(uid);
+                            Manager.getInstance().createUser();
 
                             SharedPreferences prefs = getSharedPreferences("global", MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();

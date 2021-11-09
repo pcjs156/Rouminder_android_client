@@ -13,7 +13,10 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.rouminder.firebase.Manager;
+import com.example.rouminder.firebase.model.Action;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     String uid;
@@ -41,14 +44,25 @@ public class MainActivity extends AppCompatActivity {
         //첫 화면 띄우기
         getSupportFragmentManager().beginTransaction().add(R.id.mainLayoutContainer, goalFragment).commit();
 
+        Manager manager = Manager.getInstance();
+        Manager.setUid(uid);
+
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.main_menu_item_goal:
-                    Manager manager = Manager.getInstance();
-                    String actionId = manager.createAction(uid, "ACTION_TYPE_1", "UNIT_1");
-                    String conditionId = manager.createCondition(uid, actionId, "COND_TYPE_1");
-                    String categoryId = manager.createCategory(uid, "CATEGORY_1");
-                    String goalId = manager.createGoal(uid, conditionId, categoryId, "GOAL_NAME_1");
+                    Action newAction = manager.createAction("ACTION_TYPE_1", "UNIT_1");
+                    String actionId = newAction.id;
+
+                    String conditionId = manager.createCondition(actionId, "COND_TYPE_1");
+                    String categoryId = manager.createCategory("CATEGORY_1");
+                    String goalId = manager.createGoal(conditionId, categoryId, "GOAL_NAME_1");
+
+                    manager.syncActions();
+                    ArrayList<Action> actions = manager.getActions();
+                    for(Action action: actions) {
+                        Log.d("Hello", action.toString(true));
+                    }
+
                     getSupportFragmentManager().beginTransaction().replace(R.id.mainLayoutContainer, goalFragment).commit();
                     break;
                 case R.id.main_menu_item_statistics:
