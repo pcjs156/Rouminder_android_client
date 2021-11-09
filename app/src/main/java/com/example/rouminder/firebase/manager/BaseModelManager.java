@@ -15,13 +15,11 @@ public class BaseModelManager {
 
     protected FirebaseDatabase db;
     private DatabaseReference userRef;
-    private DatabaseReference goalRef;
     private DatabaseReference categoryRef;
 
     private BaseModelManager() {
         db = FirebaseDatabase.getInstance();
         userRef = db.getReference("user");
-        goalRef = db.getReference("goal");
         categoryRef = db.getReference("category");
     }
 
@@ -49,22 +47,6 @@ public class BaseModelManager {
 
         String loggedOn = getTimeStampString();
         userRef.child(uid).child("last_login").setValue(loggedOn);
-    }
-
-    public String createGoal(String conditionId, String categoryId, String goalName) {
-        checkUidInitialized();
-
-        String created_at = getTimeStampString();
-        String randomId = getRandomId();
-
-        goalRef.child("data").child(randomId).child("author").setValue(uid);
-        goalRef.child("data").child(randomId).child("goal").setValue(conditionId);
-        goalRef.child("data").child(randomId).child("created_at").setValue(created_at);
-        goalRef.child("data").child(randomId).child("name").setValue(goalName);
-        goalRef.child("data").child(randomId).child("category").setValue(categoryId);
-        goalRef.child("data").child(randomId).child("modified_at").setValue("");
-
-        return randomId;
     }
 
     public String createCategory(String categoryName) {

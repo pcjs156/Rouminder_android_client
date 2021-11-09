@@ -9,8 +9,10 @@ import android.util.Log;
 import com.example.rouminder.firebase.manager.ActionManager;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.ConditionManager;
+import com.example.rouminder.firebase.manager.GoalManager;
 import com.example.rouminder.firebase.model.ActionModel;
 import com.example.rouminder.firebase.model.ConditionModel;
+import com.example.rouminder.firebase.model.GoalModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         ActionManager aManager = ActionManager.getInstance();
         ConditionManager cManager = ConditionManager.getInstance();
+        GoalManager gManager = GoalManager.getInstance();
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -57,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
                     String conditionId = newCondition.id;
 
                     String categoryId = baseModelManager.createCategory("CATEGORY_1");
-                    String goalId = baseModelManager.createGoal(conditionId, categoryId, "GOAL_NAME_1");
+
+                    GoalModel newGoal = gManager.create(conditionId, categoryId, "GOAL_NAME_1");
+                    String goalId = newGoal.id;
 
                     aManager.syncActionModels();
                     ArrayList<ActionModel> actions = aManager.getActionModels();
