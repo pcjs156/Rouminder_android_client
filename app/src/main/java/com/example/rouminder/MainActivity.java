@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.rouminder.firebase.ActionManager;
-import com.example.rouminder.firebase.Manager;
+import com.example.rouminder.firebase.BaseModelManager;
 import com.example.rouminder.firebase.model.ActionModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
         //첫 화면 띄우기
         getSupportFragmentManager().beginTransaction().add(R.id.mainLayoutContainer, goalFragment).commit();
 
-        Manager.setUid(uid);
-        Manager manager = Manager.getInstance();
+        BaseModelManager.setUid(uid);
+        BaseModelManager baseModelManager = BaseModelManager.getInstance();
         ActionManager aManager = ActionManager.getInstance();
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -49,9 +49,9 @@ public class MainActivity extends AppCompatActivity {
                     ActionModel newAction = aManager.create("ACTION_TYPE_1", "UNIT_1");
                     String actionId = newAction.id;
 
-                    String conditionId = manager.createCondition(actionId, "COND_TYPE_1");
-                    String categoryId = manager.createCategory("CATEGORY_1");
-                    String goalId = manager.createGoal(conditionId, categoryId, "GOAL_NAME_1");
+                    String conditionId = baseModelManager.createCondition(actionId, "COND_TYPE_1");
+                    String categoryId = baseModelManager.createCategory("CATEGORY_1");
+                    String goalId = baseModelManager.createGoal(conditionId, categoryId, "GOAL_NAME_1");
 
                     aManager.syncActionModels();
                     ArrayList<ActionModel> actions = aManager.getActionModels();

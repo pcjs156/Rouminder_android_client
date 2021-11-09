@@ -17,14 +17,14 @@ import java.util.HashMap;
 public class ActionManager {
     private static ActionManager instance = new ActionManager();
 
-    private final Manager manager = Manager.getInstance();
+    private final BaseModelManager baseModelManager = BaseModelManager.getInstance();
     private final DatabaseReference ref;
     private ArrayList<ActionModel> actions;
     private final String uid;
 
     private ActionManager() {
-        FirebaseDatabase db = manager.db;
-        uid = manager.uid;
+        FirebaseDatabase db = baseModelManager.db;
+        uid = baseModelManager.uid;
         ref = db.getReference("action");
         actions = new ArrayList<>();
     }
@@ -34,13 +34,13 @@ public class ActionManager {
     }
 
     public ActionModel create(String type, String unit) {
-        manager.checkUidInitialized();
+        baseModelManager.checkUidInitialized();
 
-        String created_at = manager.getTimeStampString();
+        String created_at = baseModelManager.getTimeStampString();
 
-        String randomId = manager.getRandomId();
+        String randomId = baseModelManager.getRandomId();
 
-        ref.child("data").child(randomId).child("author").setValue(manager.uid);
+        ref.child("data").child(randomId).child("author").setValue(baseModelManager.uid);
         ref.child("data").child(randomId).child("created_at").setValue(created_at);
         ref.child("data").child(randomId).child("type").setValue(type);
         ref.child("data").child(randomId).child("unit").setValue(unit);
@@ -52,7 +52,7 @@ public class ActionManager {
     }
 
     public void syncActionModels() {
-        manager.checkUidInitialized();
+        baseModelManager.checkUidInitialized();
 
         Query select = ref.child("data");
         select.addValueEventListener(new ValueEventListener() {

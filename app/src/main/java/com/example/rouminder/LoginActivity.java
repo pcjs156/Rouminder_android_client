@@ -8,9 +8,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.example.rouminder.firebase.Manager;
+import com.example.rouminder.firebase.BaseModelManager;
 import com.example.rouminder.firebase.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -47,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (isLoggedBefore) {
             User.getInstance().setInfo(uid);
-            Manager.getInstance().createUser();
+            BaseModelManager.getInstance().createUser();
             Intent mainActivityIntent = new Intent(this, MainActivity.class);
             startActivity(mainActivityIntent);
         } else {
@@ -105,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             String uid = user.getUid();
                             User.getInstance().setInfo(uid);
-                            Manager.getInstance().createUser();
+                            BaseModelManager.getInstance().createUser();
 
                             SharedPreferences prefs = getSharedPreferences("global", MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();

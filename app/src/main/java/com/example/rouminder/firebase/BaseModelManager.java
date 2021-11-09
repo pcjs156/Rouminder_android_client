@@ -7,8 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 // Singleton 패턴으로 구현되어, 인스턴스에 접근하려면 항상 Manager.getInstance()를 호출해야 함
-public class Manager {
-    protected static final Manager instance = new Manager();
+public class BaseModelManager {
+    protected static final BaseModelManager instance = new BaseModelManager();
 
     protected static String uid = "";
     private static boolean isUidInitialized = false;
@@ -19,7 +19,7 @@ public class Manager {
     private DatabaseReference goalRef;
     private DatabaseReference categoryRef;
 
-    private Manager() {
+    private BaseModelManager() {
         db = FirebaseDatabase.getInstance();
         userRef = db.getReference("user");
         conditionRef = db.getReference("condition");
@@ -40,7 +40,7 @@ public class Manager {
         return format.format(now);
     }
 
-    public static Manager getInstance() {
+    public static BaseModelManager getInstance() {
         checkUidInitialized();
 
         return instance;
@@ -107,7 +107,7 @@ public class Manager {
         if (isUidInitialized)
             throw new RuntimeException("uid가 이미 초기화 되어 있습니다.");
         else {
-            Manager.uid = uid;
+            BaseModelManager.uid = uid;
             isUidInitialized = true;
         }
     }
