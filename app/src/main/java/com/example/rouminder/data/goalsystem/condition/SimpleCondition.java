@@ -1,13 +1,16 @@
 package com.example.rouminder.data.goalsystem.condition;
 
+import androidx.annotation.Nullable;
+
+import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.action.Action;
 import com.example.rouminder.data.goalsystem.action.BaseDataFormat;
 
 public class SimpleCondition<D extends BaseDataFormat<?, D>> extends Condition<D>{
     private final D target;
 
-    public SimpleCondition(int id, Action<D> action, D target) {
-        super(id, action);
+    public SimpleCondition(@Nullable GoalManager manager, int conditionID, int actionID, D target) {
+        super(manager, conditionID, actionID);
         this.target = target;
     }
 
