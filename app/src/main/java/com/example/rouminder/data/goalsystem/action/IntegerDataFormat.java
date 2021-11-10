@@ -1,7 +1,5 @@
 package com.example.rouminder.data.goalsystem.action;
 
-import android.os.Parcel;
-
 /**
  * Base DataFormat for Integer type value
  */
@@ -15,7 +13,7 @@ public class IntegerDataFormat extends BaseDataFormat<Integer, IntegerDataFormat
     }
 
     public IntegerDataFormat(String unit, int value) {
-        super(unit, (Integer) value);
+        super(unit, value);
     }
 
     public IntegerDataFormat(IntegerDataFormat data) {

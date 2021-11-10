@@ -2,8 +2,6 @@ package com.example.rouminder.data.goalsystem;
 
 import androidx.annotation.Nullable;
 
-import com.example.rouminder.data.goalsystem.action.Action;
-import com.example.rouminder.data.goalsystem.action.ActionInstance;
 import com.example.rouminder.data.goalsystem.action.ActionManager;
 import com.example.rouminder.data.goalsystem.condition.Condition;
 import com.example.rouminder.data.goalsystem.condition.ConditionInstance;
@@ -297,7 +295,7 @@ public class GoalManager {
         ALL,
         DAY,
         WEEK,
-        MONTH;
+        MONTH
     }
 
     public enum Status {

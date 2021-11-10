@@ -3,18 +3,17 @@ package com.example.rouminder.data.goalsystem.goal;
 import androidx.annotation.Nullable;
 
 import com.example.rouminder.data.goalsystem.GoalManager;
-import com.example.rouminder.data.goalsystem.action.ActionInstance;
 import com.example.rouminder.data.goalsystem.condition.ConditionInstance;
 
 import java.time.LocalDateTime;
 
 public class GoalInstance implements Comparable<GoalInstance> {
     private final GoalManager manager;
-    private int goalInstanceID;
     private final int goalID;
     private final int conditionInstanceID;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
+    private int goalInstanceID;
 
     public GoalInstance(@Nullable GoalManager manager, int goalInstanceID, int goalID, int conditionInstanceID, LocalDateTime from, LocalDateTime to) {
         this.manager = manager;

@@ -1,13 +1,9 @@
 package com.example.rouminder.data.goalsystem.goal;
 
-import android.os.Parcelable;
-
 import androidx.annotation.Nullable;
 
 import com.example.rouminder.data.goalsystem.GoalManager;
-import com.example.rouminder.data.goalsystem.action.BaseDataFormat;
 import com.example.rouminder.data.goalsystem.condition.Condition;
-import com.example.rouminder.data.goalsystem.action.Action;
 
 import java.time.LocalDateTime;
 
