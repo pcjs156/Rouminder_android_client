@@ -4,6 +4,7 @@ import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidIn
 
 import androidx.annotation.NonNull;
 
+import com.example.rouminder.firebase.model.CategoryModel;
 import com.example.rouminder.firebase.model.ConditionModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,7 +35,7 @@ public class CategoryManager {
         return instance;
     }
 
-    public String createCategory(String categoryName) {
+    public CategoryModel createCategory(String categoryName) {
         checkUidInitialized();
 
         String created_at = baseModelManager.getTimeStampString();
@@ -45,7 +46,9 @@ public class CategoryManager {
         ref.child("data").child(randomId).child("created_at").setValue(created_at);
         ref.child("data").child(randomId).child("modified_at").setValue("");
 
-        return randomId;
+        CategoryModel newCategory = new CategoryModel(randomId, uid, created_at, "", categoryName);
+
+        return newCategory;
     }
 
     public void syncConditionModels() {
