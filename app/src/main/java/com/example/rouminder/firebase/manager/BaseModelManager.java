@@ -15,12 +15,10 @@ public class BaseModelManager {
 
     protected FirebaseDatabase db;
     private DatabaseReference userRef;
-    private DatabaseReference categoryRef;
 
     private BaseModelManager() {
         db = FirebaseDatabase.getInstance();
         userRef = db.getReference("user");
-        categoryRef = db.getReference("category");
     }
 
     public String getRandomId() {
@@ -47,20 +45,6 @@ public class BaseModelManager {
 
         String loggedOn = getTimeStampString();
         userRef.child(uid).child("last_login").setValue(loggedOn);
-    }
-
-    public String createCategory(String categoryName) {
-        checkUidInitialized();
-
-        String created_at = getTimeStampString();
-        String randomId = getRandomId();
-
-        categoryRef.child("data").child(randomId).child("author").setValue(uid);
-        categoryRef.child("data").child(randomId).child("name").setValue(categoryName);
-        categoryRef.child("data").child(randomId).child("created_at").setValue(created_at);
-        categoryRef.child("data").child(randomId).child("modified_at").setValue("");
-
-        return randomId;
     }
 
     public static void checkUidInitialized() {
