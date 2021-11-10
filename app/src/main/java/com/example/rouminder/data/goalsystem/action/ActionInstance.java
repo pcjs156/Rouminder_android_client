@@ -1,13 +1,24 @@
 package com.example.rouminder.data.goalsystem.action;
 
+import androidx.annotation.Nullable;
+
 public class ActionInstance<D extends BaseDataFormat<?, D>> implements Comparable<ActionInstance<D>>{
-    private final Action<D> action;
+    private final ActionManager manager;
+    private final int actionInstanceID;
+    private final int actionID;
     private final D data;
 
-    public ActionInstance(Action<D> action, D data) {
-        this.action = action;
+    public ActionInstance(@Nullable ActionManager manager, int actionInstanceID, int actionID, D data) {
+        this.manager = manager;
+        this.actionInstanceID = actionInstanceID;
+        this.actionID = actionID;
         this.data = data;
     }
+
+    public int getID() { return actionID; }
+
+    @SuppressWarnings("unchecked")
+    public Action<D> getAction() { return manager == null ? null : (Action<D>)manager.getAction(actionID);}
 
     /**
      * Get a copy of the data.
@@ -27,17 +38,9 @@ public class ActionInstance<D extends BaseDataFormat<?, D>> implements Comparabl
         this.data.set(data);
     }
 
-    /**
-     * Get actual Action.
-     *
-     * @return a Action object.
-     */
-    public Action<D> getAction() {
-        return action;
-    }
 
     @Override
-    public int compareTo(ActionInstance<D> dActionInstance) {
-        return getAction().compareTo(dActionInstance.getAction());
+    public int compareTo(ActionInstance<D> other) {
+        return getAction().compareTo(other.getAction());
     }
 }

@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 
 import com.example.rouminder.data.goalsystem.action.Action;
 import com.example.rouminder.data.goalsystem.action.ActionInstance;
+import com.example.rouminder.data.goalsystem.action.ActionManager;
 import com.example.rouminder.data.goalsystem.condition.Condition;
 import com.example.rouminder.data.goalsystem.condition.ConditionInstance;
 import com.example.rouminder.data.goalsystem.goal.Goal;
@@ -24,17 +25,17 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GoalManager {
+    private final ActionManager actionManager;
     private final Set<Goal> goals;
     private final TreeSet<GoalInstance> earlyStartingGoalInstanceSet;
     private final TreeSet<GoalInstance> earlyEndingGoalInstanceSet;
     private final TreeSet<GoalInstance> ongoingGoalInstanceSet;
-    private final Set<Action<?>> actions;
-    private final Set<ActionInstance<?>> actionInstances;
     private final Set<Condition<?>> conditions;
     private final Set<ConditionInstance<?>> conditionInstances;
     private final Period timeUntilGoalInstanceArchived;
 
     public GoalManager() {
+        actionManager = new ActionManager();
         goals = new HashSet<>();
         earlyStartingGoalInstanceSet = new TreeSet<>(new Comparator<GoalInstance>() {
             @Override
@@ -49,8 +50,6 @@ public class GoalManager {
             }
         });
         ongoingGoalInstanceSet = new TreeSet<>();
-        actions = new HashSet<>();
-        actionInstances = new HashSet<>();
         conditions = new HashSet<>();
         conditionInstances = new HashSet<>();
         timeUntilGoalInstanceArchived = Period.ofMonths(1);
@@ -66,15 +65,6 @@ public class GoalManager {
         return false;
     }
 
-    /**
-     * Add an Action to the manager.
-     *
-     * @param action to be added to manager.
-     * @return true if successfully added, otherwise false.
-     */
-    public boolean addAction(Action<?> action) {
-        return false;
-    }
 
     /**
      * Add a Condition to the manager.
@@ -97,16 +87,6 @@ public class GoalManager {
     }
 
     /**
-     * Add an ActionInstance to the manager.
-     *
-     * @param actionInstance to be added to manager.
-     * @return true if successfully added, otherwise false.
-     */
-    public boolean addActionInstance(ActionInstance<?> actionInstance) {
-        return false;
-    }
-
-    /**
      * Add a ConditionInstance to the manager
      *
      * @param conditionInstance to be added to manger.
@@ -119,6 +99,7 @@ public class GoalManager {
 
     /**
      * Get a Goal with specified id.
+     *
      * @param id of a Goal to be found.
      * @return a Goal object if found, otherwise null.
      */
@@ -127,24 +108,18 @@ public class GoalManager {
     }
 
     /**
-     * Get a Action with specified id.
-     * @param id of a Action to be found.
-     * @return a Action object if found, otherwise null.
-     */
-    public Action<?> getAction(int id) {
-        return null;
-    }
-
-    /**
      * Get a Condition with specified id.
+     *
      * @param id of a Condition to be found.
      * @return a Condition object if found, otherwise null.
      */
     public Condition<?> getCondition(int id) {
         return null;
     }
+
     /**
      * Get a GoalInstance with specified id.
+     *
      * @param id of a GoalInstance to be found.
      * @return a GoalInstance object if found, otherwise null.
      */
@@ -192,21 +167,24 @@ public class GoalManager {
         return new ArrayList<>(ongoingGoalInstanceSet);
     }
 
-    /**
-     * Get a ActionInstance with specified id.
-     * @param id of a ActionInstance to be found.
-     * @return a ActionInstance object if found, otherwise null.
-     */
-    public ActionInstance<?> getActionInstance(int id) {
-        return null;
-    }
+
     /**
      * Get a ConditionInstance with specified id.
+     *
      * @param id of a ConditionInstance to be found.
      * @return a ConditionInstance object if found, otherwise null.
      */
     public ConditionInstance<?> getConditionInstance(int id) {
         return null;
+    }
+
+    /**
+     * Get an ActionManager from Goalmanager.
+     *
+     * @return an ActionManager.
+     */
+    public ActionManager getActionManager() {
+        return actionManager;
     }
 
     /**
@@ -229,25 +207,6 @@ public class GoalManager {
         return false;
     }
 
-    /**
-     * Remove an Action from manager.
-     *
-     * @param action to be removed from manager.
-     * @return true if successfully removed(found), otherwise false.
-     */
-    public boolean removeAction(Action<?> action) {
-        return false;
-    }
-
-    /**
-     * Remove an Action from manager.
-     *
-     * @param id of the Action to be removed from manager.
-     * @return true if successfully removed(found), otherwise false.
-     */
-    public boolean removeAction(int id) {
-        return false;
-    }
 
     /**
      * Remove a Condition from manager.
@@ -290,26 +249,6 @@ public class GoalManager {
     }
 
     /**
-     * Remove an ActionInstance from manager.
-     *
-     * @param actionInstance to be removed from manager.
-     * @return true if successfully removed(found), otherwise false.
-     */
-    public boolean removeActionInstance(ActionInstance<?> actionInstance) {
-        return false;
-    }
-
-    /**
-     * Remove an ActionInstance from manager.
-     *
-     * @param id to be removed from manager.
-     * @return true if successfully removed(found), otherwise false.
-     */
-    public boolean removeActionInstance(int id) {
-        return false;
-    }
-
-    /**
      * Remove a ConditionInstance from manager.
      *
      * @param id to be removed from manager.
@@ -328,7 +267,6 @@ public class GoalManager {
     public boolean removeConditionInstance(ConditionInstance<?> conditionInstance) {
         return false;
     }
-
 
 
     /**
@@ -396,7 +334,7 @@ public class GoalManager {
         }
 
         public GoalInstance getDummy() {
-            return new GoalInstance(null, null, null, end, start);
+            return new GoalInstance(null, -1, -1, -1, end, start);
         }
 
         @Override

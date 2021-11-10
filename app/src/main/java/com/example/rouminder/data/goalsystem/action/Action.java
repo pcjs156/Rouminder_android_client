@@ -1,24 +1,22 @@
 package com.example.rouminder.data.goalsystem.action;
 
+import androidx.annotation.Nullable;
+
 /**
  * A class for Action
  *
  * @param <D> a data format for the action's progress. Provides getter and setter for value, string format.
  */
-public abstract class Action<D extends BaseDataFormat<?, D>> implements Comparable<Action<D>>{
+public abstract class Action<D extends BaseDataFormat<?, D>> implements Comparable<Action<D>> {
     protected static final String TYPE_NAME = "";
 
-    private final int id;
+    private final ActionManager manager;
     protected D data;
+    private int actionID;
 
-    /**
-     * Create Action with id and data.
-     *
-     * @param id   a unique integer id
-     * @param data a data in DataFormat
-     */
-    public Action(int id, D data) {
-        this.id = id;
+    public Action(@Nullable ActionManager manager, int actionID, D data) {
+        this.manager = manager;
+        this.actionID = actionID;
         this.data = data;
     }
 
@@ -31,8 +29,12 @@ public abstract class Action<D extends BaseDataFormat<?, D>> implements Comparab
         return TYPE_NAME;
     }
 
-    public int getId() {
-        return id;
+    public int getID() {
+        return actionID;
+    }
+
+    void setID(int actionID) {
+        this.actionID = actionID;
     }
 
     /**
@@ -54,11 +56,12 @@ public abstract class Action<D extends BaseDataFormat<?, D>> implements Comparab
     }
 
     public ActionInstance<D> createInstance() {
-        return new ActionInstance<>(this, data.another());
+        return new ActionInstance<>(manager, -1, getID(), data.another());
     }
 
     /**
      * Commit new data.
+     *
      * @param data a data to be committed.
      */
     public void commit(D data) {
@@ -66,7 +69,7 @@ public abstract class Action<D extends BaseDataFormat<?, D>> implements Comparab
     }
 
     @Override
-    public int compareTo(Action<D> dAction) {
-        return Integer.compare(getId(), dAction.getId());
+    public int compareTo(Action<D> other) {
+        return Integer.compare(getID(), other.getID());
     }
 }
