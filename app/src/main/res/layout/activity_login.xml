@@ -7,52 +7,21 @@
     tools:context=".LoginActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textLogin"
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/signInButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="로그인"
-            android:layout_gravity="center"/>
-
-        <EditText
-            android:id="@+id/editTextId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:ems="10"
-            android:hint="id"
-            android:inputType="textPersonName" />
-
-        <EditText
-            android:id="@+id/editTextPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="password"
-            android:inputType="textPassword" />
-
-        <Button
-            android:id="@+id/btnGoogleLogin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="구글 계정으로 로그인하기"
-            android:textColor="@color/black" />
-
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="로그인" />
+            android:layout_centerHorizontal="true" />
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
