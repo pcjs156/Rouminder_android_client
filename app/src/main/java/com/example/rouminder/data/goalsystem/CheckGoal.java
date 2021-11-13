@@ -6,8 +6,8 @@ public class CheckGoal extends Goal {
     private static String CHECKED = "완료";
     private static String UNCHECKED = "미완료";
 
-    public CheckGoal(int id, String name, LocalDateTime from, LocalDateTime to, int current) {
-        super(id, name, from, to, current, 1);
+    public CheckGoal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current) {
+        super(manager, id, name, from, to, current, 1);
     }
 
     /**
@@ -56,6 +56,7 @@ public class CheckGoal extends Goal {
     }
 
     public void setChecked(boolean checked) {
+        update();
         setCurrent(checked ? target : 0);
     }
 }
