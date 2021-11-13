@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,8 @@ public class GoalManager {
     private final Set<Goal> ongoingGoals;
     private final Set<Goal> endedGoals;
 
+    private final List<OnGoalChangeListener> onGoalChangeListeners;
+
     public GoalManager() {
         Set<Integer> a = new HashSet<>();
         Goal goal;
@@ -45,6 +48,7 @@ public class GoalManager {
         pendingGoals = new Vector<>();
         ongoingGoals = new HashSet<>();
         endedGoals = new HashSet<>();
+        onGoalChangeListeners = new ArrayList<>();
     }
 
     /**
@@ -54,6 +58,7 @@ public class GoalManager {
      * @return the id of the goal if succeed, otherwise -1.
      */
     public int addGoal(Goal goal) {
+        onGoalChangeListeners.stream().peek(listener -> listener.onGoalAdd(goal.getId()));
         return -1;
     }
 
@@ -67,6 +72,10 @@ public class GoalManager {
         return goals.getOrDefault(id, null);
     }
 
+    void updateGoal(int id) {
+        onGoalChangeListeners.stream().peek(listener -> listener.onGoalUpdate(id));
+    }
+
     /**
      * Remove a goal from the manager
      *
@@ -74,6 +83,7 @@ public class GoalManager {
      * @return true if successfully remove the goal, otherwise false.
      */
     public boolean removeGoal(int id) {
+        onGoalChangeListeners.stream().peek(listener -> listener.onGoalRemove(id));
         return false;
     }
 
@@ -106,6 +116,44 @@ public class GoalManager {
 
         List<Goal> statusFiltered = domainFiltered.stream().filter(statusFilter).collect(Collectors.toList());
         return statusFiltered;
+    }
+
+    /**
+     * Set an event listener for changes of each goal;
+     * like add, update, change.
+     *
+     * @param listener a listener to be set.
+     */
+    public void setOnGoalChangeListener(OnGoalChangeListener listener) {
+        onGoalChangeListeners.add(listener);
+    }
+
+    /**
+     * Remove an event listener for changes of each goal from the list
+     *
+     * @param listener a listener to be removed.
+     */
+    public void removeOnGoalChangeListener(OnGoalChangeListener listener) {
+        onGoalChangeListeners.remove(listener);
+    }
+
+    /**
+     * Set an event listener for changes of each goal matching condition;
+     * like add, update, change.
+     *
+     * @param listener a listener to be set.
+     */
+    public void removeOnGoalMatchingConditionChangeListener(OnGoalWithCriteriaChangeListener listener) {
+        removeOnGoalChangeListener(listener.getListener());
+    }
+
+    /**
+     * Remove an event listener for changes of each goal matching condition from the list
+     *
+     * @param listener a listener to be removed.
+     */
+    public void setOnGoalMatchingConditionChangeListener(OnGoalWithCriteriaChangeListener listener) {
+        setOnGoalChangeListener(listener.getListener());
     }
 
     /**
@@ -154,8 +202,13 @@ public class GoalManager {
             }
         }
 
+        public static boolean test(LocalDateTime now, Domain domain, Goal goal) {
+            return new DomainFilter(now, domain).test(goal);
+        }
+
         /**
          * Create a dummy goal for effective search.
+         *
          * @return a goal with given range
          */
         public Goal getDummy() {
@@ -164,6 +217,10 @@ public class GoalManager {
 
         @Override
         public boolean test(Goal goal) {
+            return test(goal, start, end);
+        }
+
+        public boolean test(Goal goal, LocalDateTime start, LocalDateTime end) {
             return (start == null && end == null)
                     || (goal.getEndTime().isAfter(start) && goal.getStartTime().isBefore(end))
                     ;
@@ -179,8 +236,16 @@ public class GoalManager {
             this.now = now;
         }
 
+        public static boolean test(LocalDateTime now, Status status, Goal goal) {
+            return new StatusFilter(now, status).test(goal);
+        }
+
         @Override
         public boolean test(Goal goal) {
+            return test(goal, now);
+        }
+
+        public boolean test(Goal goal, LocalDateTime now) {
             switch (status) {
                 case BEFORE:
                     return goal.isBeforeStart(now);
@@ -193,5 +258,58 @@ public class GoalManager {
                     return true;
             }
         }
+    }
+
+    /**
+     * An event listener for changes of each goal
+     */
+    public abstract class OnGoalChangeListener {
+        public abstract void onGoalAdd(int id);
+
+        public abstract void onGoalUpdate(int id);
+
+        public abstract void onGoalRemove(int id);
+    }
+
+    /**
+     * An event listener for changes of each goal for matching criteria.
+     */
+    public abstract class OnGoalWithCriteriaChangeListener {
+        private final OnGoalChangeListener listener;
+
+        OnGoalWithCriteriaChangeListener(Domain domain, Status status) {
+            this.listener = new OnGoalChangeListener() {
+                @Override
+                public void onGoalAdd(int id) {
+                    if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
+                            && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
+                        onGoalWithCriteriaAdd(id);
+                }
+
+                @Override
+                public void onGoalUpdate(int id) {
+                    if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
+                            && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
+                        onGoalWithCriteriaUpdate(id);
+                }
+
+                @Override
+                public void onGoalRemove(int id) {
+                    if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
+                            && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
+                        onGoalWithCriteriaRemove(id);
+                }
+            };
+        }
+
+        private OnGoalChangeListener getListener() {
+            return listener;
+        }
+
+        public abstract void onGoalWithCriteriaAdd(int id);
+
+        public abstract void onGoalWithCriteriaUpdate(int id);
+
+        public abstract void onGoalWithCriteriaRemove(int id);
     }
 }
