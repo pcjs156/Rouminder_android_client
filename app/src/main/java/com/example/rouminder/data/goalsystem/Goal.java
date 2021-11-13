@@ -11,6 +11,7 @@ import java.util.Arrays;
  */
 public class Goal implements Comparable<Goal> {
     private final int id;
+    private final GoalManager manager;
     protected int current = 0;
     protected int target = 0;
     private LocalDateTime startTime;
@@ -30,7 +31,8 @@ public class Goal implements Comparable<Goal> {
      * @param current a current progress of the goal.
      * @param target  a target progress of the goal.
      */
-    public Goal(int id, String name, LocalDateTime from, LocalDateTime to, int current, int target) {
+    public Goal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target) {
+        this.manager = manager;
         this.id = id;
         this.name = name;
         this.startTime = from;
@@ -46,10 +48,16 @@ public class Goal implements Comparable<Goal> {
      * @param to   when the goal should end; open end point of the range.
      */
     Goal(LocalDateTime from, LocalDateTime to) {
+        this.manager = null;
         this.id = -1;
         this.name = null;
         this.startTime = from;
         this.endTime = to;
+    }
+
+    protected void update() {
+        if (manager != null)
+            manager.updateGoal(getId());
     }
 
     /**
@@ -72,9 +80,11 @@ public class Goal implements Comparable<Goal> {
 
     /**
      * Set a name of a goal.
+     *
      * @param name a name to be set.
      */
     public void setName(String name) {
+        update();
         this.name = name;
     }
 
@@ -89,9 +99,11 @@ public class Goal implements Comparable<Goal> {
 
     /**
      * Set start time of a goal.
+     *
      * @param startTime a time to be set.
      */
     public void setStartTime(LocalDateTime startTime) {
+        update();
         this.startTime = startTime;
     }
 
@@ -106,9 +118,11 @@ public class Goal implements Comparable<Goal> {
 
     /**
      * Set an end time of a goal.
+     *
      * @param endTime a time to be set.
      */
     public void setEndTime(LocalDateTime endTime) {
+        update();
         this.endTime = endTime;
     }
 
@@ -157,6 +171,7 @@ public class Goal implements Comparable<Goal> {
      * @param icon a Drawable object to be set.
      */
     public void setIcon(Drawable icon) {
+        update();
         this.icon = icon;
     }
 
@@ -175,6 +190,7 @@ public class Goal implements Comparable<Goal> {
      * @param highlight a Color object to be set.
      */
     public void setHighlight(Color highlight) {
+        update();
         this.highlight = highlight;
     }
 
@@ -192,6 +208,7 @@ public class Goal implements Comparable<Goal> {
     }
 
     protected void setCurrent(int current) {
+        update();
         this.current = current;
     }
 

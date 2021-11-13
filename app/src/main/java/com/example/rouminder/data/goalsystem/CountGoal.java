@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 public class CountGoal extends Goal {
     private String unit;
 
-    public CountGoal(int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, String unit) {
-        super(id, name, from, to, current, target);
+    public CountGoal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, String unit) {
+        super(manager, id, name, from, to, current, target);
         this.unit = unit;
     }
 
@@ -24,6 +24,7 @@ public class CountGoal extends Goal {
 
     /**
      * Get a unit String.
+     *
      * @return a unit String.
      */
     public String getUnit() {
@@ -32,14 +33,17 @@ public class CountGoal extends Goal {
 
     /**
      * Set a unit String.
+     *
      * @param unit a unit String.
      */
     public void setUnit(String unit) {
+        update();
         this.unit = unit;
     }
 
     /**
      * Get a current count of a CountGoal.
+     *
      * @return a current count.
      */
     public int getCount() {
@@ -48,9 +52,11 @@ public class CountGoal extends Goal {
 
     /**
      * Set a current count of a CurrentGoal.
+     *
      * @param count a current count to be set; any value smaller than zero is considered zero.
      */
     public void setCount(int count) {
+        update();
         setCurrent(Math.max(count, 0));
     }
 
