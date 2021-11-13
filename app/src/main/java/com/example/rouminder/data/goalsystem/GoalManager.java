@@ -101,7 +101,7 @@ public class GoalManager {
         SortedSet<Goal> setFromBottom = earlyEndingGoals.tailSet(bottom);
         SortedSet<Goal> setFromTop = earlyStartingGoals.headSet(top);
         List<Goal> domainFiltered = setFromBottom.stream()
-                .filter(val -> !setFromTop.contains(val))
+                .filter(val -> setFromTop.contains(val))
                 .collect(Collectors.toList());
 
         List<Goal> statusFiltered = domainFiltered.stream().filter(statusFilter).collect(Collectors.toList());
@@ -159,7 +159,7 @@ public class GoalManager {
          * @return a goal with given range
          */
         public Goal getDummy() {
-            return new Goal(start, end);
+            return new Goal(end, start);
         }
 
         @Override
