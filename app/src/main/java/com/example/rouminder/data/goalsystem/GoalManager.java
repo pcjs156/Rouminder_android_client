@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GoalManager {
+    private static int MAX_ID = 0;
     private static final Period timeToExpire = Period.ofMonths(1);
     private final HashMap<Integer, Goal> goals;
     private final TreeSet<Goal> earlyStartingGoals;
@@ -58,8 +59,16 @@ public class GoalManager {
      * @return the id of the goal if succeed, otherwise -1.
      */
     public int addGoal(Goal goal) {
+        if(goal.getId() == -1) {
+            goal.setId(++GoalManager.MAX_ID);
+        }
+
+        goals.put(goal.getId(), goal);
+        earlyStartingGoals.add(goal);
+        earlyEndingGoals.add(goal);
+
         onGoalChangeListeners.stream().peek(listener -> listener.onGoalAdd(goal.getId()));
-        return -1;
+        return goal.getId();
     }
 
     /**
@@ -69,7 +78,7 @@ public class GoalManager {
      * @return a goal object if found, otherwise null.
      */
     public Goal getGoal(int id) {
-        return goals.getOrDefault(id, null);
+        return goals.get(id);
     }
 
     void updateGoal(int id) {
@@ -83,8 +92,19 @@ public class GoalManager {
      * @return true if successfully remove the goal, otherwise false.
      */
     public boolean removeGoal(int id) {
+        boolean result;
+        if(goals.get(id) != null) {
+
+            Goal goal = goals.remove(id);
+            earlyStartingGoals.remove(goal);
+            earlyEndingGoals.remove(goal);
+            result = true;
+        } else {
+            result = false;
+        }
+
         onGoalChangeListeners.stream().peek(listener -> listener.onGoalRemove(id));
-        return false;
+        return result;
     }
 
     /**

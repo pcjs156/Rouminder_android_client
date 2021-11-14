@@ -10,7 +10,7 @@ import java.util.Arrays;
  * A class for Goal.
  */
 public class Goal implements Comparable<Goal> {
-    private final int id;
+    private int id;
     private final GoalManager manager;
     protected int current = 0;
     protected int target = 0;
@@ -68,6 +68,12 @@ public class Goal implements Comparable<Goal> {
     public int getId() {
         return id;
     }
+
+    /**
+     * Set an identifier of a goal.
+     * @param id an identifier
+     */
+    void setId(int id) {this.id = id;}
 
     /**
      * Get a name of a goal.
@@ -248,8 +254,6 @@ public class Goal implements Comparable<Goal> {
     public boolean isAccomplished() {
         return false;
     }
-
-    ;
 
     /**
      * Get a String representing the type of a goal.
