@@ -12,6 +12,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Date;
 
 
 public class GoalModelManager {
@@ -33,7 +34,18 @@ public class GoalModelManager {
         return instance;
     }
 
-    public GoalModel create(String categoryId, String goalName) {
+    public GoalModel create(String categoryId, String goalName, String goalType,
+                            int current, Date startDatetime, Date finishDatetime) {
+        String startDTString = BaseModelManager.getTimeStampString(startDatetime);
+        String finishDTString = BaseModelManager.getTimeStampString(finishDatetime);
+
+
+        GoalModel newGoal = create(categoryId, goalName, goalType, current, startDTString, finishDTString);
+        return newGoal;
+    }
+
+    public GoalModel create(String categoryId, String goalName, String goalType,
+                            int current, String startDTString, String finishDTString) {
         baseModelManager.checkUidInitialized();
 
         String created_at = baseModelManager.getTimeStampString();
@@ -44,9 +56,15 @@ public class GoalModelManager {
         ref.child("data").child(randomId).child("modified_at").setValue("");
         ref.child("data").child(randomId).child("category").setValue(categoryId);
         ref.child("data").child(randomId).child("name").setValue(goalName);
+        ref.child("data").child(randomId).child("type").setValue(goalType);
+        ref.child("data").child(randomId).child("current").setValue(current);
+
+        ref.child("data").child(randomId).child("start_datetime").setValue(startDTString);
+        ref.child("data").child(randomId).child("finish_datetime").setValue(finishDTString);
+
 
         GoalModel newGoal = new GoalModel(randomId, uid, created_at,
-                "", categoryId, goalName);
+                "", categoryId, goalName, goalType, current, startDTString, finishDTString);
 
         return newGoal;
     }
@@ -69,7 +87,8 @@ public class GoalModelManager {
                     if (author.equals(uid)) {
                         goals.add(new GoalModel(
                                 id, uid, data.get("created_at"), data.get("modified_at"),
-                                data.get("category"), data.get("name")));
+                                data.get("category"), data.get("name"), data.get("type"), Integer.parseInt(data.get("current")),
+                                data.get("start_datetime"), data.get("finish_datetime")));
                     }
                 }
             }

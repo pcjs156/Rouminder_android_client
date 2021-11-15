@@ -3,6 +3,7 @@ package com.example.rouminder.firebase.manager;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,10 +29,31 @@ public class BaseModelManager {
         return timeMills + stringSalt;
     }
 
+    public static String getTimeStampString(Date dt) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd/HH:mm:ss");
+        return format.format(dt);
+    }
+
     public static String getTimeStampString() {
         Date now = new Date();
+        return getTimeStampString(now);
+    }
+
+    public static String getTimeStampString(int year, int month, int day, int hour, int minute) {
+        Date dt = new Date(year, month, day, hour, minute);
+        return getTimeStampString(dt);
+    }
+
+    public static String getTimeStampString(int year, int month, int day) {
+        Date dt = new Date(year, month, day, 0, 0);
+        return getTimeStampString(dt);
+    }
+
+    public static Date parseTimeStampString(String dtString) throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd/HH:mm:ss");
-        return format.format(now);
+        Date ret = null;
+        ret = format.parse(dtString);
+        return ret;
     }
 
     public static BaseModelManager getInstance() {

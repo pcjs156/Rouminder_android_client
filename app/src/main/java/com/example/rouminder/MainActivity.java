@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
                     CategoryModel newCategory = ctManager.createCategory("CATEGORY_1");
                     String categoryId = newCategory.id;
 
-                    GoalModel newGoal = gManager.create(categoryId, "GOAL_NAME_1");
+                    GoalModel newGoal = gManager.create(categoryId, "GOAL_NAME_1", "GOAL_TYPE_1",
+                            0, "2021.11.15/16:45:25", "2021.11.16/16:45:25");
                     String goalId = newGoal.id;
 
                     getSupportFragmentManager().beginTransaction().replace(R.id.mainLayoutContainer, goalFragment).commit();
