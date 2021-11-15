@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.CategoryModelManager;
@@ -12,8 +11,6 @@ import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.model.CategoryModel;
 import com.example.rouminder.firebase.model.GoalModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     String uid;
@@ -50,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.main_menu_item_goal:
-                    CategoryModel newCategory = ctManager.createCategory("CATEGORY_1");
+                    CategoryModel newCategory = ctManager.create("CATEGORY_1");
                     String categoryId = newCategory.id;
 
                     GoalModel newGoal = gManager.create(categoryId, "GOAL_NAME_1", "GOAL_TYPE_1",

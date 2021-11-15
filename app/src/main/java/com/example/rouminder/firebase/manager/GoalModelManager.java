@@ -39,7 +39,6 @@ public class GoalModelManager {
         String startDTString = BaseModelManager.getTimeStampString(startDatetime);
         String finishDTString = BaseModelManager.getTimeStampString(finishDatetime);
 
-
         GoalModel newGoal = create(categoryId, goalName, goalType, current, startDTString, finishDTString);
         return newGoal;
     }
@@ -69,7 +68,7 @@ public class GoalModelManager {
         return newGoal;
     }
 
-    public void syncGoalModels() {
+    public void sync() {
         baseModelManager.checkUidInitialized();
 
         Query select = ref.child("data");
@@ -101,7 +100,8 @@ public class GoalModelManager {
         });
     }
 
-    public ArrayList<GoalModel> getGoalModels() {
+    public ArrayList<GoalModel> get() {
+        sync();
         return goals;
     }
 }

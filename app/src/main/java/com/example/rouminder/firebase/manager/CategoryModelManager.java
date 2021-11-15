@@ -34,7 +34,7 @@ public class CategoryModelManager {
         return instance;
     }
 
-    public CategoryModel createCategory(String categoryName) {
+    public CategoryModel create(String categoryName) {
         checkUidInitialized();
 
         String created_at = baseModelManager.getTimeStampString();
@@ -50,7 +50,7 @@ public class CategoryModelManager {
         return newCategory;
     }
 
-    public void syncConditionModels() {
+    public void sync() {
         checkUidInitialized();
 
         Query select = ref.child("data");
@@ -80,7 +80,8 @@ public class CategoryModelManager {
         });
     }
 
-    public ArrayList<CategoryModel> getCategoryModels() {
+    public ArrayList<CategoryModel> get() {
+        sync();
         return categories;
     }
 }
