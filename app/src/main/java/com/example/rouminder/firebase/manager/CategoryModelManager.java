@@ -1,8 +1,10 @@
 package com.example.rouminder.firebase.manager;
 
+import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidInitialized;
+
 import androidx.annotation.NonNull;
 
-import com.example.rouminder.firebase.model.GoalModel;
+import com.example.rouminder.firebase.model.CategoryModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -13,47 +15,43 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
-public class GoalManager {
-    private static GoalManager instance = new GoalManager();
+public class CategoryModelManager {
+    private static CategoryModelManager instance = new CategoryModelManager();
 
     private final BaseModelManager baseModelManager = BaseModelManager.getInstance();
     private final DatabaseReference ref;
-    private ArrayList<GoalModel> goals;
+    private ArrayList<CategoryModel> categories;
     private final String uid;
 
-    private GoalManager() {
+    private CategoryModelManager() {
         FirebaseDatabase db = baseModelManager.db;
         uid = baseModelManager.uid;
-        ref = db.getReference("goal");
-        goals = new ArrayList<>();
+        ref = db.getReference("category");
+        categories = new ArrayList<>();
     }
 
-    public static GoalManager getInstance() {
+    public static CategoryModelManager getInstance() {
         return instance;
     }
 
-    public GoalModel create(String conditionId, String categoryId, String goalName) {
-        baseModelManager.checkUidInitialized();
+    public CategoryModel createCategory(String categoryName) {
+        checkUidInitialized();
 
         String created_at = baseModelManager.getTimeStampString();
         String randomId = baseModelManager.getRandomId();
 
         ref.child("data").child(randomId).child("author").setValue(uid);
+        ref.child("data").child(randomId).child("name").setValue(categoryName);
         ref.child("data").child(randomId).child("created_at").setValue(created_at);
         ref.child("data").child(randomId).child("modified_at").setValue("");
-        ref.child("data").child(randomId).child("condition").setValue(conditionId);
-        ref.child("data").child(randomId).child("category").setValue(categoryId);
-        ref.child("data").child(randomId).child("name").setValue(goalName);
 
-        GoalModel newGoal = new GoalModel(randomId, uid, created_at, "",
-                conditionId, categoryId, goalName);
+        CategoryModel newCategory = new CategoryModel(randomId, uid, created_at, "", categoryName);
 
-        return newGoal;
+        return newCategory;
     }
 
-    public void syncGoalModels() {
-        baseModelManager.checkUidInitialized();
+    public void syncConditionModels() {
+        checkUidInitialized();
 
         Query select = ref.child("data");
         select.addValueEventListener(new ValueEventListener() {
@@ -62,28 +60,27 @@ public class GoalManager {
                 HashMap<String, HashMap<String, String>> result =
                         (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
 
-                goals = new ArrayList<>();
+                categories = new ArrayList<>();
                 for (String id : result.keySet()) {
                     HashMap<String, String> data = result.get(id);
                     String author = data.get("author");
 
                     if (author.equals(uid)) {
-                        goals.add(new GoalModel(
+                        categories.add(new CategoryModel(
                                 id, uid, data.get("created_at"), data.get("modified_at"),
-                                data.get("condition"), data.get("category"), data.get("name")));
+                                data.get("name")));
                     }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                System.out.println("HELLO : Failed to read value");
                 databaseError.toException();
             }
         });
     }
 
-    public ArrayList<GoalModel> getGoalModels() {
-        return goals;
+    public ArrayList<CategoryModel> getCategoryModels() {
+        return categories;
     }
 }

@@ -1,10 +1,8 @@
 package com.example.rouminder.firebase.manager;
 
-import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidInitialized;
-
 import androidx.annotation.NonNull;
 
-import com.example.rouminder.firebase.model.ConditionModel;
+import com.example.rouminder.firebase.model.GoalModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,48 +13,46 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ConditionManager {
-    private static ConditionManager instance = new ConditionManager();
+
+public class GoalModelManager {
+    private static GoalModelManager instance = new GoalModelManager();
 
     private final BaseModelManager baseModelManager = BaseModelManager.getInstance();
     private final DatabaseReference ref;
-    private ArrayList<ConditionModel> conditions;
+    private ArrayList<GoalModel> goals;
     private final String uid;
 
-    private ConditionManager() {
+    private GoalModelManager() {
         FirebaseDatabase db = baseModelManager.db;
         uid = baseModelManager.uid;
-        ref = db.getReference("condition");
-        conditions = new ArrayList<>();
+        ref = db.getReference("goal");
+        goals = new ArrayList<>();
     }
 
-    public static ConditionManager getInstance() {
+    public static GoalModelManager getInstance() {
         return instance;
     }
 
-    public ConditionModel create(String actionId, String condType) {
+    public GoalModel create(String categoryId, String goalName) {
         baseModelManager.checkUidInitialized();
 
         String created_at = baseModelManager.getTimeStampString();
         String randomId = baseModelManager.getRandomId();
 
         ref.child("data").child(randomId).child("author").setValue(uid);
-        ref.child("data").child(randomId).child("action").setValue(actionId);
         ref.child("data").child(randomId).child("created_at").setValue(created_at);
-        ref.child("data").child(randomId).child("type").setValue(condType);
         ref.child("data").child(randomId).child("modified_at").setValue("");
+        ref.child("data").child(randomId).child("category").setValue(categoryId);
+        ref.child("data").child(randomId).child("name").setValue(goalName);
 
-        ConditionModel newCondition = new ConditionModel(
-                randomId, uid, created_at, "", condType
-        );
+        GoalModel newGoal = new GoalModel(randomId, uid, created_at,
+                "", categoryId, goalName);
 
-        return newCondition;
+        return newGoal;
     }
 
-    ;
-
-    public void syncConditionModels() {
-        checkUidInitialized();
+    public void syncGoalModels() {
+        baseModelManager.checkUidInitialized();
 
         Query select = ref.child("data");
         select.addValueEventListener(new ValueEventListener() {
@@ -65,15 +61,15 @@ public class ConditionManager {
                 HashMap<String, HashMap<String, String>> result =
                         (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
 
-                conditions = new ArrayList<>();
+                goals = new ArrayList<>();
                 for (String id : result.keySet()) {
                     HashMap<String, String> data = result.get(id);
                     String author = data.get("author");
 
                     if (author.equals(uid)) {
-                        conditions.add(new ConditionModel(
+                        goals.add(new GoalModel(
                                 id, uid, data.get("created_at"), data.get("modified_at"),
-                                data.get("type")));
+                                data.get("category"), data.get("name")));
                     }
                 }
             }
@@ -86,7 +82,7 @@ public class ConditionManager {
         });
     }
 
-    public ArrayList<ConditionModel> getActionModels() {
-        return conditions;
+    public ArrayList<GoalModel> getGoalModels() {
+        return goals;
     }
 }

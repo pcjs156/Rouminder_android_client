@@ -6,14 +6,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.rouminder.firebase.manager.ActionManager;
 import com.example.rouminder.firebase.manager.BaseModelManager;
-import com.example.rouminder.firebase.manager.CategoryManager;
-import com.example.rouminder.firebase.manager.ConditionManager;
-import com.example.rouminder.firebase.manager.GoalManager;
-import com.example.rouminder.firebase.model.ActionModel;
+import com.example.rouminder.firebase.manager.CategoryModelManager;
+import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.model.CategoryModel;
-import com.example.rouminder.firebase.model.ConditionModel;
 import com.example.rouminder.firebase.model.GoalModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -48,31 +44,17 @@ public class MainActivity extends AppCompatActivity {
         BaseModelManager.setUid(uid);
         BaseModelManager baseModelManager = BaseModelManager.getInstance();
 
-        ActionManager aManager = ActionManager.getInstance();
-        ConditionManager cManager = ConditionManager.getInstance();
-        GoalManager gManager = GoalManager.getInstance();
-        CategoryManager ctManager = CategoryManager.getInstance();
+        GoalModelManager gManager = GoalModelManager.getInstance();
+        CategoryModelManager ctManager = CategoryModelManager.getInstance();
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.main_menu_item_goal:
-                    ActionModel newAction = aManager.create("ACTION_TYPE_1", "UNIT_1");
-                    String actionId = newAction.id;
-
-                    ConditionModel newCondition = cManager.create(actionId, "COND_TYPE_1");
-                    String conditionId = newCondition.id;
-
                     CategoryModel newCategory = ctManager.createCategory("CATEGORY_1");
                     String categoryId = newCategory.id;
 
-                    GoalModel newGoal = gManager.create(conditionId, categoryId, "GOAL_NAME_1");
+                    GoalModel newGoal = gManager.create(categoryId, "GOAL_NAME_1");
                     String goalId = newGoal.id;
-
-                    aManager.syncActionModels();
-                    ArrayList<ActionModel> actions = aManager.getActionModels();
-                    for(ActionModel action: actions) {
-                        Log.d("Hello", action.toString(true));
-                    }
 
                     getSupportFragmentManager().beginTransaction().replace(R.id.mainLayoutContainer, goalFragment).commit();
                     break;
