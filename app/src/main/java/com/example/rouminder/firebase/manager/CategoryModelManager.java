@@ -5,6 +5,7 @@ import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidIn
 import androidx.annotation.NonNull;
 
 import com.example.rouminder.firebase.model.CategoryModel;
+import com.example.rouminder.firebase.model.ModelDoesNotExists;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +47,7 @@ public class CategoryModelManager {
         ref.child("data").child(randomId).child("modified_at").setValue("");
 
         CategoryModel newCategory = new CategoryModel(randomId, uid, created_at, "", categoryName);
+        sync();
 
         return newCategory;
     }
@@ -81,7 +83,26 @@ public class CategoryModelManager {
     }
 
     public ArrayList<CategoryModel> get() {
+        checkUidInitialized();
         sync();
         return categories;
+    }
+
+    public CategoryModel get(String id) throws ModelDoesNotExists {
+        checkUidInitialized();
+        sync();
+
+        CategoryModel ret = null;
+        for (CategoryModel model : categories) {
+            if (model.id.equals(id)) {
+                ret = model;
+                break;
+            }
+        }
+
+        if (ret == null)
+            throw new ModelDoesNotExists();
+        else
+            return ret;
     }
 }

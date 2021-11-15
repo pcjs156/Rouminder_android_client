@@ -1,8 +1,12 @@
 package com.example.rouminder.firebase.manager;
 
+import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidInitialized;
+
 import androidx.annotation.NonNull;
 
+import com.example.rouminder.firebase.model.CategoryModel;
 import com.example.rouminder.firebase.model.GoalModel;
+import com.example.rouminder.firebase.model.ModelDoesNotExists;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,7 +49,7 @@ public class GoalModelManager {
 
     public GoalModel create(String categoryId, String goalName, String goalType,
                             int current, String startDTString, String finishDTString) {
-        baseModelManager.checkUidInitialized();
+        checkUidInitialized();
 
         String created_at = baseModelManager.getTimeStampString();
         String randomId = baseModelManager.getRandomId();
@@ -65,11 +69,13 @@ public class GoalModelManager {
         GoalModel newGoal = new GoalModel(randomId, uid, created_at,
                 "", categoryId, goalName, goalType, current, startDTString, finishDTString);
 
+        sync();
+
         return newGoal;
     }
 
     public void sync() {
-        baseModelManager.checkUidInitialized();
+        checkUidInitialized();
 
         Query select = ref.child("data");
         select.addValueEventListener(new ValueEventListener() {
@@ -101,7 +107,26 @@ public class GoalModelManager {
     }
 
     public ArrayList<GoalModel> get() {
+        checkUidInitialized();
         sync();
         return goals;
+    }
+
+    public GoalModel get(String id) throws ModelDoesNotExists {
+        checkUidInitialized();
+        sync();
+
+        GoalModel ret = null;
+        for (GoalModel model : goals) {
+            if (model.id.equals(id)) {
+                ret = model;
+                break;
+            }
+        }
+
+        if (ret == null)
+            throw new ModelDoesNotExists();
+        else
+            return ret;
     }
 }
