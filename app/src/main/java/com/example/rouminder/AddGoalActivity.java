@@ -84,14 +84,16 @@ public class AddGoalActivity extends AppCompatActivity {
                 }
 
                 Collections.shuffle(categoryIds);
-                String pickedId = categoryIds.get(0);
-                HashMap<String, Object> newData = new HashMap<>();
-                newData.put("name", "newName");
-                try {
-                    categoryModelManager.update(pickedId, newData);
-                } catch (ModelDoesNotExists e) {
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                if (!categoryIds.isEmpty()) {
+                    String pickedId = categoryIds.get(0);
+                    HashMap<String, Object> newData = new HashMap<>();
+                    newData.put("name", "newName");
+                    try {
+                        categoryModelManager.update(pickedId, newData);
+                    } catch (ModelDoesNotExists e) {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -106,12 +108,14 @@ public class AddGoalActivity extends AppCompatActivity {
                 }
 
                 Collections.shuffle(categoryIds);
-                String pickedId = categoryIds.get(0);
-                try {
-                    categoryModelManager.delete(pickedId);
-                } catch (ModelDoesNotExists e) {
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                if (!categoryIds.isEmpty()) {
+                    String pickedId = categoryIds.get(0);
+                    try {
+                        categoryModelManager.delete(pickedId);
+                    } catch (ModelDoesNotExists e) {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
