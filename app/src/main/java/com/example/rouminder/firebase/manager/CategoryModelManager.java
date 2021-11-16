@@ -46,19 +46,19 @@ public class CategoryModelManager {
                         (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
 
                 categories.clear();
-                for (String id : result.keySet()) {
-                    HashMap<String, String> category = result.get(id);
+                if (result != null && !result.isEmpty()) {
+                    for (String id : result.keySet()) {
+                        HashMap<String, String> category = result.get(id);
 
-                    String author = category.get("author");
-                    if (author.equals(uid)) {
-                        categories.add(new CategoryModel(
-                                id, uid, category.get("created_at"),
-                                category.get("modified_at"), category.get("name")));
+                        String author = category.get("author");
+                        if (author.equals(uid)) {
+                            categories.add(new CategoryModel(
+                                    id, uid, category.get("created_at"),
+                                    category.get("modified_at"), category.get("name")));
+                        }
                     }
-                }
 
-                for (ArrayAdapter adapter : notifyAdapters) {
-                    adapter.notifyDataSetChanged();
+                    notifyToAdapters();
                 }
             }
 
@@ -86,6 +86,12 @@ public class CategoryModelManager {
         }
     }
 
+    public void notifyToAdapters() {
+        for (ArrayAdapter adapter : notifyAdapters) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     public CategoryModel create(String categoryName) {
         checkUidInitialized();
 
@@ -98,6 +104,8 @@ public class CategoryModelManager {
         ref.child("data").child(randomId).child("modified_at").setValue("");
 
         CategoryModel newCategory = new CategoryModel(randomId, uid, created_at, "", categoryName);
+        categories.add(newCategory);
+        notifyToAdapters();
 
         return newCategory;
     }
@@ -122,5 +130,66 @@ public class CategoryModelManager {
             throw new ModelDoesNotExists();
         else
             return ret;
+    }
+
+    public CategoryModel update(String id, HashMap<String, Object> newValues) throws ModelDoesNotExists {
+        checkUidInitialized();
+
+        CategoryModel targetCategory = null;
+        int targetIdx = -1;
+        for (CategoryModel model : categories) {
+            if (model.id.equals(id)) {
+                targetCategory = model;
+                break;
+            }
+        }
+        for(int i=0; i<categories.size(); i++) {
+            CategoryModel model = categories.get(i);
+            if (model.id.equals(id)) {
+                targetCategory = model;
+                targetIdx = i;
+                break;
+            }
+        }
+
+        if (targetCategory == null)
+            throw new ModelDoesNotExists();
+        else {
+            newValues.put("modified_at", BaseModelManager.getTimeStampString());
+            dataRef.child(id).updateChildren(newValues);
+            CategoryModel updatedModel = targetCategory.update(newValues);
+            categories.set(targetIdx, updatedModel);
+            notifyToAdapters();
+            return updatedModel;
+        }
+    }
+
+    public void delete(String id) throws ModelDoesNotExists {
+        checkUidInitialized();
+
+        CategoryModel targetCategory = null;
+        int targetIdx = -1;
+        for (CategoryModel model : categories) {
+            if (model.id.equals(id)) {
+                targetCategory = model;
+                break;
+            }
+        }
+        for(int i=0; i<categories.size(); i++) {
+            CategoryModel model = categories.get(i);
+            if (model.id.equals(id)) {
+                targetCategory = model;
+                targetIdx = i;
+                break;
+            }
+        }
+
+        if (targetCategory == null)
+            throw new ModelDoesNotExists();
+        else {
+            dataRef.child(id).removeValue();
+            categories.remove(targetIdx);
+            notifyToAdapters();
+        }
     }
 }

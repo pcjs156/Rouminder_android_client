@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.rouminder.firebase.exception.ModelDoesNotExists;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.CategoryModelManager;
 import com.example.rouminder.firebase.model.CategoryModel;
@@ -23,9 +24,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
+import com.nex3z.togglebuttongroup.button.LabelToggle;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class AddGoalActivity extends AppCompatActivity {
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -67,6 +73,48 @@ public class AddGoalActivity extends AppCompatActivity {
 
         categoriesSpinner.setAdapter(categoriesAdapter);
         highlightsSpinner.setAdapter(highlightsAdapter);
+
+        LabelToggle choiceGeneral = (LabelToggle) findViewById(R.id.choiceGeneral);
+        choiceGeneral.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<String> categoryIds = new ArrayList<>();
+                for (CategoryModel model : categoryModels) {
+                    categoryIds.add(model.id);
+                }
+
+                Collections.shuffle(categoryIds);
+                String pickedId = categoryIds.get(0);
+                HashMap<String, Object> newData = new HashMap<>();
+                newData.put("name", "newName");
+                try {
+                    categoryModelManager.update(pickedId, newData);
+                } catch (ModelDoesNotExists e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        LabelToggle choiceRepeat = (LabelToggle) findViewById(R.id.choiceRepeat);
+        choiceRepeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<String> categoryIds = new ArrayList<>();
+                for (CategoryModel model : categoryModels) {
+                    categoryIds.add(model.id);
+                }
+
+                Collections.shuffle(categoryIds);
+                String pickedId = categoryIds.get(0);
+                try {
+                    categoryModelManager.delete(pickedId);
+                } catch (ModelDoesNotExists e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
 //        나중에 Spinner.getSelectedItem()으로 선택 값 가져오기
 
