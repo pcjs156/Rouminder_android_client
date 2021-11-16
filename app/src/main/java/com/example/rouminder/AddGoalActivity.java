@@ -36,7 +36,8 @@ public class AddGoalActivity extends AppCompatActivity {
     public SingleSelectToggleGroup typeGroup;
     public SingleSelectToggleGroup methodGroup;
 
-    public ArrayList<CategoryModel> categoryModels;
+    public CategoryModelManager categoryModelManager = CategoryModelManager.getInstance();
+    public ArrayList<CategoryModel> categoryModels = categoryModelManager.getCategories();
 
     public String uid;
 
@@ -55,39 +56,11 @@ public class AddGoalActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.custom_bar_add_goal);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference()
-                .child("category").child("data");
-
-        categoryModels = new ArrayList<>();
+        ArrayAdapter categoriesAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryModels);
+        categoryModelManager.addNotifyAdapter(categoriesAdapter);
 
         String[] highlights = {"하이라이트1", "하이라이트2", "하이라이트3", "하이라이트4", "하이라이트5"};
-        ArrayAdapter categoriesAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryModels);
         ArrayAdapter highlightsAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, highlights);
-
-        db.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                HashMap<String, HashMap<String, String>> result =
-                        (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
-
-                categoryModels.clear();
-                for (String id : result.keySet()) {
-                    HashMap<String, String> category = result.get(id);
-
-                    String author = category.get("author");
-                    if (author.equals(uid)) {
-                        categoryModels.add(new CategoryModel(
-                                id, uid, category.get("created_at"),
-                                category.get("modified_at"), category.get("name")));
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getApplicationContext(), "Category 정보를 읽어오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         categoriesSpinner = (Spinner) findViewById(R.id.spinnerCategory);
         highlightsSpinner = (Spinner) findViewById(R.id.spinnerHighlight);

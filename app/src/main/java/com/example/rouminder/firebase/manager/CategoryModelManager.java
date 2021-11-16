@@ -3,6 +3,8 @@ package com.example.rouminder.firebase.manager;
 import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidInitialized;
 import static com.example.rouminder.firebase.manager.BaseModelManager.readData;
 
+import android.widget.ArrayAdapter;
+
 import androidx.annotation.NonNull;
 
 import com.example.rouminder.firebase.model.CategoryModel;
@@ -17,6 +19,7 @@ import com.google.firebase.ktx.Firebase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class CategoryModelManager {
     private static CategoryModelManager instance = new CategoryModelManager();
@@ -27,6 +30,8 @@ public class CategoryModelManager {
     public ArrayList<CategoryModel> categories;
     private final String uid;
 
+    private final HashSet<ArrayAdapter> notifyAdapters = new HashSet<>();
+
     private CategoryModelManager() {
         FirebaseDatabase db = baseModelManager.db;
         uid = baseModelManager.uid;
@@ -34,37 +39,51 @@ public class CategoryModelManager {
         dataRef = ref.child("data");
         categories = new ArrayList<>();
 
-        ref.addValueEventListener(new ValueEventListener() {
+        dataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HashMap<String, HashMap<String, String>> result =
                         (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
 
-                categories = new ArrayList<>();
-                int idx = 0;
-                for (String id : result.get("data").keySet()) {
-                    String author = dataRef.child(uid).getKey();
+                categories.clear();
+                for (String id : result.keySet()) {
+                    HashMap<String, String> category = result.get(id);
 
+                    String author = category.get("author");
                     if (author.equals(uid)) {
-//                        System.out.println("FB_DB: " + dataRef.child(uid).child("name"));
                         categories.add(new CategoryModel(
-                                id, uid, dataRef.child(uid).child("created_at").getKey(),
-                                dataRef.child(uid).child("modified_at").getKey(), dataRef.child(uid).child("name").getKey()));
+                                id, uid, category.get("created_at"),
+                                category.get("modified_at"), category.get("name")));
                     }
                 }
-                setCategories(categories);
-                idx++;
+
+                for (ArrayAdapter adapter : notifyAdapters) {
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                System.out.println("REALTIME_DB: 카테고리 연동 실패");
             }
         });
     }
 
     public static CategoryModelManager getInstance() {
         return instance;
+    }
+
+    public ArrayList<CategoryModel> getCategories() {
+        return (ArrayList<CategoryModel>) categories.clone();
+    }
+
+    public boolean addNotifyAdapter(ArrayAdapter newAdapter) {
+        if (notifyAdapters.contains(newAdapter))
+            return false;
+        else {
+            notifyAdapters.add(newAdapter);
+            return true;
+        }
     }
 
     public CategoryModel create(String categoryName) {
@@ -79,55 +98,17 @@ public class CategoryModelManager {
         ref.child("data").child(randomId).child("modified_at").setValue("");
 
         CategoryModel newCategory = new CategoryModel(randomId, uid, created_at, "", categoryName);
-        sync();
 
         return newCategory;
     }
 
-    public void sync() {
-        checkUidInitialized();
-
-        Query select = ref.child("data");
-        readData(select, new OnGetDataListener() {
-            @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                HashMap<String, HashMap<String, String>> result =
-                        (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
-
-                categories = new ArrayList<>();
-                for (String id : result.keySet()) {
-                    HashMap<String, String> data = result.get(id);
-                    String author = data.get("author");
-
-                    if (author.equals(uid)) {
-                        categories.add(new CategoryModel(
-                                id, uid, data.get("created_at"), data.get("modified_at"),
-                                data.get("name")));
-                    }
-                }
-            }
-
-            @Override
-            public void onStart() {
-
-            }
-
-            @Override
-            public void onFailure() {
-                System.out.println("FB_DB: CategoryModelManager.onFailure");
-            }
-        });
-    }
-
     public ArrayList<CategoryModel> get() {
         checkUidInitialized();
-        sync();
         return categories;
     }
 
     public CategoryModel get(String id) throws ModelDoesNotExists {
         checkUidInitialized();
-        sync();
 
         CategoryModel ret = null;
         for (CategoryModel model : categories) {
@@ -141,9 +122,5 @@ public class CategoryModelManager {
             throw new ModelDoesNotExists();
         else
             return ret;
-    }
-
-    public void setCategories(ArrayList<CategoryModel> categories) {
-        this.categories = categories;
     }
 }
