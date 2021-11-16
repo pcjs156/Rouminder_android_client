@@ -4,9 +4,8 @@ import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidIn
 
 import androidx.annotation.NonNull;
 
-import com.example.rouminder.firebase.model.CategoryModel;
 import com.example.rouminder.firebase.model.GoalModel;
-import com.example.rouminder.firebase.model.ModelDoesNotExists;
+import com.example.rouminder.firebase.exception.ModelDoesNotExists;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -77,33 +76,33 @@ public class GoalModelManager {
     public void sync() {
         checkUidInitialized();
 
-        Query select = ref.child("data");
-        select.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                HashMap<String, HashMap<String, String>> result =
-                        (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
-
-                goals = new ArrayList<>();
-                for (String id : result.keySet()) {
-                    HashMap<String, String> data = result.get(id);
-                    String author = data.get("author");
-
-                    if (author.equals(uid)) {
-                        goals.add(new GoalModel(
-                                id, uid, data.get("created_at"), data.get("modified_at"),
-                                data.get("category"), data.get("name"), data.get("type"), Integer.parseInt(data.get("current")),
-                                data.get("start_datetime"), data.get("finish_datetime")));
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                System.out.println("HELLO : Failed to read value");
-                databaseError.toException();
-            }
-        });
+//        Query select = ref.child("data");
+//        select.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                HashMap<String, HashMap<String, String>> result =
+//                        (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
+//
+//                goals = new ArrayList<>();
+//                for (String id : result.keySet()) {
+//                    HashMap<String, String> data = result.get(id);
+//                    String author = data.get("author");
+//
+//                    if (author.equals(uid)) {
+//                        goals.add(new GoalModel(
+//                                id, uid, data.get("created_at"), data.get("modified_at"),
+//                                data.get("category"), data.get("name"), data.get("type"), Integer.parseInt(data.get("current")),
+//                                data.get("start_datetime"), data.get("finish_datetime")));
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                System.out.println("HELLO : Failed to read value");
+//                databaseError.toException();
+//            }
+//        });
     }
 
     public ArrayList<GoalModel> get() {

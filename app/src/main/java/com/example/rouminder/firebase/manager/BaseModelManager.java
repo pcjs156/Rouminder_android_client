@@ -1,7 +1,13 @@
 package com.example.rouminder.firebase.manager;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -81,5 +87,24 @@ public class BaseModelManager {
             BaseModelManager.uid = uid;
             isUidInitialized = true;
         }
+    }
+
+    public static void readData(Query query, final OnGetDataListener listener) {
+        listener.onStart();
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listener.onSuccess(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                listener.onFailure();
+            }
+        });
+    }
+
+    public String getUid() {
+        return uid;
     }
 }

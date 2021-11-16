@@ -17,18 +17,6 @@ public class CategoryModel {
 
     @Override
     public String toString() {
-        return toString(false);
-    }
-
-    public String toString(boolean verbose) {
-        String ret = String.format("[%s] name: '%s'",
-                id, name);
-        if (verbose) {
-            ret += String.format(" / created on '%s' / modified on '%s' / by '%s'",
-                    created_at, modified_at, uid);
-            return ret;
-        } else {
-            return ret;
-        }
+        return name;
     }
 }

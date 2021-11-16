@@ -1,17 +1,19 @@
 package com.example.rouminder.firebase.manager;
 
 import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidInitialized;
+import static com.example.rouminder.firebase.manager.BaseModelManager.readData;
 
 import androidx.annotation.NonNull;
 
 import com.example.rouminder.firebase.model.CategoryModel;
-import com.example.rouminder.firebase.model.ModelDoesNotExists;
+import com.example.rouminder.firebase.exception.ModelDoesNotExists;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.ktx.Firebase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,15 +22,45 @@ public class CategoryModelManager {
     private static CategoryModelManager instance = new CategoryModelManager();
 
     private final BaseModelManager baseModelManager = BaseModelManager.getInstance();
-    private final DatabaseReference ref;
-    private ArrayList<CategoryModel> categories;
+    public final DatabaseReference ref;
+    public final DatabaseReference dataRef;
+    public ArrayList<CategoryModel> categories;
     private final String uid;
 
     private CategoryModelManager() {
         FirebaseDatabase db = baseModelManager.db;
         uid = baseModelManager.uid;
         ref = db.getReference("category");
+        dataRef = ref.child("data");
         categories = new ArrayList<>();
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                HashMap<String, HashMap<String, String>> result =
+                        (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
+
+                categories = new ArrayList<>();
+                int idx = 0;
+                for (String id : result.get("data").keySet()) {
+                    String author = dataRef.child(uid).getKey();
+
+                    if (author.equals(uid)) {
+//                        System.out.println("FB_DB: " + dataRef.child(uid).child("name"));
+                        categories.add(new CategoryModel(
+                                id, uid, dataRef.child(uid).child("created_at").getKey(),
+                                dataRef.child(uid).child("modified_at").getKey(), dataRef.child(uid).child("name").getKey()));
+                    }
+                }
+                setCategories(categories);
+                idx++;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public static CategoryModelManager getInstance() {
@@ -56,9 +88,9 @@ public class CategoryModelManager {
         checkUidInitialized();
 
         Query select = ref.child("data");
-        select.addValueEventListener(new ValueEventListener() {
+        readData(select, new OnGetDataListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onSuccess(DataSnapshot dataSnapshot) {
                 HashMap<String, HashMap<String, String>> result =
                         (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
 
@@ -76,8 +108,13 @@ public class CategoryModelManager {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                databaseError.toException();
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onFailure() {
+                System.out.println("FB_DB: CategoryModelManager.onFailure");
             }
         });
     }
@@ -104,5 +141,9 @@ public class CategoryModelManager {
             throw new ModelDoesNotExists();
         else
             return ret;
+    }
+
+    public void setCategories(ArrayList<CategoryModel> categories) {
+        this.categories = categories;
     }
 }
