@@ -7,23 +7,19 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.content.SharedPreferences;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 
-import com.example.rouminder.firebase.Manager;
+import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -37,21 +33,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import android.view.View;
-import android.widget.Toast;
-
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity {
@@ -80,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (isLoggedBefore) {
             User.getInstance().setInfo(uid);
-            Manager.getInstance().createUser(uid);
+            BaseModelManager.getInstance().createUser();
             Intent mainActivityIntent = new Intent(this, MainActivity.class);
             startActivity(mainActivityIntent);
         } else {
@@ -176,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             String uid = user.getUid();
                             User.getInstance().setInfo(uid);
-                            Manager.getInstance().createUser(uid);
+                            BaseModelManager.getInstance().createUser();
 
                             SharedPreferences prefs = getSharedPreferences("global", MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();

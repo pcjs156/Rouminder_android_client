@@ -5,7 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.example.rouminder.firebase.Manager;
+import com.example.rouminder.firebase.manager.BaseModelManager;
+import com.example.rouminder.firebase.manager.CategoryModelManager;
+import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.firebase.model.CategoryModel;
+import com.example.rouminder.firebase.model.GoalModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,11 +38,22 @@ public class MainActivity extends AppCompatActivity {
         //첫 화면 띄우기
         getSupportFragmentManager().beginTransaction().add(R.id.mainLayoutContainer, goalFragment).commit();
 
+        BaseModelManager.setUid(uid);
+        BaseModelManager baseModelManager = BaseModelManager.getInstance();
+
+        GoalModelManager gManager = GoalModelManager.getInstance();
+        CategoryModelManager ctManager = CategoryModelManager.getInstance();
+
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.main_menu_item_goal:
-                    Manager manager = Manager.getInstance();
-                    manager.createAction(uid, "TYPE1", "unit1");
+                    CategoryModel newCategory = ctManager.create("CATEGORY_1");
+                    String categoryId = newCategory.id;
+
+                    GoalModel newGoal = gManager.create(categoryId, "GOAL_NAME_1", "GOAL_TYPE_1",
+                            0, "2021.11.15/16:45:25", "2021.11.16/16:45:25");
+                    String goalId = newGoal.id;
+
                     getSupportFragmentManager().beginTransaction().replace(R.id.mainLayoutContainer, goalFragment).commit();
                     break;
                 case R.id.main_menu_item_statistics:

@@ -6,19 +6,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.dinuscxj.progressbar.CircleProgressBar;
 import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 
 public class GoalAdapter extends RecyclerView.Adapter<DefaultGoalHolder> {
@@ -27,10 +21,6 @@ public class GoalAdapter extends RecyclerView.Adapter<DefaultGoalHolder> {
 
     final int bigGoalRecycler = R.id.viewGoal;
     final int miniGoalRecycler = R.id.lstMiniGoal;
-
-//    GoalAdapter(ArrayList<GoalItem> list) {
-//        this.list = list;
-//    }
 
     GoalAdapter(GoalManager goalManager) { super(); this.goalManager = goalManager; }
 
@@ -119,5 +109,4 @@ public class GoalAdapter extends RecyclerView.Adapter<DefaultGoalHolder> {
     public int getItemCount() {
         return goalManager.goals.size();
     }
-
 }
