@@ -5,8 +5,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -14,6 +16,8 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
+
+import android.graphics.Color;
 
 public class AddGoalActivity extends AppCompatActivity {
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -23,6 +27,7 @@ public class AddGoalActivity extends AppCompatActivity {
     public Spinner highlightsSpinner;
     public SingleSelectToggleGroup typeGroup;
     public SingleSelectToggleGroup methodGroup;
+    public Color selectedColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +43,12 @@ public class AddGoalActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         String[] categories = { "카테고리1", "카테고리2", "카테고리3" };
-        String[] highlights = { "하이라이트1", "하이라이트2", "하이라이트3", "하이라이트4", "하이라이트5" };
+        int colors[] = {R.drawable.red, R.drawable.blue, R.drawable.green};
+
         ArrayAdapter categoriesAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categories);
-        ArrayAdapter highlightsAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, highlights);
+        //ArrayAdapter highlightsAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, highlights);
+        //SpinnerAdapter highlightsAdapter = new SpinnerAdapter(this, android.R.layout.simple_spinner_dropdown_item, highlights);
+        SpinnerAdapter highlightsAdapter = new SpinnerAdapter(this, colors);
 
         categoriesSpinner = (Spinner) findViewById(R.id.spinnerCategory);
         highlightsSpinner = (Spinner) findViewById(R.id.spinnerHighlight);
@@ -48,9 +56,40 @@ public class AddGoalActivity extends AppCompatActivity {
         categoriesSpinner.setAdapter(categoriesAdapter);
         highlightsSpinner.setAdapter(highlightsAdapter);
 
-//        나중에 Spinner.getSelectedItem()으로 선택 값 가져오기
+      //  highlightsAdapter.getDropDownView()
 
-        typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
+//        나중에 Spinner.getSelectedItem()으로 선택 값 가져오기
+//        각 색깔에 대응하여 Color 인스턴스 설정, Goal 생성할 때 그냥 setHighlight 해주면 될듯.
+/*
+        highlightsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedItem = (String) adapterView.getItemAtPosition(i);
+                switch (selectedItem) {
+                    case "빨강색":
+                        Log.e("하이라이트아이템", "#ff0000");
+                        selectedColor = Color.valueOf(0xffff0000);
+                        break;
+                    case "초록색":
+                        Log.e("하이라이트아이템", "#00ff00");
+                        selectedColor = Color.valueOf(0xff00ff00);
+                        break;
+                    case "파란색":
+                        Log.e("하이라이트아이템", "#0000ff");
+                        selectedColor = Color.valueOf(0xff0000ff);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                Log.e("하이라이트아이템", "선택지 없음.");
+                selectedColor = null;
+            }
+        });
+ */
+
+                typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
         methodGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesMethod);
         typeGroup.setOnCheckedChangeListener(new SingleSelectToggleGroup.OnCheckedChangeListener() {
             @Override

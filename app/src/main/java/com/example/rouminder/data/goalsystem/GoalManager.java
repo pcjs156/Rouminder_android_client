@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class GoalManager {
     private static int MAX_ID = 0;
     private static final Period timeToExpire = Period.ofMonths(1);
-    private final HashMap<Integer, Goal> goals;
+    public final HashMap<Integer, Goal> goals;
     private final TreeSet<Goal> earlyStartingGoals;
     private final TreeSet<Goal> earlyEndingGoals;
     private final Vector<Goal> pendingGoals;

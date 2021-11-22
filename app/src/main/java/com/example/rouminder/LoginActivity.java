@@ -74,10 +74,26 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
+        settingAlarmTest();
+
         goalManager = new GoalManager();
+
+        if (isLoggedBefore) {
+            User.getInstance().setInfo(uid);
+            Manager.getInstance().createUser(uid);
+            Intent mainActivityIntent = new Intent(this, MainActivity.class);
+            startActivity(mainActivityIntent);
+        } else {
+            setAuthEnvironment();
+        }
+    }
+
+    private void settingAlarmTest() {
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE); // 알람 매니저 초기화
+
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0); // 인덴트 생성
+
         // 현재 시간 받아오기
         LocalDateTime end = LocalDateTime.now();
         // 현재 시간에서 5분 20초 추가
@@ -108,15 +124,6 @@ public class LoginActivity extends AppCompatActivity {
 
         btnlogin = (Button) findViewById(R.id.signInButton);
         signInButton = findViewById(R.id.signInButton);
-
-        if (isLoggedBefore) {
-            User.getInstance().setInfo(uid);
-            Manager.getInstance().createUser(uid);
-            Intent mainActivityIntent = new Intent(this, MainActivity.class);
-            startActivity(mainActivityIntent);
-        } else {
-            setAuthEnvironment();
-        }
     }
 
     // [START signin]
