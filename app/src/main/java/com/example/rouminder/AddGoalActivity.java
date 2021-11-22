@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,13 +17,8 @@ import android.widget.Toast;
 
 import com.example.rouminder.firebase.exception.ModelDoesNotExists;
 import com.example.rouminder.firebase.manager.BaseModelManager;
-import com.example.rouminder.firebase.manager.CategoryModelManager;
-import com.example.rouminder.firebase.model.CategoryModel;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.firebase.model.GoalModel;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 import com.nex3z.togglebuttongroup.button.LabelToggle;
 
@@ -30,20 +26,18 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 public class AddGoalActivity extends AppCompatActivity {
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
 
     public EditText goalName;
-    public Spinner categoriesSpinner;
+    public Spinner tagSpinner;
     public Spinner highlightsSpinner;
     public SingleSelectToggleGroup typeGroup;
     public SingleSelectToggleGroup methodGroup;
 
-    public CategoryModelManager categoryModelManager = CategoryModelManager.getInstance();
-    public ArrayList<CategoryModel> categoryModels = categoryModelManager.getCategories();
+    public GoalModelManager goalModelManager = GoalModelManager.getInstance();
+    public ArrayList<GoalModel> goalModels = goalModelManager.get();
 
     public String uid;
 
@@ -62,34 +56,49 @@ public class AddGoalActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.custom_bar_add_goal);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ArrayAdapter categoriesAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryModels);
-        categoryModelManager.addNotifyAdapter(categoriesAdapter);
+        ArrayList<String> tags = goalModelManager.getTags();
+        ArrayAdapter tagAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, tags);
 
         String[] highlights = {"하이라이트1", "하이라이트2", "하이라이트3", "하이라이트4", "하이라이트5"};
         ArrayAdapter highlightsAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, highlights);
 
-        categoriesSpinner = (Spinner) findViewById(R.id.spinnerCategory);
         highlightsSpinner = (Spinner) findViewById(R.id.spinnerHighlight);
+        tagSpinner = (Spinner) findViewById(R.id.spinnerTag);
 
-        categoriesSpinner.setAdapter(categoriesAdapter);
         highlightsSpinner.setAdapter(highlightsAdapter);
+        tagSpinner.setAdapter(tagAdapter);
 
         LabelToggle choiceGeneral = (LabelToggle) findViewById(R.id.choiceGeneral);
         choiceGeneral.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<String> categoryIds = new ArrayList<>();
-                for (CategoryModel model : categoryModels) {
-                    categoryIds.add(model.id);
+                ArrayList<String> goalIds = new ArrayList<>();
+                Log.e("LEN:", "size " + goalModels.size());
+                for (GoalModel model : goalModels) {
+                    goalIds.add(model.id);
+                    Log.e("ID:", model.id);
                 }
 
-                Collections.shuffle(categoryIds);
-                if (!categoryIds.isEmpty()) {
-                    String pickedId = categoryIds.get(0);
-                    HashMap<String, Object> newData = new HashMap<>();
+                Collections.shuffle(goalIds);
+                if (!goalIds.isEmpty()) {
+                    String pickedId = goalIds.get(0);
+                    Log.e("PICKED:", pickedId);
+                    GoalModel targetGoal = null;
+                    for(GoalModel model: goalModels) {
+                        if (model.id.equals(pickedId)) {
+                            targetGoal = model;
+                            break;
+                        }
+                    }
+
+                    HashMap<String, Object> newData = targetGoal.getInfo();
                     newData.put("name", "newName");
+                    for(String key: newData.keySet()) {
+                        Log.e("TEST:", key + " / " + newData.get(key).toString());
+                    }
                     try {
-                        categoryModelManager.update(pickedId, newData);
+                        Log.e("PICKED:", pickedId);
+                        goalModelManager.update(pickedId, newData);
                     } catch (ModelDoesNotExists e) {
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
@@ -103,7 +112,7 @@ public class AddGoalActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ArrayList<String> categoryIds = new ArrayList<>();
-                for (CategoryModel model : categoryModels) {
+                for (GoalModel model : goalModels) {
                     categoryIds.add(model.id);
                 }
 
@@ -111,7 +120,7 @@ public class AddGoalActivity extends AppCompatActivity {
                 if (!categoryIds.isEmpty()) {
                     String pickedId = categoryIds.get(0);
                     try {
-                        categoryModelManager.delete(pickedId);
+                        goalModelManager.delete(pickedId);
                     } catch (ModelDoesNotExists e) {
                         e.printStackTrace();
                         Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();

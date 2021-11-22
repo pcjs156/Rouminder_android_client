@@ -28,7 +28,7 @@ public class BaseModelManager {
         userRef = db.getReference("user");
     }
 
-    public String getRandomId() {
+    public static String getRandomId() {
         String timeMills = Long.toString(System.currentTimeMillis());
         int salt = (int) (Math.random() * 10000);
         String stringSalt = String.format("%04d", salt);

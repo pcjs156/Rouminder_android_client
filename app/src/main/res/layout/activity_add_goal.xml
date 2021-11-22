@@ -52,13 +52,14 @@
             </Spinner>
 
             <Spinner
-                android:id="@+id/spinnerCategory"
+                android:id="@+id/spinnerTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tooltipText="카테고리"
+                android:tooltipText="태그"
                 app:layout_constraintBottom_toBottomOf="@+id/spinnerHighlight"
                 app:layout_constraintStart_toEndOf="@+id/spinnerHighlight"
-                app:layout_constraintTop_toBottomOf="@+id/goalFront" />
+                app:layout_constraintTop_toBottomOf="@+id/spinnerHighlight" />
+
 
             <LinearLayout
                 android:id="@+id/linearLayout"
