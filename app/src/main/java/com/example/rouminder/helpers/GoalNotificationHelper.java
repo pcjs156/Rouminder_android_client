@@ -11,7 +11,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.example.rouminder.MainActivity;
+import com.example.rouminder.activities.MainActivity;
 import com.example.rouminder.R;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.receivers.NotifyAlarmReceiver;

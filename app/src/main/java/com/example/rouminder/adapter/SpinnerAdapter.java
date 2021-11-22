@@ -1,4 +1,4 @@
-package com.example.rouminder;
+package com.example.rouminder.adapter;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.content.Context;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.rouminder.R;
 
 public class SpinnerAdapter extends BaseAdapter {
   Context context;

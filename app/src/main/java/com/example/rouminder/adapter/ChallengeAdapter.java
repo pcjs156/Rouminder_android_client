@@ -1,4 +1,4 @@
-package com.example.rouminder;
+package com.example.rouminder.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,23 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rouminder.ChallengeItem;
+import com.example.rouminder.R;
+
 import java.util.ArrayList;
-
-class ChallengeItem {
-    private String challengeName;
-
-    public ChallengeItem(String challengeName) {
-        this.challengeName = challengeName;
-    }
-
-    String getChallengeName() { return challengeName; }
-    void setChallengeName(String challengeName) {this.challengeName = challengeName;}
-}
 
 public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeHolder> {
     static ArrayList<ChallengeItem> list;
 
-    ChallengeAdapter(ArrayList<ChallengeItem> list) {
+    public ChallengeAdapter(ArrayList<ChallengeItem> list) {
         this.list = list;
     }
 

@@ -1,9 +1,9 @@
 package com.example.rouminder;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
-import android.os.IBinder;
+
+import com.example.rouminder.activities.LoginActivity;
 
 public class AlarmIntentService extends IntentService {
     public AlarmIntentService() {

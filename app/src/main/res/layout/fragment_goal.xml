@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/goalFragment"
-    tools:context=".GoalFragment">
+    tools:context=".fragments.GoalFragment">
 
 <!-- goal upper view-->
     <androidx.cardview.widget.CardView

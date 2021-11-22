@@ -1,4 +1,4 @@
-package com.example.rouminder;
+package com.example.rouminder.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -15,23 +15,17 @@ import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.example.rouminder.firebase.exception.ModelDoesNotExists;
-import com.example.rouminder.firebase.manager.BaseModelManager;
-import com.example.rouminder.firebase.manager.CategoryModelManager;
-import com.example.rouminder.firebase.model.CategoryModel;
+import com.example.rouminder.R;
+import com.example.rouminder.adapter.SpinnerAdapter;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.CategoryModelManager;
 import com.example.rouminder.firebase.model.CategoryModel;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
-import com.nex3z.togglebuttongroup.button.LabelToggle;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
 import android.graphics.Color;
 
@@ -39,9 +33,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-
-import android.graphics.Color;
 
 public class AddGoalActivity extends AppCompatActivity {
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;

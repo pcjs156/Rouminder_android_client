@@ -1,4 +1,4 @@
-package com.example.rouminder;
+package com.example.rouminder.fragments;
 
 import android.os.Bundle;
 
@@ -11,6 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.example.rouminder.adapter.ChallengeAdapter;
+import com.example.rouminder.R;
+import com.example.rouminder.ChallengeItem;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.example.rouminder;
+package com.example.rouminder.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,9 +10,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.example.rouminder.AlarmReceiver;
+import com.example.rouminder.R;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 

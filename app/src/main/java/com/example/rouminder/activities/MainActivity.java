@@ -1,10 +1,14 @@
-package com.example.rouminder;
+package com.example.rouminder.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.example.rouminder.fragments.GoalFragment;
+import com.example.rouminder.fragments.ProfileFragment;
+import com.example.rouminder.R;
+import com.example.rouminder.fragments.StatisticsFragment;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.CategoryModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;

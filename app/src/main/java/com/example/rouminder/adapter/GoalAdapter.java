@@ -1,4 +1,4 @@
-package com.example.rouminder;
+package com.example.rouminder.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rouminder.R;
 import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
@@ -22,7 +23,7 @@ public class GoalAdapter extends RecyclerView.Adapter<DefaultGoalHolder> {
     final int bigGoalRecycler = R.id.viewGoal;
     final int miniGoalRecycler = R.id.lstMiniGoal;
 
-    GoalAdapter(GoalManager goalManager) { super(); this.goalManager = goalManager; }
+    public GoalAdapter(GoalManager goalManager) { super(); this.goalManager = goalManager; }
 
     @NonNull
     @Override

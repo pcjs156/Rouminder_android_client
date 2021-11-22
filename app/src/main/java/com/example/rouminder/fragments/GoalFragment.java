@@ -1,4 +1,4 @@
-package com.example.rouminder;
+package com.example.rouminder.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,16 +18,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.rouminder.adapter.GoalAdapter;
+import com.example.rouminder.R;
+import com.example.rouminder.activities.AddGoalActivity;
 import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.CountGoal;
-import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.nex3z.togglebuttongroup.button.CircularToggle;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 
 public class GoalFragment extends Fragment {
 

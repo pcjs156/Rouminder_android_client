@@ -1,4 +1,4 @@
-package com.example.rouminder;
+package com.example.rouminder.adapter;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
+import com.example.rouminder.R;
 import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
