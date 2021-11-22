@@ -189,7 +189,7 @@ public class AddGoalActivity extends AppCompatActivity {
         });
  */
 
-                typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
+        typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
         methodGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesMethod);
         typeGroup.setOnCheckedChangeListener(new SingleSelectToggleGroup.OnCheckedChangeListener() {
             @Override
@@ -205,7 +205,6 @@ public class AddGoalActivity extends AppCompatActivity {
 
                     methodLayout.setVisibility(View.VISIBLE);
                 } else if (checkedId == R.id.choiceRepeat) {
-                } else if (checkedId == R.id.choiceRepeat) {
                     dateTime.setVisibility(View.GONE);
                     countLayout.setVisibility(View.GONE);
                     mapLayout.setVisibility(View.GONE);
@@ -213,7 +212,6 @@ public class AddGoalActivity extends AppCompatActivity {
                     methodGroup.clearCheck();
 
                     methodLayout.setVisibility(View.VISIBLE);
-                } else if (checkedId == R.id.choiceComplex) {
                 } else if (checkedId == R.id.choiceComplex) {
                     countLayout.setVisibility(View.GONE);
                     mapLayout.setVisibility(View.GONE);
@@ -232,20 +230,14 @@ public class AddGoalActivity extends AppCompatActivity {
                     countLayout.setVisibility(View.GONE);
                     mapLayout.setVisibility(View.GONE);
                 } else if (checkedId == R.id.choiceCount) {
-
-                    if (currentType == R.id.choiceGeneral) dateTime.setVisibility(View.VISIBLE);
-                } else if (checkedId == R.id.choiceCount) {
                     countLayout.setVisibility(View.VISIBLE);
                     mapLayout.setVisibility(View.GONE);
                 } else if (checkedId == R.id.choiceLocation) {
-
-                    if (currentType == R.id.choiceGeneral) dateTime.setVisibility(View.VISIBLE);
-                } else if (checkedId == R.id.choiceLocation) {
                     countLayout.setVisibility(View.GONE);
                     mapLayout.setVisibility(View.VISIBLE);
-
-                    if (currentType == R.id.choiceGeneral) dateTime.setVisibility(View.VISIBLE);
                 }
+
+                if (currentType == R.id.choiceGeneral) dateTime.setVisibility(View.VISIBLE);
             }
         });
 
