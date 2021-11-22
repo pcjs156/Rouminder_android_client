@@ -2,7 +2,11 @@ package com.example.rouminder.firebase.manager;
 
 import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidInitialized;
 
+import androidx.annotation.NonNull;
+
+import com.example.rouminder.firebase.model.GoalModel;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -20,6 +24,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Date;
 
 
 public class GoalModelManager {
@@ -30,13 +40,11 @@ public class GoalModelManager {
     public final DatabaseReference dataRef;
     private ArrayList<GoalModel> goals = new ArrayList<>();
     private ArrayList<String> tags = new ArrayList<>();
-    private final String uid;
 
     private final HashSet<ArrayAdapter> notifyAdapters = new HashSet<>();
 
     private GoalModelManager() {
         FirebaseDatabase db = baseModelManager.db;
-        uid = baseModelManager.uid;
         ref = db.getReference("goal");
         dataRef = ref.child("data");
 
@@ -54,11 +62,10 @@ public class GoalModelManager {
 
                         String author = goal.get("uid");
                         HashMap<String, Object> _goal = (HashMap<String, Object>) goal.clone();
-                        if (author.equals(uid)) {
+                        if (author.equals(BaseModelManager.uid)) {
                             goals.add(new GoalModel(_goal));
 
                             String tag = goal.get("tag");
-                            System.out.println("HELLO: " + tag);
                             if (!tags.contains(tag)) {
                                 tags.add(tag);
                             }
@@ -109,7 +116,7 @@ public class GoalModelManager {
 
         String randomId = baseModelManager.getRandomId();
 
-        ref.child("data").child(randomId).child("uid").setValue(uid);
+        ref.child("data").child(randomId).child("uid").setValue(BaseModelManager.uid);
         ref.child("data").child(randomId).child("created_at").setValue(createdAt);
         ref.child("data").child(randomId).child("modified_at").setValue("");
 
@@ -121,6 +128,9 @@ public class GoalModelManager {
 
         String tag = (String) values.get("tag");
         ref.child("data").child(randomId).child("tag").setValue(tag);
+
+        String method = (String) values.get("method");
+        ref.child("data").child(randomId).child("method").setValue(method);
 
         String highlight = (String) values.get("highlight");
         ref.child("data").child(randomId).child("highlight").setValue(highlight);
@@ -135,7 +145,7 @@ public class GoalModelManager {
         ref.child("data").child(randomId).child("finish_datetime").setValue(finishDatetime);
 
         values.put("id", randomId);
-        values.put("uid", uid);
+        values.put("uid", BaseModelManager.uid);
         values.put("created_at", createdAt);
         values.put("modified_at", "");
         GoalModel newGoal = new GoalModel(values);

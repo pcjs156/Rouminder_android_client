@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Rouminder</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="channel_name">Rouminder</string>
+    <string name="channel_description">Rouminder reminder</string>
 </resources>

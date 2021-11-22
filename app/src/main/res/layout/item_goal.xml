@@ -19,24 +19,48 @@
             android:layout_height="wrap_content"
             android:padding="10dp">
 
-            <ImageView
-                android:id="@+id/goalImgCheckBox"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:clickable="true"
-                android:src="@android:drawable/checkbox_on_background"
+            <LinearLayout
+                android:id="@+id/check_or_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/goalImgCheckBox"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:clickable="true"
+                    android:layout_gravity="center_vertical"
+                    android:src="@android:drawable/checkbox_on_background" />
+
+                <com.dinuscxj.progressbar.CircleProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:progress_stroke_width="10dp"
+                    app:style="solid_line" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/goalContent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="물 마시기"
+                android:layout_marginTop="15dp"
+                android:text="저녁 먹기"
                 android:textSize="12pt"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/goalImgCheckBox" />
+                app:layout_constraintTop_toBottomOf="@+id/check_or_progress" />
+
+            <TextView
+                android:id="@+id/goalSubText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="0/1회"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/goalContent" />
 
             <TextView
                 android:id="@+id/goalRestTime"
@@ -47,16 +71,6 @@
                 android:textSize="9pt"
                 app:layout_constraintBottom_toTopOf="@+id/goalTime"
                 app:layout_constraintEnd_toEndOf="parent" />
-
-            <TextView
-                android:id="@+id/goalCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="600/350ml"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/goalContent" />
 
             <TextView
                 android:id="@+id/goalTime"

@@ -3,6 +3,7 @@ package com.example.rouminder.firebase.model;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 
 import java.util.HashMap;
+import java.util.Date;
 
 public class GoalModel {
     // 목표의 id값 (primary key)
@@ -13,8 +14,10 @@ public class GoalModel {
 
     // 목표명
     public String name;
-    // 목표의 유형
+    // 목표의 유형 (general, repeat, complex)
     public final String type;
+    // 목표 수행 방법 (check, count, location)
+    public final String method;
     // 목표의 달성 현황 (boolean type의 경우 0, 1로 false, true를 표기)
     public int current;
     // 태그
@@ -33,7 +36,7 @@ public class GoalModel {
     public String modifiedAt;
 
     public GoalModel(String id, String uid, String createdAt, String modifiedAt,
-                     String name, String type, int current, String tag, String highlight,
+                     String name, String type, int current, String tag, String highlight, String method,
                      String startDatetime, String finishDatetime) {
         this.id = id;
         this.uid = uid;
@@ -43,6 +46,7 @@ public class GoalModel {
         this.type = type;
         this.current = current;
         this.tag = tag;
+        this.method = method;
         this.highlight = highlight;
         this.startDatetime = startDatetime;
         this.finishDatetime = finishDatetime;
@@ -69,6 +73,7 @@ public class GoalModel {
             this.current = (Integer) currentObj;
 
         this.tag = (String) values.get("tag");
+        this.method = (String) values.get("method");
         this.highlight = (String) values.get("highlight");
 
         this.startDatetime = (String) values.get("start_datetime");
@@ -115,6 +120,7 @@ public class GoalModel {
         info.put("type", type);
         info.put("current", current);
         info.put("tag", tag);
+        info.put("method", method);
         info.put("highlight", highlight);
         info.put("start_datetime", startDatetime);
         info.put("finish_datetime", finishDatetime);
