@@ -7,8 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
@@ -40,7 +42,6 @@ public class AddGoalActivity extends AppCompatActivity {
     public Spinner highlightsSpinner;
     public SingleSelectToggleGroup typeGroup;
     public SingleSelectToggleGroup methodGroup;
-    public Color selectedColor;
 
     public CategoryModelManager categoryModelManager = CategoryModelManager.getInstance();
     public ArrayList<CategoryModel> categoryModels = categoryModelManager.getCategories();
@@ -85,7 +86,6 @@ public class AddGoalActivity extends AppCompatActivity {
         categoryModelManager.create("tag1");
         categoryModelManager.create("tag2");
         categoryModelManager.create("tag3");
-
         categoryModels = categoryModelManager.getCategories();
 
         ArrayAdapter tagsAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryModels);
@@ -94,9 +94,13 @@ public class AddGoalActivity extends AppCompatActivity {
         editTextTag.setTokenizer(token);
         editTextTag.setAdapter(tagsAdapter);
 
-        int colors[] = {R.drawable.red, R.drawable.blue, R.drawable.green};
-        SpinnerAdapter highlightsAdapter = new SpinnerAdapter(this, colors);
+//        int colors[] = {R.drawable.red, R.drawable.blue, R.drawable.green};
+        Color[] colors = {
+                Color.valueOf(256, 0, 0, 256),
+                Color.valueOf(0, 256,0,256),
+                Color.valueOf(0, 0,256,256)};
 
+        SpinnerAdapter highlightsAdapter = new SpinnerAdapter(this, colors);
         highlightsSpinner = (Spinner) findViewById(R.id.spinnerHighlight);
         highlightsSpinner.setAdapter(highlightsAdapter);
 
@@ -148,37 +152,6 @@ public class AddGoalActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
-
-//        나중에 Spinner.getSelectedItem()으로 선택 값 가져오기
-//        각 색깔에 대응하여 Color 인스턴스 설정, Goal 생성할 때 그냥 setHighlight 해주면 될듯.
-/*
-        highlightsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String selectedItem = (String) adapterView.getItemAtPosition(i);
-                switch (selectedItem) {
-                    case "빨강색":
-                        Log.e("하이라이트아이템", "#ff0000");
-                        selectedColor = Color.valueOf(0xffff0000);
-                        break;
-                    case "초록색":
-                        Log.e("하이라이트아이템", "#00ff00");
-                        selectedColor = Color.valueOf(0xff00ff00);
-                        break;
-                    case "파란색":
-                        Log.e("하이라이트아이템", "#0000ff");
-                        selectedColor = Color.valueOf(0xff0000ff);
-                        break;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                Log.e("하이라이트아이템", "선택지 없음.");
-                selectedColor = null;
-            }
-        });
- */
 
         typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
         methodGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesMethod);
