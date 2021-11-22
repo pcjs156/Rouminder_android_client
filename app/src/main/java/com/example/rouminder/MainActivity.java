@@ -1,16 +1,9 @@
 package com.example.rouminder;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.example.rouminder.firebase.Manager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -60,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         });
+
     }
 
 }
