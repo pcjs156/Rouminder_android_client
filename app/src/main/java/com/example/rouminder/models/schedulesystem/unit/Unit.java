@@ -167,6 +167,16 @@ public abstract class Unit {
             return domains;
         }
 
+        public static List<Domain> getDomainsFromRange(Domain from, Domain to) {
+            List<Domain> domains = new ArrayList<>();
+            for(Domain domain : Domain.values()) {
+                if(from.getBitmask() <= domain.getBitmask() && domain.getBitmask() <= to.getBitmask())
+                    domains.add(domain);
+            }
+
+            return domains;
+        }
+
         /**
          * Get a start value, or possible smallest value of the domain.
          *
