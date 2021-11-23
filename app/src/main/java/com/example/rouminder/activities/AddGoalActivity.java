@@ -254,8 +254,7 @@ public class AddGoalActivity extends AppCompatActivity {
             Toast.makeText(self, "목표명이 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
             Log.d("FIELD", "name");
             return;
-        }
-        else
+        } else
             values.put("name", goalName);
 
 //        Object selectedHighlight = highlightsSpinner.getSelectedItem();
@@ -322,6 +321,8 @@ public class AddGoalActivity extends AppCompatActivity {
             values.put("method", method);
         }
 
+        values.put("current", 0);
+
         String startDateString = startDate.getText().toString();
         String endDateString = endDate.getText().toString();
         String startTimeString = startTime.getText().toString();
@@ -337,11 +338,11 @@ public class AddGoalActivity extends AppCompatActivity {
         int endMonth = Integer.parseInt(endDateTokenizer.nextToken().toString());
         int endDay = Integer.parseInt(endDateTokenizer.nextToken().toString());
 
-        StringTokenizer startTimeTokenizer = new StringTokenizer(startDateString, ".");
+        StringTokenizer startTimeTokenizer = new StringTokenizer(startTimeString, ":");
         int startHour = Integer.parseInt(startTimeTokenizer.nextToken().toString());
         int startMinute = Integer.parseInt(startTimeTokenizer.nextToken().toString());
 
-        StringTokenizer endTimeTokenizer = new StringTokenizer(startDateString, ".");
+        StringTokenizer endTimeTokenizer = new StringTokenizer(endTimeString, ":");
         int endHour = Integer.parseInt(endTimeTokenizer.nextToken().toString());
         int endMinute = Integer.parseInt(endTimeTokenizer.nextToken().toString());
 
@@ -355,7 +356,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
         goalModelManager.create(values);
 
-        //        finish();
+        finish();
     }
 
     private void getGoalInfo() {
@@ -396,7 +397,7 @@ public class AddGoalActivity extends AppCompatActivity {
         clickedDate = view;
 
         DatePickerDialog dialog = new DatePickerDialog(this, dateListener,
-                cur.getYear(), cur.getMonthValue()-1, cur.getDayOfMonth());
+                cur.getYear(), cur.getMonthValue() - 1, cur.getDayOfMonth());
         dialog.show();
     }
 
@@ -411,7 +412,7 @@ public class AddGoalActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-            resetDate(clickedDate, year, monthOfYear+1, dayOfMonth);
+            resetDate(clickedDate, year, monthOfYear + 1, dayOfMonth);
         }
     };
 
