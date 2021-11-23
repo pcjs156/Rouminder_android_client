@@ -18,14 +18,11 @@ import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.receivers.NotifyAlarmReceiver;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class GoalNotificationHelper {
     public static String CHANNEL_ID = "rouminder_notification_channel_new";
@@ -87,31 +84,30 @@ public class GoalNotificationHelper {
         long duration = ChronoUnit.MILLIS.between(goal.getStartTime(), goal.getEndTime());
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        Date date = new Date((goal.getStartTime().toInstant(ZoneOffset.UTC).toEpochMilli() + duration / 2));
-        LocalDateTime timeInDate = date.toInstant()
-                .atZone(ZoneId.systemDefault()) // Instant -> ZonedDateTime
-                .toLocalDateTime();
-
-        DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
-        String timeInFormat = sdf.format(goal.getStartTime());
-        Log.i("test", "start : "+timeInFormat);
-
-        timeInFormat = sdf.format(goal.getEndTime());
-        Log.i("test", "end : "+timeInFormat);
-
-        timeInFormat = sdf.format(timeInDate);
-        Log.i("test", "half : "+timeInFormat);
-
+        // time check
+        checkTime(goal);
 
         // 각 버전마다 다르게 setting
+        long millis = goal.getStartTime().toInstant(ZoneOffset.UTC).toEpochMilli() + duration / 2;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, goal.getStartTime().toInstant(ZoneOffset.UTC).toEpochMilli() + duration / 2, pendingIntent);
+            manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            manager.setExact(AlarmManager.RTC_WAKEUP, goal.getStartTime().toInstant(ZoneOffset.UTC).toEpochMilli() + duration / 2, pendingIntent);
+            manager.setExact(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
         } else {
-            manager.set(AlarmManager.RTC_WAKEUP, goal.getStartTime().toInstant(ZoneOffset.UTC).toEpochMilli() + duration / 2, pendingIntent);
+            manager.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
         }
+    }
+
+    void checkTime(Goal goal) {
+        long duration = ChronoUnit.MILLIS.between(goal.getStartTime(), goal.getEndTime());
+        long millis = goal.getStartTime().toInstant(ZoneOffset.UTC).toEpochMilli() + duration / 2;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+        LocalDateTime half = LocalDateTime.ofEpochSecond(seconds, 0, ZoneOffset.UTC);
+
+        Log.i("goal_time", goal.getName());
+        Log.i("goal_time", "start : " + goal.getStartTime().toString());
+        Log.i("goal_time", "end : " + goal.getEndTime().toString());
+        Log.i("goal_time", "alarm : " + half.toString());
     }
 
     /**

@@ -128,16 +128,13 @@ public class GoalFragment extends Fragment {
     }
 
     void createGoalAdapter() {
-
 //        from, to는 모두 현재 시간과, 오늘 23:59으로 통일시킵니다.
         LocalDateTime from = LocalDateTime.now();
         LocalDateTime to = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59));
 
         // alarm test를 위한 시간 설정
         LocalDateTime test = LocalDateTime.now();
-        Log.i("test", test.toString());
         test = test.plusMinutes(5);
-        Log.i("test", test.toString());
 
         // 데이터 생성
         goalManager.addGoal(new CheckGoal(goalManager, 0, "test", from, test, 0));
@@ -150,7 +147,7 @@ public class GoalFragment extends Fragment {
     }
 
     void initGoalAlarms() {
-        notificationHelper = new GoalNotificationHelper(getActivity());
+        notificationHelper = new GoalNotificationHelper(getActivity().getApplicationContext());
 
         goalManager.goals.forEach((id, goal)-> {
             notificationHelper.registerGoal(goal);

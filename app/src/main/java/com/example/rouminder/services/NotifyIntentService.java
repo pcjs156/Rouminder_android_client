@@ -2,6 +2,7 @@ package com.example.rouminder.services;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
@@ -20,6 +21,8 @@ public class NotifyIntentService extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
+        Log.i("test", "onHandleWork");
+
         int id = intent.getIntExtra("goal_id", -1);
         Goal goal = ((Application) getApplication()).getGoalManager().getGoal(id);
         GoalNotificationHelper.showNotification(this, goal);
