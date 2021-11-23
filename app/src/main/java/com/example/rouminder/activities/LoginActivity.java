@@ -47,8 +47,8 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        btnlogin = (Button) findViewById(R.id.signInButton);
-        signInButton = findViewById(R.id.signInButton);
+        btnlogin = (Button) findViewById(R.id.btnLogin);
+        signInButton = (SignInButton) findViewById(R.id.signInButton);
 
         if (isLoggedBefore) {
             User.getInstance().setInfo(uid);

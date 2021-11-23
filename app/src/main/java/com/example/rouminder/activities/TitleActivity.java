@@ -52,7 +52,7 @@ public class TitleActivity extends AppCompatActivity {
     private void alarmTest() {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE); // 알람 매니저 초기화
         GoalManager goalManager = new GoalManager();
-
+/*
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0); // 인덴트 생성
 
@@ -84,6 +84,8 @@ public class TitleActivity extends AppCompatActivity {
 
         // 5분 차감된 시간으로 브로드캐스트를 울리도록 알아서 설정.
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() , pendingIntent); // 해당 시간으로 알림
+
+ */
 
     }
 }
