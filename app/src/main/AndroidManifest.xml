@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".Application"
@@ -20,9 +21,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${API_KEY}" />
 
+        <service
+            android:name=".services.NotifyIntentService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true"/>
 
         <receiver
-            android:name=".AlarmReceiver"
+            android:name=".receivers.NotifyAlarmReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

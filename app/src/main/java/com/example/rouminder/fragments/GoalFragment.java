@@ -18,12 +18,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.rouminder.Application;
 import com.example.rouminder.adapter.GoalAdapter;
 import com.example.rouminder.R;
 import com.example.rouminder.activities.AddGoalActivity;
 import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.GoalManager;
+import com.example.rouminder.helpers.GoalNotificationHelper;
 import com.nex3z.togglebuttongroup.button.CircularToggle;
 
 import java.time.LocalDate;
@@ -31,6 +33,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class GoalFragment extends Fragment {
+
+    GoalNotificationHelper notificationHelper;
+    GoalManager goalManager;
 
     ImageView btnAddGoal;
 
@@ -49,6 +54,8 @@ public class GoalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_goal, container, false);
+
+        goalManager = ((Application) getActivity().getApplication()).getGoalManager();
 
         btnAddGoal = (ImageView) rootView.findViewById(R.id.btnAddGoal);
 
@@ -114,38 +121,39 @@ public class GoalFragment extends Fragment {
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         miniRecyclerView.setAdapter(adapter);
 
+        // 알람 초기화
+        initGoalAlarms();
+
         return rootView;
     }
 
     void createGoalAdapter() {
-        GoalManager goalManager = new GoalManager();
 
 //        from, to는 모두 현재 시간과, 오늘 23:59으로 통일시킵니다.
         LocalDateTime from = LocalDateTime.now();
         LocalDateTime to = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59));
 
-        // 데이터 생성
-        goalManager.addGoal(new CheckGoal(goalManager, 0, "밥 먹기", from, to, 0));
-        goalManager.addGoal(new CountGoal(goalManager, 1, "물 마시기", from, to, 1, 5, "회"));
-        goalManager.addGoal(new CheckGoal(goalManager, 2, "한강 가기", from, to, 1));
+        // alarm test를 위한 시간 설정
+        LocalDateTime test = LocalDateTime.now();
+        Log.i("test", test.toString());
+        test = test.plusMinutes(5);
+        Log.i("test", test.toString());
 
-//        ArrayList<GoalItem> list = new ArrayList<>();
-//        list.add(new GoalItem("밥 먹기"
-//                ,"2시간 남음"
-//                ,0, 1
-//                ,"~오늘 21:59"));
-//        list.add(new GoalItem("물 마시기"
-//                ,"3시간 남음"
-//                ,1, 5
-//                ,"~오늘 22:59"));
-//        list.add(new GoalItem( "한강 가기"
-//                ,"4시간 남음"
-//                ,1, 1
-//                ,"~오늘 23:59"));
+        // 데이터 생성
+        goalManager.addGoal(new CheckGoal(goalManager, 0, "test", from, test, 0));
+        goalManager.addGoal(new CheckGoal(goalManager, 1, "밥 먹기", from, to, 0));
+        goalManager.addGoal(new CountGoal(goalManager, 2, "물 마시기", from, to, 1, 5, "회"));
+        goalManager.addGoal(new CheckGoal(goalManager, 3, "한강 가기", from, to, 1));
 
         // 어댑터 객체 생성
         adapter = new GoalAdapter(goalManager);
+    }
 
-        Log.i("tag", "adapter create");
+    void initGoalAlarms() {
+        notificationHelper = new GoalNotificationHelper(getActivity());
+
+        goalManager.goals.forEach((id, goal)-> {
+            notificationHelper.registerGoal(goal);
+        });
     }
 }

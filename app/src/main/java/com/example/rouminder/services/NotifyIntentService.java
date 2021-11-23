@@ -1,5 +1,6 @@
 package com.example.rouminder.services;
 
+import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,11 @@ import com.example.rouminder.helpers.GoalNotificationHelper;
 
 
 public class NotifyIntentService extends JobIntentService {
+    public static final int JOB_ID = 1;
+
+    public static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, NotifyIntentService.class, JOB_ID, work);
+    }
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
