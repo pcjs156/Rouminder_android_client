@@ -59,6 +59,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         bronzeListContents.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         bronzeListContents.setAdapter(bronzeAdapter);
 
+        Log.d("TestCode", "ChallengeDescribeFragment Start");
+
+        ChallengeDescribeFragment challengeDescribeFragment = new ChallengeDescribeFragment(testList.get(0));
+        challengeDescribeFragment.show(getActivity().getSupportFragmentManager(),null);
+
         // Inflate the layout for this fragment
         return root;
     }

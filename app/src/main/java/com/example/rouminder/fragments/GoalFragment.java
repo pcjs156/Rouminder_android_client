@@ -130,9 +130,9 @@ public class GoalFragment extends Fragment {
         goalManager.addGoal(new CountGoal(goalManager, 1, "물 마시기", from, to, 1, 5, "회"));
         goalManager.addGoal(new CheckGoal(goalManager, 2, "한강 가기", from, to, 1));
 
-        Log.d("TestCode", "FragmentGoalDescribe Start");
-        GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goalManager.getGoal(0));
-        goalDescribeFragment.show(getActivity().getSupportFragmentManager(),null);
+       // Log.d("TestCode", "FragmentGoalDescribe Start");
+       // GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goalManager.getGoal(2));
+       // goalDescribeFragment.show(getActivity().getSupportFragmentManager(),null);
 
 //        ArrayList<GoalItem> list = new ArrayList<>();
 //        list.add(new GoalItem("밥 먹기"
