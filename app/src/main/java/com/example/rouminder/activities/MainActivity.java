@@ -4,17 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.example.rouminder.firebase.manager.BaseModelManager;
+import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.firebase.model.GoalModel;
 import com.example.rouminder.fragments.GoalFragment;
 import com.example.rouminder.fragments.ProfileFragment;
 import com.example.rouminder.R;
 import com.example.rouminder.fragments.StatisticsFragment;
-import com.example.rouminder.firebase.manager.BaseModelManager;
-import com.example.rouminder.firebase.manager.CategoryModelManager;
-import com.example.rouminder.firebase.manager.GoalModelManager;
-import com.example.rouminder.firebase.model.CategoryModel;
-import com.example.rouminder.firebase.model.GoalModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     String uid;
@@ -46,17 +47,20 @@ public class MainActivity extends AppCompatActivity {
         BaseModelManager baseModelManager = BaseModelManager.getInstance();
 
         GoalModelManager gManager = GoalModelManager.getInstance();
-        CategoryModelManager ctManager = CategoryModelManager.getInstance();
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.main_menu_item_goal:
-                    CategoryModel newCategory = ctManager.create("CATEGORY_1");
-                    String categoryId = newCategory.id;
-
-                    GoalModel newGoal = gManager.create(categoryId, "GOAL_NAME_1", "GOAL_TYPE_1",
-                            0, "2021.11.15/16:45:25", "2021.11.16/16:45:25");
-                    String goalId = newGoal.id;
+                    HashMap<String, Object> values = new HashMap<>();
+                    values.put("name", "GOAL_NAME_1");
+                    values.put("type", "GOAL_TYPE_1");
+                    values.put("current", 0);
+                    values.put("tag", "GOAL_TAG_1");
+                    values.put("method", "METHOD_1");
+                    values.put("highlight", "COLOR_1");
+                    values.put("start_datetime", "2021.11.15/16:45:25");
+                    values.put("finish_datetime", "2021.11.16/16:45:25");
+                    GoalModel newGoal = gManager.create(values);
 
                     getSupportFragmentManager().beginTransaction().replace(R.id.mainLayoutContainer, goalFragment).commit();
                     break;
@@ -72,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         });
-
     }
 
 }

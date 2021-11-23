@@ -7,10 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.RelativeLayout;
@@ -21,18 +24,19 @@ import android.widget.TimePicker;
 import com.example.rouminder.R;
 import com.example.rouminder.adapter.SpinnerAdapter;
 import com.example.rouminder.firebase.manager.BaseModelManager;
-import com.example.rouminder.firebase.manager.CategoryModelManager;
-import com.example.rouminder.firebase.model.CategoryModel;
+import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 
-import java.util.ArrayList;
-
 import android.graphics.Color;
+import android.widget.Toast;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 public class AddGoalActivity extends AppCompatActivity {
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -40,11 +44,9 @@ public class AddGoalActivity extends AppCompatActivity {
     public Spinner highlightsSpinner;
     public SingleSelectToggleGroup typeGroup;
     public SingleSelectToggleGroup methodGroup;
-    public Color selectedColor;
 
-    public CategoryModelManager categoryModelManager = CategoryModelManager.getInstance();
-    public ArrayList<CategoryModel> categoryModels = categoryModelManager.getCategories();
-
+    private EditText goalNameEditText;
+    private MultiAutoCompleteTextView editTextTag;
     private TextView startDate;
     private TextView startTime;
     private TextView endDate;
@@ -53,7 +55,11 @@ public class AddGoalActivity extends AppCompatActivity {
     public static int currentType;
     public static View clickedDate;
 
+    public GoalModelManager goalModelManager = GoalModelManager.getInstance();
+
     public String uid;
+
+    public AddGoalActivity self = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +79,7 @@ public class AddGoalActivity extends AppCompatActivity {
         startTime = findViewById(R.id.startTime);
         endDate = findViewById(R.id.endDate);
         endTime = findViewById(R.id.endTime);
+        goalNameEditText = (EditText) findViewById(R.id.goalNameEditText);
 
         resetDateTime();
 
@@ -80,23 +87,19 @@ public class AddGoalActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.custom_bar_add_goal);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // 현재 firebase 오류나서 tag 임의 생성
-        categoryModelManager.categories = new ArrayList<CategoryModel>();
-        categoryModelManager.create("tag1");
-        categoryModelManager.create("tag2");
-        categoryModelManager.create("tag3");
-
-        categoryModels = categoryModelManager.getCategories();
-
-        ArrayAdapter tagsAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryModels);
-        MultiAutoCompleteTextView editTextTag = (MultiAutoCompleteTextView) findViewById(R.id.editTextTag);
+        ArrayAdapter tagsAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, goalModelManager.getTags());
+        editTextTag = (MultiAutoCompleteTextView) findViewById(R.id.editTextTag);
         MultiAutoCompleteTextView.CommaTokenizer token = new MultiAutoCompleteTextView.CommaTokenizer();
         editTextTag.setTokenizer(token);
         editTextTag.setAdapter(tagsAdapter);
 
-        int colors[] = {R.drawable.red, R.drawable.blue, R.drawable.green};
-        SpinnerAdapter highlightsAdapter = new SpinnerAdapter(this, colors);
+//        int colors[] = {R.drawable.red, R.drawable.blue, R.drawable.green};
+        Color[] colors = {
+                Color.valueOf(256, 0, 0, 256),
+                Color.valueOf(0, 256,0,256),
+                Color.valueOf(0, 0,256,256)};
 
+        SpinnerAdapter highlightsAdapter = new SpinnerAdapter(this, colors);
         highlightsSpinner = (Spinner) findViewById(R.id.spinnerHighlight);
         highlightsSpinner.setAdapter(highlightsAdapter);
 
@@ -148,37 +151,6 @@ public class AddGoalActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
-
-//        나중에 Spinner.getSelectedItem()으로 선택 값 가져오기
-//        각 색깔에 대응하여 Color 인스턴스 설정, Goal 생성할 때 그냥 setHighlight 해주면 될듯.
-/*
-        highlightsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String selectedItem = (String) adapterView.getItemAtPosition(i);
-                switch (selectedItem) {
-                    case "빨강색":
-                        Log.e("하이라이트아이템", "#ff0000");
-                        selectedColor = Color.valueOf(0xffff0000);
-                        break;
-                    case "초록색":
-                        Log.e("하이라이트아이템", "#00ff00");
-                        selectedColor = Color.valueOf(0xff00ff00);
-                        break;
-                    case "파란색":
-                        Log.e("하이라이트아이템", "#0000ff");
-                        selectedColor = Color.valueOf(0xff0000ff);
-                        break;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                Log.e("하이라이트아이템", "선택지 없음.");
-                selectedColor = null;
-            }
-        });
- */
 
         typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
         methodGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesMethod);
@@ -248,6 +220,117 @@ public class AddGoalActivity extends AppCompatActivity {
     }
 
     public void onCheckClicked(View view) {
+        HashMap<String, Object> values = new HashMap<>();
+
+        String goalName = goalNameEditText.getText().toString();
+        if (goalName.isEmpty()) {
+            Toast.makeText(self, "목표명이 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
+            Log.d("FIELD", "name");
+            return;
+        } else
+            values.put("name", goalName);
+
+        Object selectedHighlight = highlightsSpinner.getSelectedItem();
+        String highlight = "";
+        if (selectedHighlight != null) {
+            Color selectedColor = (Color) highlightsSpinner.getSelectedItem();
+            highlight = String.format("#%08X", (0xFFFFFFFF & selectedColor.toArgb()));
+            values.put("highlight", highlight);
+        }
+        else {
+            Toast.makeText(self, "하이라이트가 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
+            Log.d("FIELD", "highlight");
+            return;
+        }
+
+        String tag = editTextTag.getText().toString();
+        values.put("tag", tag);
+
+        String type = "";
+        switch (typeGroup.getCheckedId()) {
+            case R.id.choiceGeneral:
+                type = "general";
+                break;
+            case R.id.choiceRepeat:
+                type = "repeat";
+                break;
+            case R.id.choiceComplex:
+                type = "complex";
+                break;
+            default:
+                Toast.makeText(self, "경고: 유형이 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                Log.d("FIELD", "type");
+                return;
+        }
+        if (!type.equals("general")) {
+            Toast.makeText(self, "구현되지 않은 유형입니다.", Toast.LENGTH_SHORT).show();
+            Log.d("FIELD", "invalid type");
+            return;
+        } else {
+            values.put("type", type);
+        }
+
+        String method = "";
+        switch (methodGroup.getCheckedId()) {
+            case R.id.choiceCheck:
+                method = "check";
+                break;
+            case R.id.choiceCount:
+                method = "choice";
+                break;
+            case R.id.choiceLocation:
+                method = "location";
+                break;
+            default:
+                Toast.makeText(self, "경고: 수행 방법이 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                Log.d("FIELD", "method");
+                return;
+        }
+        if (!method.equals("check")) {
+            Toast.makeText(self, "구현되지 않은 수행 방법입니다.", Toast.LENGTH_SHORT).show();
+            Log.d("FIELD", "invalid method");
+            return;
+        } else {
+            values.put("method", method);
+        }
+
+        values.put("current", 0);
+
+        String startDateString = startDate.getText().toString();
+        String endDateString = endDate.getText().toString();
+        String startTimeString = startTime.getText().toString();
+        String endTimeString = endTime.getText().toString();
+
+        StringTokenizer startDateTokenizer = new StringTokenizer(startDateString, ".");
+        int startYear = Integer.parseInt(startDateTokenizer.nextToken().toString());
+        int startMonth = Integer.parseInt(startDateTokenizer.nextToken().toString());
+        int startDay = Integer.parseInt(startDateTokenizer.nextToken().toString());
+
+        StringTokenizer endDateTokenizer = new StringTokenizer(endDateString, ".");
+        int endYear = Integer.parseInt(endDateTokenizer.nextToken().toString());
+        int endMonth = Integer.parseInt(endDateTokenizer.nextToken().toString());
+        int endDay = Integer.parseInt(endDateTokenizer.nextToken().toString());
+
+        StringTokenizer startTimeTokenizer = new StringTokenizer(startTimeString, ":");
+        int startHour = Integer.parseInt(startTimeTokenizer.nextToken().toString());
+        int startMinute = Integer.parseInt(startTimeTokenizer.nextToken().toString());
+
+        StringTokenizer endTimeTokenizer = new StringTokenizer(endTimeString, ":");
+        int endHour = Integer.parseInt(endTimeTokenizer.nextToken().toString());
+        int endMinute = Integer.parseInt(endTimeTokenizer.nextToken().toString());
+
+        Date start = new Date(startYear, startMonth, startDay, startHour, startMinute);
+        Date end = new Date(endYear, endMonth, endDay, endHour, endMinute);
+
+        String startDatetime = BaseModelManager.getTimeStampString(start);
+        String endDatetime = BaseModelManager.getTimeStampString(end);
+        values.put("start_datetime", startDatetime);
+        values.put("finish_datetime", endDatetime);
+
+        Log.d("DATETIME", startDatetime);
+
+        goalModelManager.create(values);
+
         finish();
     }
 
@@ -289,7 +372,7 @@ public class AddGoalActivity extends AppCompatActivity {
         clickedDate = view;
 
         DatePickerDialog dialog = new DatePickerDialog(this, dateListener,
-                cur.getYear(), cur.getMonthValue()-1, cur.getDayOfMonth());
+                cur.getYear(), cur.getMonthValue() - 1, cur.getDayOfMonth());
         dialog.show();
     }
 
@@ -304,7 +387,7 @@ public class AddGoalActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-            resetDate(clickedDate, year, monthOfYear+1, dayOfMonth);
+            resetDate(clickedDate, year, monthOfYear + 1, dayOfMonth);
         }
     };
 

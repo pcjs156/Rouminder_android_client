@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.R;
 
 import com.example.rouminder.firebase.manager.BaseModelManager;
@@ -29,7 +31,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity {
-    Button btnlogin;
     private FirebaseAuth mAuth = null;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
@@ -39,15 +40,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.i("time", "onCreate");
-
         SharedPreferences prefs = getSharedPreferences("global", MODE_PRIVATE);
         String uid = prefs.getString("uid", null);
         boolean isLoggedBefore = uid != null;
 
         setContentView(R.layout.activity_login);
 
-        btnlogin = (Button) findViewById(R.id.signInButton);
         signInButton = findViewById(R.id.signInButton);
 
         if (isLoggedBefore) {
@@ -109,6 +107,9 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
                             String uid = user.getUid();
+                            Toast.makeText(getApplicationContext(), "uid: " + uid, Toast.LENGTH_SHORT).show();
+                            BaseModelManager.setUid(uid);
+
                             User.getInstance().setInfo(uid);
                             BaseModelManager.getInstance().createUser();
 

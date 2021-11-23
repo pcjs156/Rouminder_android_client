@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.rouminder.AlarmReceiver;
 import com.example.rouminder.R;
@@ -36,7 +37,7 @@ public class TitleActivity extends AppCompatActivity {
         titleViewContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                alarmTest();
+//                alarmTest();
 
                 if (isLoggedBefore) {
                     Intent mainActivityIntent = new Intent(getApplicationContext(), MainActivity.class);
