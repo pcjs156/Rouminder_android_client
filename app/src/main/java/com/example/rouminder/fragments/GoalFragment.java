@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -128,6 +129,10 @@ public class GoalFragment extends Fragment {
         goalManager.addGoal(new CheckGoal(goalManager, 0, "밥 먹기", from, to, 0));
         goalManager.addGoal(new CountGoal(goalManager, 1, "물 마시기", from, to, 1, 5, "회"));
         goalManager.addGoal(new CheckGoal(goalManager, 2, "한강 가기", from, to, 1));
+
+        Log.d("TestCode", "FragmentGoalDescribe Start");
+        GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goalManager.getGoal(0));
+        goalDescribeFragment.show(getActivity().getSupportFragmentManager(),null);
 
 //        ArrayList<GoalItem> list = new ArrayList<>();
 //        list.add(new GoalItem("밥 먹기"

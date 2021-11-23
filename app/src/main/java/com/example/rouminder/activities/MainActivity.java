@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.example.rouminder.fragments.GoalDescribeFragment;
 import com.example.rouminder.fragments.GoalFragment;
 import com.example.rouminder.fragments.ProfileFragment;
 import com.example.rouminder.R;
