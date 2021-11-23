@@ -6,12 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.example.rouminder.firebase.model.GoalModel;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.example.rouminder.firebase.model.GoalModel;
-import com.example.rouminder.firebase.model.GoalModel;
 import com.example.rouminder.firebase.exception.ModelDoesNotExists;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,17 +14,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Date;
 
 
 public class GoalModelManager {
@@ -66,18 +54,20 @@ public class GoalModelManager {
                             goals.add(new GoalModel(_goal));
 
                             String tag = goal.get("tag");
-                            if (!tags.contains(tag)) {
+                            if (tag != null && !tags.contains(tag)) {
                                 tags.add(tag);
                             }
                         }
                     }
 
-                    tags.sort(new Comparator<String>() {
-                        @Override
-                        public int compare(String s, String t1) {
-                            return s.compareTo(t1);
-                        }
-                    });
+                    if (!tags.isEmpty()) {
+                        tags.sort(new Comparator<String>() {
+                            @Override
+                            public int compare(String s, String t1) {
+                                return s.compareTo(t1);
+                            }
+                        });
+                    }
 
                     notifyToAdapters();
                 }

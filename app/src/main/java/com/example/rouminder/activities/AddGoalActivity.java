@@ -230,18 +230,18 @@ public class AddGoalActivity extends AppCompatActivity {
         } else
             values.put("name", goalName);
 
-//        Object selectedHighlight = highlightsSpinner.getSelectedItem();
-//        String highlight = "";
-//        if (selectedHighlight != null) {
-//            highlight = highlightsSpinner.getSelectedItem().toString();
-//            values.put("highlight", highlight);
-//        }
-//        else {
-//            Toast.makeText(self, "하이라이트가 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
-//            Log.d("FIELD", "highlight");
-//            return;
-//        }
-        String highlight = "red";
+        Object selectedHighlight = highlightsSpinner.getSelectedItem();
+        String highlight = "";
+        if (selectedHighlight != null) {
+            Color selectedColor = (Color) highlightsSpinner.getSelectedItem();
+            highlight = String.format("#%08X", (0xFFFFFFFF & selectedColor.toArgb()));
+            values.put("highlight", highlight);
+        }
+        else {
+            Toast.makeText(self, "하이라이트가 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
+            Log.d("FIELD", "highlight");
+            return;
+        }
 
         String tag = editTextTag.getText().toString();
         values.put("tag", tag);
@@ -326,6 +326,8 @@ public class AddGoalActivity extends AppCompatActivity {
         String endDatetime = BaseModelManager.getTimeStampString(end);
         values.put("start_datetime", startDatetime);
         values.put("finish_datetime", endDatetime);
+
+        Log.d("DATETIME", startDatetime);
 
         goalModelManager.create(values);
 

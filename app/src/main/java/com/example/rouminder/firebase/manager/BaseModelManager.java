@@ -36,7 +36,7 @@ public class BaseModelManager {
     }
 
     public static String getTimeStampString(Date dt) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd/HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("20yy.MM.dd/HH:mm:ss");
         return format.format(dt);
     }
 
