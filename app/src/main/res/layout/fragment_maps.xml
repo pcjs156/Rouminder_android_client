@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/maps_fragment"
-    tools:context=".MapsFragment">
+    tools:context=".fragments.MapsFragment">
 
     <FrameLayout
         android:id="@+id/autocomplete_fragment_content"

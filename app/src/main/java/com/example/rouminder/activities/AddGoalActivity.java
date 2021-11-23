@@ -327,6 +327,8 @@ public class AddGoalActivity extends AppCompatActivity {
         values.put("start_datetime", startDatetime);
         values.put("finish_datetime", endDatetime);
 
+        Log.d("DATETIME", startDatetime);
+
         goalModelManager.create(values);
 
         finish();

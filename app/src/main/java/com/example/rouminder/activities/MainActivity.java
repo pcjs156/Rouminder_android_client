@@ -1,19 +1,21 @@
-package com.example.rouminder;
+package com.example.rouminder.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
-import com.example.rouminder.firebase.Manager;
+import com.example.rouminder.firebase.manager.BaseModelManager;
+import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.firebase.model.GoalModel;
+import com.example.rouminder.fragments.GoalFragment;
+import com.example.rouminder.fragments.ProfileFragment;
+import com.example.rouminder.R;
+import com.example.rouminder.fragments.StatisticsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     String uid;
@@ -41,11 +43,25 @@ public class MainActivity extends AppCompatActivity {
         //첫 화면 띄우기
         getSupportFragmentManager().beginTransaction().add(R.id.mainLayoutContainer, goalFragment).commit();
 
+        BaseModelManager.setUid(uid);
+        BaseModelManager baseModelManager = BaseModelManager.getInstance();
+
+        GoalModelManager gManager = GoalModelManager.getInstance();
+
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.main_menu_item_goal:
-                    Manager manager = Manager.getInstance();
-                    manager.createAction(uid, "TYPE1", "unit1");
+                    HashMap<String, Object> values = new HashMap<>();
+                    values.put("name", "GOAL_NAME_1");
+                    values.put("type", "GOAL_TYPE_1");
+                    values.put("current", 0);
+                    values.put("tag", "GOAL_TAG_1");
+                    values.put("method", "METHOD_1");
+                    values.put("highlight", "COLOR_1");
+                    values.put("start_datetime", "2021.11.15/16:45:25");
+                    values.put("finish_datetime", "2021.11.16/16:45:25");
+                    GoalModel newGoal = gManager.create(values);
+
                     getSupportFragmentManager().beginTransaction().replace(R.id.mainLayoutContainer, goalFragment).commit();
                     break;
                 case R.id.main_menu_item_statistics:
