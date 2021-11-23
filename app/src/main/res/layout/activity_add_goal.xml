@@ -36,7 +36,7 @@
                     android:layout_marginLeft="10dp"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:hint="goalName"
+                    android:hint="목표명"
                     android:layout_toRightOf="@+id/circleImageView"/>
 
             </RelativeLayout>

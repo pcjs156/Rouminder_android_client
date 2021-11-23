@@ -5,6 +5,8 @@ import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidIn
 import androidx.annotation.NonNull;
 
 import com.example.rouminder.firebase.model.GoalModel;
+
+import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.example.rouminder.firebase.exception.ModelDoesNotExists;
@@ -106,38 +108,13 @@ public class GoalModelManager {
 
         String randomId = baseModelManager.getRandomId();
 
-        ref.child("data").child(randomId).child("uid").setValue(BaseModelManager.uid);
-        ref.child("data").child(randomId).child("created_at").setValue(createdAt);
-        ref.child("data").child(randomId).child("modified_at").setValue("");
-
-        String name = (String) values.get("name");
-        ref.child("data").child(randomId).child("name").setValue(name);
-
-        String type = (String) values.get("type");
-        ref.child("data").child(randomId).child("type").setValue(type);
-
-        String tag = (String) values.get("tag");
-        ref.child("data").child(randomId).child("tag").setValue(tag);
-
-        String method = (String) values.get("method");
-        ref.child("data").child(randomId).child("method").setValue(method);
-
-        String highlight = (String) values.get("highlight");
-        ref.child("data").child(randomId).child("highlight").setValue(highlight);
-
-        int current = (Integer) values.get("current");
-        ref.child("data").child(randomId).child("current").setValue(current);
-
-        String startDatetime = (String) values.get("start_datetime");
-        ref.child("data").child(randomId).child("start_datetime").setValue(startDatetime);
-
-        String finishDatetime = (String) values.get("finish_datetime");
-        ref.child("data").child(randomId).child("finish_datetime").setValue(finishDatetime);
-
         values.put("id", randomId);
         values.put("uid", BaseModelManager.uid);
         values.put("created_at", createdAt);
         values.put("modified_at", "");
+
+        ref.child("data").child(randomId).setValue(values);
+
         GoalModel newGoal = new GoalModel(values);
 
         return newGoal;

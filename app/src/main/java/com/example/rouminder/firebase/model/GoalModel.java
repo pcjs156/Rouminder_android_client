@@ -25,6 +25,13 @@ public class GoalModel {
     // 하이라이트(Color hex code)
     public String highlight;
 
+    // 목표 count (check, location은 항상 1)
+    public int targetCount;
+
+    /* count용 */
+    // 단위 (3컵, 2회, ...)
+    public String unit;
+
     // 목표 시작 일시
     public String startDatetime;
     // 목표 종료 일시
@@ -37,7 +44,7 @@ public class GoalModel {
 
     public GoalModel(String id, String uid, String createdAt, String modifiedAt,
                      String name, String type, int current, String tag, String highlight, String method,
-                     String startDatetime, String finishDatetime) {
+                     int targetCount, String unit, String startDatetime, String finishDatetime) {
         this.id = id;
         this.uid = uid;
         this.createdAt = createdAt;
@@ -48,6 +55,8 @@ public class GoalModel {
         this.tag = tag;
         this.method = method;
         this.highlight = highlight;
+        this.targetCount = targetCount;
+        this.unit = unit;
         this.startDatetime = startDatetime;
         this.finishDatetime = finishDatetime;
     }
@@ -76,6 +85,16 @@ public class GoalModel {
         this.method = (String) values.get("method");
         this.highlight = (String) values.get("highlight");
 
+        if (this.method.equals("count")) {
+            if (values.get("target_count") instanceof Integer)
+                this.targetCount = (Integer) values.get("target_count");
+            else
+                this.targetCount = ((Long) values.get("target_count")).intValue();
+            this.unit = (String) values.get("unit");
+        } else {
+            this.targetCount = 1;
+        }
+
         this.startDatetime = (String) values.get("start_datetime");
         this.finishDatetime = (String) values.get("finish_datetime");
     }
@@ -102,6 +121,10 @@ public class GoalModel {
 
         this.tag = (String) newValues.get("tag");
         this.highlight = (String) newValues.get("highlight");
+        this.targetCount = (Integer) newValues.get("target_count");
+
+        if (method.equals("count"))
+            this.unit = (String) newValues.get("unit");
 
         this.startDatetime = (String) newValues.get("start_datetime");
         this.finishDatetime = (String) newValues.get("finish_datetime");
@@ -122,6 +145,11 @@ public class GoalModel {
         info.put("tag", tag);
         info.put("method", method);
         info.put("highlight", highlight);
+        info.put("target_count", targetCount);
+
+        if (method.equals("count"))
+            info.put("unit", unit);
+
         info.put("start_datetime", startDatetime);
         info.put("finish_datetime", finishDatetime);
 

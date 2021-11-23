@@ -47,6 +47,8 @@ public class AddGoalActivity extends AppCompatActivity {
 
     private EditText goalNameEditText;
     private MultiAutoCompleteTextView editTextTag;
+    private EditText editTextTargetCount;
+    private EditText editTextUnit;
     private TextView startDate;
     private TextView startTime;
     private TextView endDate;
@@ -80,6 +82,8 @@ public class AddGoalActivity extends AppCompatActivity {
         endDate = findViewById(R.id.endDate);
         endTime = findViewById(R.id.endTime);
         goalNameEditText = (EditText) findViewById(R.id.goalNameEditText);
+        editTextUnit = (EditText) findViewById(R.id.editTextNumberSigned2);
+        editTextTargetCount = (EditText) findViewById(R.id.editTextNumberSigned);
 
         resetDateTime();
 
@@ -276,7 +280,7 @@ public class AddGoalActivity extends AppCompatActivity {
                 method = "check";
                 break;
             case R.id.choiceCount:
-                method = "choice";
+                method = "count";
                 break;
             case R.id.choiceLocation:
                 method = "location";
@@ -286,7 +290,7 @@ public class AddGoalActivity extends AppCompatActivity {
                 Log.d("FIELD", "method");
                 return;
         }
-        if (!method.equals("check")) {
+        if (method.equals("location")) {
             Toast.makeText(self, "구현되지 않은 수행 방법입니다.", Toast.LENGTH_SHORT).show();
             Log.d("FIELD", "invalid method");
             return;
@@ -295,6 +299,25 @@ public class AddGoalActivity extends AppCompatActivity {
         }
 
         values.put("current", 0);
+        switch (method) {
+            case "check":
+                values.put("target_count", 0);
+                break;
+            case "count":
+                String unit = editTextUnit.getText().toString();
+                if (unit.isEmpty())
+                    unit = "회";
+                values.put("unit", unit);
+
+                String rawTargetCount = editTextTargetCount.getText().toString();
+                if (rawTargetCount == null || rawTargetCount.isEmpty()) {
+                    Toast.makeText(self, "목표 count가 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Integer targetCount = Integer.parseInt(rawTargetCount);
+                values.put("target_count", targetCount);
+                break;
+        }
 
         String startDateString = startDate.getText().toString();
         String endDateString = endDate.getText().toString();
@@ -326,8 +349,6 @@ public class AddGoalActivity extends AppCompatActivity {
         String endDatetime = BaseModelManager.getTimeStampString(end);
         values.put("start_datetime", startDatetime);
         values.put("finish_datetime", endDatetime);
-
-        Log.d("DATETIME", startDatetime);
 
         goalModelManager.create(values);
 
