@@ -4,46 +4,47 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.content.Context;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import androidx.cardview.widget.CardView;
 
 import com.example.rouminder.R;
 
 public class SpinnerAdapter extends BaseAdapter {
-  Context context;
-  int flags[];
-  LayoutInflater inflater;
+    Context context;
+    LayoutInflater inflater;
+    Color[] colors;
 
-  public SpinnerAdapter(Context applicationContext, int[] flags) {
-      this.context = applicationContext;
-      this.flags = flags;
-      inflater = (LayoutInflater.from(applicationContext));
-  }
+    public SpinnerAdapter(Context applicationContext, Color[] colors) {
+        this.context = applicationContext;
+        this.colors = colors;
+        inflater = (LayoutInflater.from(applicationContext));
+    }
 
-  @Override
+    @Override
     public int getCount() {
-      return flags.length;
-  }
+        if (colors != null) return colors.length;
+        return 0;
+    }
 
-  @Override
+    @Override
     public Object getItem(int position){
-        return null;
+        return colors[position];
     }
 
     @Override
     public long getItemId(int position) {
-      return 0;
+        return position;
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-      view = inflater.inflate(R.layout.item_highlight, null);
-        ImageView icon = (ImageView)  view.findViewById(R.id.imageViewHighlight);
-        icon.setImageResource(flags[i]);
-        return view;
-    }
+    public View getView(int position, View convertView, ViewGroup parent) {
+        convertView = inflater.inflate(R.layout.item_highlight, parent, false);
 
+        CardView icon = (CardView) convertView.findViewById(R.id.imageViewHighlight);
+        icon.setCardBackgroundColor(colors[position].toArgb());
+
+        return convertView;
+    }
 }
