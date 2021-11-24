@@ -27,7 +27,7 @@ public class GoalModelManager {
     private final BaseModelManager baseModelManager = BaseModelManager.getInstance();
     private final DatabaseReference ref;
     public final DatabaseReference dataRef;
-    private ArrayList<GoalModel> goals = new ArrayList<>();
+    public ArrayList<GoalModel> goals = new ArrayList<>();
     private ArrayList<String> tags = new ArrayList<>();
 
     private final HashSet<ArrayAdapter> notifyAdapters = new HashSet<>();
@@ -48,7 +48,6 @@ public class GoalModelManager {
                 if (result != null && !result.isEmpty()) {
                     for (String id : result.keySet()) {
                         HashMap<String, String> goal = result.get(id);
-
                         String author = goal.get("uid");
                         HashMap<String, Object> _goal = (HashMap<String, Object>) goal.clone();
                         if (author.equals(BaseModelManager.uid)) {

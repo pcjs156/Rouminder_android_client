@@ -67,7 +67,8 @@ public class GoalManager {
         earlyStartingGoals.add(goal);
         earlyEndingGoals.add(goal);
 
-        onGoalChangeListeners.stream().peek(listener -> listener.onGoalAdd(goal.getId()));
+//        onGoalChangeListeners.stream().peek(listener -> listener.onGoalAdd(goal.getId()));
+        onGoalChangeListeners.forEach(listener -> listener.onGoalAdd(goal.getId()));
         return goal.getId();
     }
 
@@ -82,7 +83,10 @@ public class GoalManager {
     }
 
     void updateGoal(int id) {
-        onGoalChangeListeners.stream().peek(listener -> listener.onGoalUpdate(id));
+//        onGoalChangeListeners.stream().peek(listener -> listener.onGoalUpdate(id));
+        onGoalChangeListeners.forEach(listener -> {
+            listener.onGoalUpdate(id);
+        });
     }
 
     /**
@@ -103,7 +107,10 @@ public class GoalManager {
             result = false;
         }
 
-        onGoalChangeListeners.stream().peek(listener -> listener.onGoalRemove(id));
+//        onGoalChangeListeners.stream().peek(listener -> listener.onGoalRemove(id));
+        onGoalChangeListeners.forEach(listener -> {
+            listener.onGoalRemove(id);
+        });
         return result;
     }
 
@@ -283,7 +290,7 @@ public class GoalManager {
     /**
      * An event listener for changes of each goal
      */
-    public abstract class OnGoalChangeListener {
+    public abstract static class OnGoalChangeListener {
         public abstract void onGoalAdd(int id);
 
         public abstract void onGoalUpdate(int id);
