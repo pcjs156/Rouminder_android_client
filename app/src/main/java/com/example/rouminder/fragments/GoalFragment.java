@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.rouminder.Application;
+import com.example.rouminder.MainApplication;
 import com.example.rouminder.adapter.BigGoalAdapter;
 import com.example.rouminder.R;
 import com.example.rouminder.activities.AddGoalActivity;
@@ -33,7 +32,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public class GoalFragment extends Fragment {
     GoalManager goalManager;
@@ -54,7 +52,7 @@ public class GoalFragment extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_goal, container, false);
 
-        goalManager =  ((Application) getActivity().getApplication()).getGoalManager();
+        goalManager =  ((MainApplication) getActivity().getApplication()).getGoalManager();
 
         // if goalManager's goals is empty, create goals list
         if (goalManager.goals.size() == 0) initGoalManager();
