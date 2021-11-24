@@ -121,4 +121,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         this.googleMap = googleMap;
     }
+
+    public Marker getMarker() {
+        return marker;
+    }
 }

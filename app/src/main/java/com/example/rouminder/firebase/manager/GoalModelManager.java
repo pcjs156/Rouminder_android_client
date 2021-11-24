@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import com.example.rouminder.firebase.model.GoalModel;
 
-import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.example.rouminder.firebase.exception.ModelDoesNotExists;

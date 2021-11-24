@@ -7,17 +7,17 @@ import java.util.Date;
 
 public class GoalModel {
     // 목표의 id값 (primary key)
-    public final String id;
+    public String id;
 
     // 해당 목표의 소유자의 uid (foreign key)
-    public final String uid;
+    public String uid;
 
     // 목표명
     public String name;
     // 목표의 유형 (general, repeat, complex)
-    public final String type;
+    public String type;
     // 목표 수행 방법 (check, count, location)
-    public final String method;
+    public String method;
     // 목표의 달성 현황 (boolean type의 경우 0, 1로 false, true를 표기)
     public int current;
     // 태그
@@ -32,13 +32,17 @@ public class GoalModel {
     // 단위 (3컵, 2회, ...)
     public String unit;
 
+    /* 위도/경도 */
+    public Double latitude;
+    public Double longitude;
+
     // 목표 시작 일시
     public String startDatetime;
     // 목표 종료 일시
     public String finishDatetime;
 
     // 생성일시
-    public final String createdAt;
+    public String createdAt;
     // 수정일시
     public String modifiedAt;
 
@@ -93,6 +97,11 @@ public class GoalModel {
             this.unit = (String) values.get("unit");
         } else {
             this.targetCount = 1;
+
+            if (this.method.equals("location")) {
+                this.latitude = (Double) values.get("latitude");
+                this.longitude = (Double) values.get("longitude");
+            }
         }
 
         this.startDatetime = (String) values.get("start_datetime");
@@ -125,6 +134,10 @@ public class GoalModel {
 
         if (method.equals("count"))
             this.unit = (String) newValues.get("unit");
+        else if (method.equals("location")) {
+            this.latitude = (Double) newValues.get("latitude");
+            this.longitude = (Double) newValues.get("longitude");
+        }
 
         this.startDatetime = (String) newValues.get("start_datetime");
         this.finishDatetime = (String) newValues.get("finish_datetime");
@@ -149,6 +162,10 @@ public class GoalModel {
 
         if (method.equals("count"))
             info.put("unit", unit);
+        else if (method.equals("location")) {
+            info.put("latitude", latitude);
+            info.put("longitude", longitude);
+        }
 
         info.put("start_datetime", startDatetime);
         info.put("finish_datetime", finishDatetime);

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -25,6 +24,9 @@ import com.example.rouminder.R;
 import com.example.rouminder.adapter.SpinnerAdapter;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.fragments.MapsFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 
 import android.graphics.Color;
@@ -53,6 +55,8 @@ public class AddGoalActivity extends AppCompatActivity {
     private TextView startTime;
     private TextView endDate;
     private TextView endTime;
+
+    private MapsFragment mapsFragment;
 
     public static int currentType;
     public static View clickedDate;
@@ -85,6 +89,8 @@ public class AddGoalActivity extends AppCompatActivity {
         editTextUnit = (EditText) findViewById(R.id.editTextNumberSigned2);
         editTextTargetCount = (EditText) findViewById(R.id.editTextNumberSigned);
 
+        mapsFragment = (MapsFragment) getSupportFragmentManager().findFragmentById(R.id.mapFinder);
+
         resetDateTime();
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -106,55 +112,6 @@ public class AddGoalActivity extends AppCompatActivity {
         SpinnerAdapter highlightsAdapter = new SpinnerAdapter(this, colors);
         highlightsSpinner = (Spinner) findViewById(R.id.spinnerHighlight);
         highlightsSpinner.setAdapter(highlightsAdapter);
-
-        // highlightsAdapter.getDropDownView()
-
-        // 현재 오류나서 잠시 주석처리
-//        LabelToggle choiceGeneral = (LabelToggle) findViewById(R.id.choiceGeneral);
-//        choiceGeneral.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ArrayList<String> categoryIds = new ArrayList<>();
-//                for (CategoryModel model : categoryModels) {
-//                    categoryIds.add(model.id);
-//                }
-//
-//                Collections.shuffle(categoryIds);
-//                if (!categoryIds.isEmpty()) {
-//                    String pickedId = categoryIds.get(0);
-//                    HashMap<String, Object> newData = new HashMap<>();
-//                    newData.put("name", "newName");
-//                    try {
-//                        categoryModelManager.update(pickedId, newData);
-//                    } catch (ModelDoesNotExists e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            }
-//        });
-//
-//        LabelToggle choiceRepeat = (LabelToggle) findViewById(R.id.choiceRepeat);
-//        choiceRepeat.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ArrayList<String> categoryIds = new ArrayList<>();
-//                for (CategoryModel model : categoryModels) {
-//                    categoryIds.add(model.id);
-//                }
-//
-//                Collections.shuffle(categoryIds);
-//                if (!categoryIds.isEmpty()) {
-//                    String pickedId = categoryIds.get(0);
-//                    try {
-//                        categoryModelManager.delete(pickedId);
-//                    } catch (ModelDoesNotExists e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            }
-//        });
 
         typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
         methodGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesMethod);
@@ -290,18 +247,21 @@ public class AddGoalActivity extends AppCompatActivity {
                 Log.d("FIELD", "method");
                 return;
         }
-        if (method.equals("location")) {
-            Toast.makeText(self, "구현되지 않은 수행 방법입니다.", Toast.LENGTH_SHORT).show();
-            Log.d("FIELD", "invalid method");
-            return;
-        } else {
-            values.put("method", method);
-        }
+        values.put("method", method);
 
         values.put("current", 0);
         switch (method) {
             case "check":
-                values.put("target_count", 0);
+                values.put("target_count", 1);
+                break;
+            case "location":
+                values.put("target_count", 1);
+                Marker selectedMarker = mapsFragment.getMarker();
+                LatLng position = selectedMarker.getPosition();
+                Double latitude = position.latitude;
+                Double longitude = position.longitude;
+                values.put("latitude", latitude);
+                values.put("longitude", longitude);
                 break;
             case "count":
                 String unit = editTextUnit.getText().toString();
