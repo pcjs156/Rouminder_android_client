@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -21,10 +20,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.example.rouminder.MainApplication;
 import com.example.rouminder.R;
 import com.example.rouminder.adapter.SpinnerAdapter;
+import com.example.rouminder.data.goalsystem.CheckGoal;
+import com.example.rouminder.data.goalsystem.CountGoal;
+import com.example.rouminder.data.goalsystem.Goal;
+import com.example.rouminder.data.goalsystem.GoalManager;
+import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.firebase.model.GoalModel;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 
 import android.graphics.Color;
@@ -58,6 +64,7 @@ public class AddGoalActivity extends AppCompatActivity {
     public static View clickedDate;
 
     public GoalModelManager goalModelManager = GoalModelManager.getInstance();
+    GoalManager goalManager;
 
     public String uid;
 
@@ -350,14 +357,50 @@ public class AddGoalActivity extends AppCompatActivity {
         values.put("start_datetime", startDatetime);
         values.put("finish_datetime", endDatetime);
 
-        goalModelManager.create(values);
+        GoalModel goalModel = goalModelManager.create(values);
+        goalManager = ((MainApplication) getApplication()).getGoalManager();
+        goalManager.addGoal(convertGoalModelToGoal(goalModel));
 
         finish();
     }
 
-    private void getGoalInfo() {
-        typeGroup.getCheckedId();
-        methodGroup.getCheckedId();
+    private Goal convertGoalModelToGoal(GoalModel goalModel) {
+        Goal goal;
+
+        HashMap<String, Object> info = goalModel.getInfo();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("20yy.MM.dd/HH:mm:ss");
+
+        Log.i("test", info.get("method").toString());
+
+        if ((info.get("method").toString()).equals("check")) {
+            Log.i("test", "id"+info.get("id").toString());
+            goal = new CheckGoal(goalManager,
+                    Integer.parseInt(info.get("id").toString()),
+                    info.get("name").toString(),
+                    LocalDateTime.parse(info.get("startDatetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finishDatetime").toString(), formatter),
+                    Integer.parseInt(info.get("current").toString()));
+        } else if (info.get("method").toString().equals("count")) {
+            goal = new CountGoal(goalManager,
+                    Integer.parseInt(info.get("id").toString()),
+                    info.get("name").toString(),
+                    LocalDateTime.parse(info.get("startDatetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finishDatetime").toString(), formatter),
+                    Integer.parseInt(info.get("current").toString()),
+                    Integer.parseInt(info.get("target_count").toString()),
+                    info.get("unit").toString());
+        } else {
+            goal = new LocationGoal(goalManager,
+                    Integer.parseInt(info.get("id").toString()),
+                    info.get("name").toString(),
+                    LocalDateTime.parse(info.get("startDatetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finishDatetime").toString(), formatter),
+                    Integer.parseInt(info.get("current").toString()),
+                    Integer.parseInt(info.get("target_count").toString()));
+        }
+
+        return goal;
     }
 
     private void resetDateTime() {

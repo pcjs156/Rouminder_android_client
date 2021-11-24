@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.main_menu_item_goal:
+                    // 이거 test code인가?
                     HashMap<String, Object> values = new HashMap<>();
                     values.put("name", "GOAL_NAME_1");
                     values.put("type", "GOAL_TYPE_1");
