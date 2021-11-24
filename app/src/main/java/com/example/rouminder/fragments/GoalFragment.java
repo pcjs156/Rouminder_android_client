@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.rouminder.Application;
 import com.example.rouminder.adapter.GoalAdapter;
 import com.example.rouminder.R;
 import com.example.rouminder.activities.AddGoalActivity;
@@ -114,6 +115,8 @@ public class GoalFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         miniRecyclerView.setAdapter(adapter);
+
+        ((Application)getActivity().getApplication()).getGoalManager();
 
         return rootView;
     }
