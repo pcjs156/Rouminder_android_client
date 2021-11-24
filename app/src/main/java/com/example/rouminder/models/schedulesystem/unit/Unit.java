@@ -14,19 +14,29 @@ import java.util.Map;
 import java.util.TreeSet;
 
 public abstract class Unit {
-    protected final int bitmask;
     protected final TreeSet<Domain> domains;
     protected final Map<Domain, Integer> values;
 
     protected Unit(List<Domain> domains) {
         this.domains = new TreeSet<>(domains);
         this.values = new HashMap<>();
-        int bitmask = 0;
-        for (Domain domain : this.domains) {
-            bitmask |= domain.getBitmask();
-            this.values.put(domain, domain.getStart());
+    }
+
+    public static int compareDomains(Unit lhs, Unit rhs) {
+        int compare;
+        Iterator<Domain> it1 = lhs.domains.iterator(), it2 = rhs.domains.iterator();
+        while(it1.hasNext() && it2.hasNext()) {
+            compare = it1.next().compareTo(it2.next());
+            if(compare != 0)
+                return compare;
         }
-        this.bitmask = bitmask;
+        if(it1.hasNext()) {
+            return 1;
+        } else if(it2.hasNext()) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -36,7 +46,21 @@ public abstract class Unit {
      * @return true if a unit is compatible with another, otherwise false.
      */
     public boolean isCompatible(Unit unit) {
-        return (bitmask & unit.bitmask) == 0;
+        return (Domain.orBitmask(domains.toArray(new Domain[0]))
+                & Domain.orBitmask(unit.domains.toArray(new Domain[0]))) == Domain.MIN_BITMASK;
+    }
+
+    /**
+     * Get values of a unit at each domain.
+     *
+     * @return a list of values in their domain's ascending order.
+     */
+    public List<Integer> getValues() {
+        List<Integer> values = new ArrayList<>();
+        for (Domain domain : domains) {
+            values.add(this.values.get(domain));
+        }
+        return values;
     }
 
     /**
@@ -45,7 +69,7 @@ public abstract class Unit {
      * @param values a number of values in their domain's ascending order.
      *               set null to skip the value in specific position.
      */
-    public void set(Integer... values) {
+    public void setValues(Integer... values) {
         Iterator<Domain> it = domains.iterator();
         for (Integer value : values) {
             if (!it.hasNext())
@@ -54,19 +78,6 @@ public abstract class Unit {
                 this.values.put(it.next(), value);
             }
         }
-    }
-
-    /**
-     * Get values of a unit at each domain.
-     *
-     * @return a list of values in their domain's ascending order.
-     */
-    public List<Integer> get() {
-        List<Integer> values = new ArrayList<>();
-        for (Domain domain : domains) {
-            values.add(this.values.get(domain));
-        }
-        return values;
     }
 
     /**
@@ -82,6 +93,20 @@ public abstract class Unit {
         }
         return temp;
     }
+
+    /**
+     * Get another unit object with identical domains from a unit.
+     *
+     * @return another unit with identical domains.
+     */
+    public abstract Unit another();
+
+    /**
+     * Get a copy of a unit.
+     *
+     * @return a copy of a unit.
+     */
+    public abstract Unit copy();
 
     /**
      * A domain, or primary time unit like minute, hour, etc., compromising time units.
@@ -129,7 +154,7 @@ public abstract class Unit {
          * @param domains a List of domains to calculate.
          * @return a result bitmask.
          */
-        public static int orBitmask(List<Domain> domains) {
+        public static int orBitmask(Domain... domains) {
             int bitmask = MIN_BITMASK;
             for (Domain domain : domains) {
                 bitmask |= domain.getBitmask();
@@ -143,7 +168,7 @@ public abstract class Unit {
          * @param domains a List of domains to calculate.
          * @return a result bitmask.
          */
-        public static int andBitmask(List<Domain> domains) {
+        public static int andBitmask(Domain... domains) {
             int bitmask = MAX_BITMASK;
             for (Domain domain : domains) {
                 bitmask &= domain.getBitmask();
@@ -155,7 +180,7 @@ public abstract class Unit {
          * Get domains from bitmask.
          *
          * @param bitmask a bitmask.
-         * @return an array of Domain
+         * @return an list of Domain.
          */
         public static List<Domain> getDomainsFromBitmask(int bitmask) {
             int normalized = bitmask & MAX_BITMASK;
@@ -167,10 +192,18 @@ public abstract class Unit {
             return domains;
         }
 
+        /**
+         * Get Domains within Range.
+         * Order is determined by definition order.
+         *
+         * @param from a starting Domain.
+         * @param to   an ending Domain.
+         * @return a list of Domain.
+         */
         public static List<Domain> getDomainsFromRange(Domain from, Domain to) {
             List<Domain> domains = new ArrayList<>();
-            for(Domain domain : Domain.values()) {
-                if(from.getBitmask() <= domain.getBitmask() && domain.getBitmask() <= to.getBitmask())
+            for (Domain domain : Domain.values()) {
+                if (from.getBitmask() <= domain.getBitmask() && domain.getBitmask() <= to.getBitmask())
                     domains.add(domain);
             }
 
