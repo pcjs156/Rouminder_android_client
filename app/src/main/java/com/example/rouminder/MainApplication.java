@@ -1,5 +1,7 @@
 package com.example.rouminder;
 
+import android.util.Log;
+
 import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.GoalManager;
@@ -53,6 +55,22 @@ public class MainApplication extends android.app.Application {
     }
 
     private void initGoalManager() {
+        goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener() {
+            @Override
+            public void onGoalAdd(int id) {
+                Log.d("goal_event", "add " + id);
+            }
+
+            @Override
+            public void onGoalUpdate(int id) {
+                Log.d("goal_event", "update " + id);
+            }
+
+            @Override
+            public void onGoalRemove(int id) {
+                Log.d("goal_event", "remove " + id);
+            }
+        });
         loadGoalManager();
     }
 
