@@ -2,6 +2,7 @@ package com.example.rouminder.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -32,14 +33,9 @@ import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.model.GoalModel;
 import com.nex3z.togglebuttongroup.button.CircularToggle;
 
-import java.sql.Array;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GoalFragment extends Fragment {
@@ -117,6 +113,7 @@ public class GoalFragment extends Fragment {
             }
         });
 
+        // firebase 연동 데이터 생성
         initFirebaseDate();
 
         // items 임시 생성 코드
@@ -136,19 +133,35 @@ public class GoalFragment extends Fragment {
     }
 
     private void initFirebaseDate() {
-        ArrayList<GoalModel> goalModels = goalModelManager.get();
+        InitGoalsTask task = new InitGoalsTask();
+        task.execute(goalManager);
+    }
 
-        if (goalModels == null) {
-            Log.i("null", "firebase");
-            return;
+    class InitGoalsTask extends AsyncTask<GoalManager, Integer ,ArrayList<GoalModel>> {
+
+        @Override
+        protected ArrayList<GoalModel> doInBackground(GoalManager... goalManagers) {
+            try {
+                while (goalModelManager.getIsChanging() == true) {
+                    Log.i("test", "sleep");
+                    Thread.sleep(1000);
+                    // 시간 되면 sleep 대신 로딩 중 표시 띄우고 싶음
+                }
+            } catch (InterruptedException e) {
+
+            }
+            return goalModelManager.get();
         }
 
-        Log.i("test", goalModels.toString());
+        @Override
+        protected void onPostExecute(ArrayList<GoalModel> goalModels) {
+            super.onPostExecute(goalModels);
 
-        goalModels.forEach(goalModel -> {
-            Log.i("test", goalModel.toString());
-            goalManager.addGoal(convertGoalModelToGoal(goalModel));
-        });
+            goalModels.forEach(goalModel -> {
+                Log.i("test", goalModel.toString());
+                goalManager.addGoal(convertGoalModelToGoal(goalModel));
+            });
+        }
     }
 
     private Goal convertGoalModelToGoal(GoalModel goalModel) {
@@ -162,15 +175,15 @@ public class GoalFragment extends Fragment {
             goal = new CheckGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
                     info.get("name").toString(),
-                    LocalDateTime.parse(info.get("startDatetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finishDatetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()));
         } else if (info.get("method").equals("count")) {
             goal = new CountGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
                     info.get("name").toString(),
-                    LocalDateTime.parse(info.get("startDatetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finishDatetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()),
                     info.get("unit").toString());
@@ -178,29 +191,13 @@ public class GoalFragment extends Fragment {
             goal = new LocationGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
                     info.get("name").toString(),
-                    LocalDateTime.parse(info.get("startDatetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finishDatetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()));
         }
 
         return goal;
-    }
-
-    void initGoalManager() {
-//        LocalDateTime from = LocalDateTime.now();
-
-        // 임시 코드 -> open 방식 사용하려면 to 빈 값이 들어가게?
-        // 현재는 to 값에 null 못 들어갈 것 같음. 나중에 정하기
-//        LocalDateTime to = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59));
-
-        // 데이터 생성
-//        goalManager.addGoal(new CheckGoal(goalManager, 0, "밥 먹기", from, to, 0));
-//        goalManager.addGoal(new CountGoal(goalManager, 1, "물 마시기", from, to, 1, 5, "회"));
-//        goalManager.addGoal(new CheckGoal(goalManager, 2, "한강 가기", from, to, 1));
-
-        // firebase 연동 데이터 생성
-        initFirebaseDate();
     }
 
     void setBAdapter(ArrayList<Goal> items) {

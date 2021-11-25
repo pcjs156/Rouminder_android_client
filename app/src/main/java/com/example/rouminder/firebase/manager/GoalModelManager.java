@@ -33,7 +33,11 @@ public class GoalModelManager {
 
     private final HashSet<ArrayAdapter> notifyAdapters = new HashSet<>();
 
+    private boolean isChanging;
+
     private GoalModelManager() {
+        isChanging = true;
+
         FirebaseDatabase db = baseModelManager.db;
         ref = db.getReference("goal");
         dataRef = ref.child("data");
@@ -41,6 +45,8 @@ public class GoalModelManager {
         dataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                isChanging = true;
+
                 HashMap<String, HashMap<String, String>> result =
                         (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
 
@@ -73,6 +79,8 @@ public class GoalModelManager {
 
                     notifyToAdapters();
                 }
+
+                isChanging = false;
             }
 
             @Override
@@ -80,6 +88,10 @@ public class GoalModelManager {
                 System.out.println("REALTIME_DB: 목표 연동 실패");
             }
         });
+    }
+
+    public boolean getIsChanging() {
+        return isChanging;
     }
 
     public static GoalModelManager getInstance() {
