@@ -85,11 +85,13 @@ public class MainApplication extends android.app.Application {
                 today.withHour(8).plusMinutes(1),
                 today.withHour(12).plusMinutes(1), 1, 5, "회"));
         goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
-                today.withHour(16),
-                today.withHour(18), 1));
+                LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
+                LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1));
     }
 
     public GoalManager getGoalManager() {
         return goalManager;
     }
+
+    public GoalNotificationHelper getGoalNotificationHelper() { return goalNotificationHelper; }
 }

@@ -23,7 +23,8 @@
 
         <service android:name=".services.NotifyIntentService"
             android:enabled="true"
-            android:exported="false" >
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" >
         </service>
 
         <meta-data
