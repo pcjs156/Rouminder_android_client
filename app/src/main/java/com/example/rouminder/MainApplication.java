@@ -20,12 +20,15 @@ public class MainApplication extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        initGoalNotificationHelper();
         initGoalManager();
+        initGoalNotificationHelper();
     }
+
+
 
     private void initGoalNotificationHelper() {
         goalNotificationHelper.createNotificationChannel();
+        goalManager.getGoals().forEach(goalNotificationHelper::registerGoal);
         bindGoalManagerToNotification();
     }
 

@@ -302,7 +302,7 @@ public class GoalManager {
     /**
      * An event listener for changes of each goal
      */
-    public abstract static class OnGoalChangeListener {
+    public abstract class OnGoalChangeListener {
         public abstract void onGoalAdd(int id);
 
         public abstract void onGoalUpdate(int id);

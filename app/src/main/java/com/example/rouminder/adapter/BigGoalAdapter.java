@@ -31,7 +31,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         super();
         this.items = items;
 
-        goalManager.setOnGoalChangeListener(new GoalManager.OnGoalChangeListener() {
+        goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener() {
             @Override
             public void onGoalAdd(int id) {
                 int position = getItemPosition(id);

@@ -21,16 +21,17 @@ import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MiniGoalAdapter extends RecyclerView.Adapter<MiniGoalHolder> {
-    ArrayList<Goal> items;
+    List<Goal> items;
 
-    public MiniGoalAdapter(GoalManager goalManager, ArrayList<Goal> items) {
+    public MiniGoalAdapter(GoalManager goalManager, List<Goal> items) {
         super();
 
         this.items = items;
 
-        goalManager.setOnGoalChangeListener(new GoalManager.OnGoalChangeListener() {
+        goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener() {
             @Override
             public void onGoalAdd(int id) {
                 int position = getItemPosition(id);
