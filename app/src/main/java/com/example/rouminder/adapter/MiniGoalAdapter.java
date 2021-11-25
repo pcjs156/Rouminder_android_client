@@ -33,18 +33,16 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<MiniGoalHolder> {
         goalManager.setOnGoalChangeListener(new GoalManager.OnGoalChangeListener() {
             @Override
             public void onGoalAdd(int id) {
-                Goal goal = goalManager.getGoal(id);
-                int position = getItemPosition(goal);
+                int position = getItemPosition(id);
                 if (position  == -1) {
-                    addGoal(goal);
+                    addGoal(goalManager.getGoal(id));
                     notifyItemInserted(position);
                 }
             }
 
             @Override
             public void onGoalUpdate(int id) {
-                Goal goal = goalManager.getGoal(id);
-                int position = getItemPosition(goal);
+                int position = getItemPosition(id);
                 if (position != -1) {
                     notifyItemChanged(position);
                 }
@@ -52,21 +50,21 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<MiniGoalHolder> {
 
             @Override
             public void onGoalRemove(int id) {
-                Goal goal = goalManager.getGoal(id);
-                int position = getItemPosition(goal);
+                int position = getItemPosition(id);
                 if (position != -1) {
-                    removeGoal(goal);
+                    removeGoal(goalManager.getGoal(id));
                     notifyItemRemoved(position);
                 }
             }
         });
     }
 
-    private int getItemPosition(Goal goal) {
-        for (int pos = 0 ; pos < items.size(); pos++) {
-            if (items.get(pos).getId() == goal.getId()) return pos;
-        }
-        return -1;
+    private int getItemPosition(int id) {
+        Goal goal = items.stream()
+                .filter(e -> e.getId() == id)
+                .findFirst()
+                .orElse(null);
+        return (goal == null) ? -1 : items.indexOf(goal);
     }
 
     @NonNull
@@ -85,16 +83,15 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<MiniGoalHolder> {
         holder.onBind(items.get(position));
     }
 
-    void addGoal(Goal goal) {
+    private int addGoal(Goal goal) {
         items.add(goal);
+        return items.indexOf(goal);
     }
 
-    void removeGoal(Goal goal) {
-        for (Goal item : items) {
-            if (item.getId() == goal.getId()) {
-                items.remove(items.indexOf(item));
-            }
-        }
+    private int removeGoal(Goal goal) {
+        int position = items.indexOf(goal);
+        items.remove(goal);
+        return position;
     }
 
     @Override
