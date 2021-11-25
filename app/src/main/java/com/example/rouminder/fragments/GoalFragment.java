@@ -2,6 +2,8 @@ package com.example.rouminder.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.rouminder.MainApplication;
+import com.example.rouminder.ProgressDialog;
 import com.example.rouminder.adapter.BigGoalAdapter;
 import com.example.rouminder.R;
 import com.example.rouminder.activities.AddGoalActivity;
@@ -26,21 +32,30 @@ import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
+import com.example.rouminder.data.goalsystem.LocationGoal;
+import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.firebase.model.GoalModel;
 import com.nex3z.togglebuttongroup.button.CircularToggle;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 
 public class GoalFragment extends Fragment {
     GoalManager goalManager;
+    GoalModelManager goalModelManager;
 
     BigGoalAdapter bAdapter;
     MiniGoalAdapter mAdapter;
 
+    ImageView btnAddGoal;
+
     RecyclerView recyclerView;
     RecyclerView miniRecyclerView;
+
+    InitGoalsTask task;
+    ArrayList<Goal> items;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -52,12 +67,10 @@ public class GoalFragment extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_goal, container, false);
 
-        goalManager =  ((MainApplication) getActivity().getApplication()).getGoalManager();
+        if (goalModelManager == null) goalModelManager = GoalModelManager.getInstance();
+        if (goalManager == null) goalManager = ((MainApplication) getActivity().getApplication()).getGoalManager();
 
-        // if goalManager's goals is empty, create goals list
-        if (goalManager.goals.size() == 0) initGoalManager();
-
-        ImageView btnAddGoal = (ImageView) rootView.findViewById(R.id.btnAddGoal);
+        btnAddGoal = (ImageView) rootView.findViewById(R.id.btnAddGoal);
 
         CircularToggle choiceDay = (CircularToggle) rootView.findViewById(R.id.choiceDay);
         CircularToggle choiceWeek = (CircularToggle) rootView.findViewById(R.id.choiceWeek);
@@ -107,32 +120,103 @@ public class GoalFragment extends Fragment {
             }
         });
 
-        // items 임시 생성 코드
-        ArrayList<Goal> items = new ArrayList<>();
-        goalManager.goals.forEach((idx, goal)->{
-            items.add(goal);
-        });
+        // firebase 연동 데이터 생성
+        if (task == null) {
+            initFirebaseDate();
 
-        // items 생성 코드
-//        ArrayList<Goal> items = new ArrayList(goalManager.getGoals(LocalDateTime.now(), null, null));
+            // items 임시 생성 코드
+            items = new ArrayList<>();
 
-        if (bAdapter == null) setBAdapter(items);
-        if (mAdapter == null) setMAdapter(items);
+            // items 생성 코드
+//            items = new ArrayList(goalManager.getGoals(LocalDateTime.now(), null, null));
+        }
+
+        setBAdapter(items);
+        setMAdapter(items);
 
         return rootView;
     }
 
-    void initGoalManager() {
-        LocalDateTime from = LocalDateTime.now();
+    private void initFirebaseDate() {
+        task = new InitGoalsTask();
+        task.execute(goalManager);
+    }
 
-        // 임시 코드 -> open 방식 사용하려면 to 빈 값이 들어가게?
-        // 현재는 to 값에 null 못 들어갈 것 같음. 나중에 정하기
-        LocalDateTime to = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59));
+    class InitGoalsTask extends AsyncTask<GoalManager, Integer ,ArrayList<GoalModel>> {
 
-        // 데이터 생성
-        goalManager.addGoal(new CheckGoal(goalManager, 0, "밥 먹기", from, to, 0));
-        goalManager.addGoal(new CountGoal(goalManager, 1, "물 마시기", from, to, 1, 5, "회"));
-        goalManager.addGoal(new CheckGoal(goalManager, 2, "한강 가기", from, to, 1));
+        @Override
+        protected ArrayList<GoalModel> doInBackground(GoalManager... goalManagers) {
+            final ProgressDialog[] customProgressDialog = new ProgressDialog[1];
+
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    customProgressDialog[0] = new ProgressDialog(getActivity());
+                    customProgressDialog[0].show();
+                    customProgressDialog[0].getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                }
+            });
+
+            while (goalModelManager.getIsChanging() == true) {
+                // wait for firebase loading
+            }
+
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    customProgressDialog[0].cancel();
+                }
+            });
+
+            return goalModelManager.get();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<GoalModel> goalModels) {
+            super.onPostExecute(goalModels);
+
+            goalModels.forEach(goalModel -> {
+                Log.i("test", goalModel.toString());
+                goalManager.addGoal(convertGoalModelToGoal(goalModel));
+            });
+        }
+    }
+
+    private Goal convertGoalModelToGoal(GoalModel goalModel) {
+        Goal goal;
+
+        HashMap<String, Object> info = goalModel.getInfo();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("20yy.MM.dd/HH:mm:ss");
+
+        if (info.get("method").equals("check")) {
+            goal = new CheckGoal(goalManager,
+                    Integer.parseInt(info.get("id").toString()),
+                    info.get("name").toString(),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
+                    Integer.parseInt(info.get("current").toString()));
+        } else if (info.get("method").equals("count")) {
+            goal = new CountGoal(goalManager,
+                    Integer.parseInt(info.get("id").toString()),
+                    info.get("name").toString(),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
+                    Integer.parseInt(info.get("current").toString()),
+                    Integer.parseInt(info.get("target_count").toString()),
+                    info.get("unit").toString());
+        } else {
+            goal = new LocationGoal(goalManager,
+                    Integer.parseInt(info.get("id").toString()),
+                    info.get("name").toString(),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
+                    Integer.parseInt(info.get("current").toString()),
+                    Integer.parseInt(info.get("target_count").toString()));
+        }
+
+        return goal;
     }
 
     void setBAdapter(ArrayList<Goal> items) {
