@@ -60,11 +60,12 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
     }
 
-    private int getItemPosition(Goal goal) {
-        for (int pos = 0 ; pos < items.size(); pos++) {
-            if (items.get(pos).getId() == goal.getId()) return pos;
-        }
-        return -1;
+    private int getItemPosition(int id) {
+        Goal goal = items.stream()
+                .filter(e -> e.getId() == id)
+                .findFirst()
+                .orElse(null);
+        return (goal == null) ? -1 : items.indexOf(goal);
     }
 
     @NonNull
@@ -89,6 +90,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private int addGoal(Goal goal) {
         items.add(goal);
+        return items.indexOf(goal);
     }
 
     private int removeGoal(Goal goal) {
