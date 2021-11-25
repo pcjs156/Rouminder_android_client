@@ -2,6 +2,7 @@ package com.example.rouminder.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -11,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.rouminder.MainApplication;
+import com.example.rouminder.ProgressDialog;
 import com.example.rouminder.adapter.BigGoalAdapter;
 import com.example.rouminder.R;
 import com.example.rouminder.activities.AddGoalActivity;
@@ -50,6 +54,9 @@ public class GoalFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerView miniRecyclerView;
 
+    InitGoalsTask task;
+    ArrayList<Goal> items;
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -60,8 +67,8 @@ public class GoalFragment extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_goal, container, false);
 
-        goalModelManager = GoalModelManager.getInstance();
-        goalManager = ((MainApplication) getActivity().getApplication()).getGoalManager();
+        if (goalModelManager == null) goalModelManager = GoalModelManager.getInstance();
+        if (goalManager == null) goalManager = ((MainApplication) getActivity().getApplication()).getGoalManager();
 
         btnAddGoal = (ImageView) rootView.findViewById(R.id.btnAddGoal);
 
@@ -114,26 +121,24 @@ public class GoalFragment extends Fragment {
         });
 
         // firebase 연동 데이터 생성
-        initFirebaseDate();
+        if (task == null) {
+            initFirebaseDate();
 
-        // items 임시 생성 코드
-        ArrayList<Goal> items = new ArrayList<>();
-        goalManager.goals.forEach((idx, goal)->{
-            Log.i("test", goal.toString());
-            items.add(goal);
-        });
+            // items 임시 생성 코드
+            items = new ArrayList<>();
 
-        // items 생성 코드
-//        ArrayList<Goal> items = new ArrayList(goalManager.getGoals(LocalDateTime.now(), null, null));
+            // items 생성 코드
+//            items = new ArrayList(goalManager.getGoals(LocalDateTime.now(), null, null));
+        }
 
-        if (bAdapter == null) setBAdapter(items);
-        if (mAdapter == null) setMAdapter(items);
+        setBAdapter(items);
+        setMAdapter(items);
 
         return rootView;
     }
 
     private void initFirebaseDate() {
-        InitGoalsTask task = new InitGoalsTask();
+        task = new InitGoalsTask();
         task.execute(goalManager);
     }
 
@@ -141,15 +146,29 @@ public class GoalFragment extends Fragment {
 
         @Override
         protected ArrayList<GoalModel> doInBackground(GoalManager... goalManagers) {
-            try {
-                while (goalModelManager.getIsChanging() == true) {
-                    Log.i("test", "sleep");
-                    Thread.sleep(1000);
-                    // 시간 되면 sleep 대신 로딩 중 표시 띄우고 싶음
-                }
-            } catch (InterruptedException e) {
+            final ProgressDialog[] customProgressDialog = new ProgressDialog[1];
 
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    customProgressDialog[0] = new ProgressDialog(getActivity());
+                    customProgressDialog[0].show();
+                    customProgressDialog[0].getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                }
+            });
+
+            while (goalModelManager.getIsChanging() == true) {
+                // wait for firebase loading
             }
+
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    customProgressDialog[0].cancel();
+                }
+            });
+
             return goalModelManager.get();
         }
 
