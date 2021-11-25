@@ -29,8 +29,6 @@ public class GoalNotificationHelper {
     public GoalNotificationHelper(Context context) {
         this.context = context;
         this.pendingIntentMap = new HashMap<>();
-
-        createNotificationChannel();
     }
 
     /**
@@ -53,7 +51,7 @@ public class GoalNotificationHelper {
         manager.notify(goal.getId(), builder.build());
     }
 
-    private void createNotificationChannel() {
+    public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = context.getString(R.string.channel_name);
             String description = context.getString(R.string.channel_description);
@@ -85,14 +83,14 @@ public class GoalNotificationHelper {
     /**
      * Unregister a goal reminder notification
      *
-     * @param goal a goal to be unregistered.
+     * @param id an id of a goal to be unregistered.
      */
-    public void unregisterGoal(Goal goal) {
-        PendingIntent pendingIntent = pendingIntentMap.get(goal.getId());
+    public void unregisterGoal(int id) {
+        PendingIntent pendingIntent = pendingIntentMap.get(id);
         if (pendingIntent == null)
             return;
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         manager.cancel(pendingIntent);
-        pendingIntentMap.remove(goal.getId(), pendingIntent);
+        pendingIntentMap.remove(id, pendingIntent);
     }
 }
