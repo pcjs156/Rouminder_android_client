@@ -121,23 +121,23 @@ class MiniGoalHolder extends RecyclerView.ViewHolder {
 
         if (goal instanceof LocationGoal) {
             goalProgressBar.setVisibility(View.GONE);
-        } else if (goal instanceof CheckGoal){
+        } else if (goal instanceof CheckGoal) {
             goalProgressBar.setVisibility(View.GONE);
 
             CheckGoal checkGoal = (CheckGoal) goal;
 
-            if (checkGoal.getChecked()) goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+            if (checkGoal.getChecked())
+                goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
             else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
 
             goalImgCheckBox.setClickable(true);
             goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(((CheckGoal) goal).getChecked())  {
+                    if (((CheckGoal) goal).getChecked()) {
                         goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
                         ((CheckGoal) goal).setChecked(false);
-                    }
-                    else {
+                    } else {
                         goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
                         ((CheckGoal) goal).setChecked(true);
                     }

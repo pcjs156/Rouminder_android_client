@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GoalFragment extends Fragment {
     GoalManager goalManager;
@@ -53,9 +54,6 @@ public class GoalFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_goal, container, false);
 
         goalManager =  ((MainApplication) getActivity().getApplication()).getGoalManager();
-
-        // if goalManager's goals is empty, create goals list
-        if (goalManager.goals.size() == 0) initGoalManager();
 
         ImageView btnAddGoal = (ImageView) rootView.findViewById(R.id.btnAddGoal);
 
@@ -107,14 +105,7 @@ public class GoalFragment extends Fragment {
             }
         });
 
-        // items 임시 생성 코드
-        ArrayList<Goal> items = new ArrayList<>();
-        goalManager.goals.forEach((idx, goal)->{
-            items.add(goal);
-        });
-
-        // items 생성 코드
-//        ArrayList<Goal> items = new ArrayList(goalManager.getGoals(LocalDateTime.now(), null, null));
+        List<Goal> items = goalManager.getGoals();
 
         if (bAdapter == null) setBAdapter(items);
         if (mAdapter == null) setMAdapter(items);
@@ -122,20 +113,7 @@ public class GoalFragment extends Fragment {
         return rootView;
     }
 
-    void initGoalManager() {
-        LocalDateTime from = LocalDateTime.now();
-
-        // 임시 코드 -> open 방식 사용하려면 to 빈 값이 들어가게?
-        // 현재는 to 값에 null 못 들어갈 것 같음. 나중에 정하기
-        LocalDateTime to = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59));
-
-        // 데이터 생성
-        goalManager.addGoal(new CheckGoal(goalManager, 0, "밥 먹기", from, to, 0));
-        goalManager.addGoal(new CountGoal(goalManager, 1, "물 마시기", from, to, 1, 5, "회"));
-        goalManager.addGoal(new CheckGoal(goalManager, 2, "한강 가기", from, to, 1));
-    }
-
-    void setBAdapter(ArrayList<Goal> items) {
+    void setBAdapter(List<Goal> items) {
         bAdapter = new BigGoalAdapter(goalManager, items);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setAdapter(bAdapter);
@@ -147,7 +125,7 @@ public class GoalFragment extends Fragment {
      *
      * @param items goals to show at mini goal recyclerView
      */
-    public void setMAdapter(ArrayList<Goal> items) {
+    public void setMAdapter(List<Goal> items) {
         mAdapter = new MiniGoalAdapter(goalManager, items);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         miniRecyclerView.setAdapter(mAdapter);
