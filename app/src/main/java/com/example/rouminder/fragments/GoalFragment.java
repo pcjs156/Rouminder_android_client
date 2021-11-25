@@ -55,7 +55,8 @@ public class GoalFragment extends Fragment {
     RecyclerView miniRecyclerView;
 
     InitGoalsTask task;
-    ArrayList<Goal> items;
+    ArrayList<Goal> bigItems;
+    ArrayList<Goal> miniItems;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -122,17 +123,15 @@ public class GoalFragment extends Fragment {
 
         // firebase 연동 데이터 생성
         if (task == null) {
-            initFirebaseDate();
-
             // items 임시 생성 코드
-            items = new ArrayList<>();
+            bigItems = new ArrayList<>();
+            miniItems = new ArrayList<>();
 
-            // items 생성 코드
-//            items = new ArrayList(goalManager.getGoals(LocalDateTime.now(), null, null));
+            initFirebaseDate();
         }
 
-        setBAdapter(items);
-        setMAdapter(items);
+        setBAdapter(bigItems);
+        setMAdapter(miniItems);
 
         return rootView;
     }
@@ -220,7 +219,7 @@ public class GoalFragment extends Fragment {
     }
 
     void setBAdapter(ArrayList<Goal> items) {
-        bAdapter = new BigGoalAdapter(goalManager, items);
+        if (bAdapter == null) bAdapter = new BigGoalAdapter(goalManager, items);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setAdapter(bAdapter);
     }
@@ -232,7 +231,7 @@ public class GoalFragment extends Fragment {
      * @param items goals to show at mini goal recyclerView
      */
     public void setMAdapter(ArrayList<Goal> items) {
-        mAdapter = new MiniGoalAdapter(goalManager, items);
+        if (mAdapter == null) mAdapter = new MiniGoalAdapter(goalManager, items);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         miniRecyclerView.setAdapter(mAdapter);
     }
