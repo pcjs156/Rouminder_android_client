@@ -67,7 +67,6 @@ public class GoalManager {
         earlyStartingGoals.add(goal);
         earlyEndingGoals.add(goal);
 
-//        onGoalChangeListeners.stream().peek(listener -> listener.onGoalAdd(goal.getId()));
         onGoalChangeListeners.forEach(listener -> listener.onGoalAdd(goal.getId()));
         return goal.getId();
     }
@@ -83,7 +82,6 @@ public class GoalManager {
     }
 
     void updateGoal(int id) {
-//        onGoalChangeListeners.stream().peek(listener -> listener.onGoalUpdate(id));
         onGoalChangeListeners.forEach(listener -> {
             listener.onGoalUpdate(id);
         });
@@ -107,7 +105,6 @@ public class GoalManager {
             result = false;
         }
 
-//        onGoalChangeListeners.stream().peek(listener -> listener.onGoalRemove(id));
         onGoalChangeListeners.forEach(listener -> {
             listener.onGoalRemove(id);
         });
@@ -138,7 +135,7 @@ public class GoalManager {
         SortedSet<Goal> setFromBottom = earlyEndingGoals.tailSet(bottom);
         SortedSet<Goal> setFromTop = earlyStartingGoals.headSet(top);
         List<Goal> domainFiltered = setFromBottom.stream()
-                .filter(val -> setFromTop.contains(val))
+                .filter(setFromTop::contains)
                 .collect(Collectors.toList());
 
         List<Goal> statusFiltered = domainFiltered.stream().filter(statusFilter).collect(Collectors.toList());
