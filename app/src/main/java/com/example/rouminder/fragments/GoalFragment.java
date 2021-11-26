@@ -184,14 +184,15 @@ public class GoalFragment extends Fragment {
                 goalManager.addGoal(convertGoalModelToGoal(goalModel));
             });
 
+            /*
             if (test == null) {
                 test = new CheckGoal(goalManager, 1, "한강 가기",
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1);
                 goalManager.addGoal(test);
-                GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(test);
-                goalDescribeFragment.show(getActivity().getSupportFragmentManager(), null);
             }
+             */
+
         }
     }
 
