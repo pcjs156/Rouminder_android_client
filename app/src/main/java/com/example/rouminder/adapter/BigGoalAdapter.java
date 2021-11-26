@@ -53,9 +53,8 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             public void onGoalRemove(int id) {
                 int position = getItemPosition(id);
                 if (position != -1) {
-                    removeGoal(goalManager.getGoal(id));
+                    position = removeGoal(items.get(position));
                     notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, getItemCount());
                 }
             }
         });

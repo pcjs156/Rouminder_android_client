@@ -52,7 +52,7 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onGoalRemove(int id) {
                 int position = getItemPosition(id);
                 if (position != -1) {
-                    removeGoal(goalManager.getGoal(id));
+                    position = removeGoal(items.get(position));
                     notifyItemRemoved(position);
                 }
             }

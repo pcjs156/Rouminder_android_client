@@ -56,15 +56,11 @@ public class GoalDescribeFragment extends DialogFragment{
             public void onClick(View view) {
 
                 Log.d("GoalDescribeFragment", "Delete Button Clicked");
-                try {
-                    GoalManager goalManager = ((MainApplication) getActivity().getApplication()).getGoalManager();
-                    int id = goal.getId();
-                    goalManager.removeGoal(id);
-
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Log.d("GoalDescribeFragment", "Delete Goal");
+                GoalManager goalManager = ((MainApplication) getActivity().getApplication()).getGoalManager();
+                int id = goal.getId();
+                Log.d("GoalDescribeFragment", Integer.toString(id));
+                goalManager.removeGoal(id);
+                Log.d("GoalDescribeFragment", goalManager.getGoals().toString());
                 dismiss();
             }
         });

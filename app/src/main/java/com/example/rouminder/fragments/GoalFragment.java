@@ -48,8 +48,8 @@ public class GoalFragment extends Fragment {
     GoalManager goalManager;
     GoalModelManager goalModelManager;
 
-    BigGoalAdapter bAdapter;
-    MiniGoalAdapter mAdapter;
+    static BigGoalAdapter bAdapter;
+    static MiniGoalAdapter mAdapter;
 
     ImageView btnAddGoal;
 
@@ -57,8 +57,10 @@ public class GoalFragment extends Fragment {
     RecyclerView miniRecyclerView;
 
     static InitGoalsTask task;
-    List<Goal> bigItems;
-    List<Goal> miniItems;
+    static List<Goal> bigItems;
+    static List<Goal> miniItems;
+
+    static Goal test;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -132,8 +134,8 @@ public class GoalFragment extends Fragment {
             initFirebaseDate();
         }
 
-        if (bAdapter == null) setBAdapter(bigItems);
-        if (mAdapter == null) setMAdapter(miniItems);
+        setBAdapter(bigItems);
+        setMAdapter(miniItems);
 
         return rootView;
     }
@@ -182,11 +184,12 @@ public class GoalFragment extends Fragment {
                 goalManager.addGoal(convertGoalModelToGoal(goalModel));
             });
 
-            if (goalManager.getGoal(1) == null) {
-                goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
+            if (test == null) {
+                test = new CheckGoal(goalManager, 1, "한강 가기",
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
-                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1));
-                GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goalManager.getGoal(1));
+                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1);
+                goalManager.addGoal(test);
+                GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(test);
                 goalDescribeFragment.show(getActivity().getSupportFragmentManager(), null);
             }
         }
@@ -229,7 +232,7 @@ public class GoalFragment extends Fragment {
     }
 
     void setBAdapter(List<Goal> items) {
-        bAdapter = new BigGoalAdapter(goalManager, items);
+        if (bAdapter == null) bAdapter = new BigGoalAdapter(goalManager, items);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setAdapter(bAdapter);
     }
@@ -241,7 +244,7 @@ public class GoalFragment extends Fragment {
      * @param items goals to show at mini goal recyclerView
      */
     public void setMAdapter(List<Goal> items) {
-        mAdapter = new MiniGoalAdapter(goalManager, items);
+        if (mAdapter == null) mAdapter = new MiniGoalAdapter(goalManager, items);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         miniRecyclerView.setAdapter(mAdapter);
     }
