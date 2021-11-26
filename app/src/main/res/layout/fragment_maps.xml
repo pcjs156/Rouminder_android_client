@@ -11,12 +11,7 @@
         android:id="@+id/autocomplete_fragment_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true" />
 
-    <TextView
-        android:id="@+id/selected_place_name"
-        android:text="장소를 선택해 주세요."
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
 </RelativeLayout>

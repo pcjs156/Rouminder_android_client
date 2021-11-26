@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.rouminder.BuildConfig;
 import com.example.rouminder.R;
@@ -30,10 +31,7 @@ public class MapsFragment extends Fragment {
 
     static final String apiKey = BuildConfig.API_KEY;
 
-    TextView selectedTextNameView;
-
     LatLng selectedLatLng = null;
-    String selectedPlaceName = null;
 
     MapsFragment self = this;
 
@@ -41,8 +39,6 @@ public class MapsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_maps, container, false);
-
-        selectedTextNameView = (TextView) layout.findViewById(R.id.selected_place_name);
 
         if (!Places.isInitialized()) {
             Places.initialize(getActivity().getApplicationContext(), apiKey);
@@ -69,9 +65,9 @@ public class MapsFragment extends Fragment {
                 self.selectedLatLng = latLng;
 
                 String address = place.getAddress();
-                self.selectedPlaceName = address;
 
-                selectedTextNameView.setText(address);
+                TextView addressTextView = (TextView) getActivity().findViewById(R.id.selected_place_name);
+                addressTextView.setText(address);
             }
 
             @Override
