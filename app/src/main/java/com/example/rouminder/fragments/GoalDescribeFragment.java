@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.rouminder.MainApplication;
 import com.example.rouminder.R;
@@ -47,7 +48,9 @@ public class GoalDescribeFragment extends DialogFragment{
             @Override
             public void onClick(View view) {
                 Log.d("GoalDescribeFragment", "Change");
-                dismiss();
+                GoalModifyFragment goalModifyFragment = new GoalModifyFragment(goal);
+                goalModifyFragment.show(getActivity().getSupportFragmentManager(), null);
+                //dismiss();
             }
         });
 
@@ -61,10 +64,10 @@ public class GoalDescribeFragment extends DialogFragment{
                 Log.d("GoalDescribeFragment", Integer.toString(id));
                 goalManager.removeGoal(id);
                 Log.d("GoalDescribeFragment", goalManager.getGoals().toString());
-                dismiss();
+                //dismiss();
             }
         });
-        setCancelable(false);
+        setCancelable(true);
         return v;
     }
 }
