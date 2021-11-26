@@ -21,29 +21,28 @@ import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    ArrayList<Goal> items;
+    List<Goal> items;
 
-    public MiniGoalAdapter(GoalManager goalManager, ArrayList<Goal> items) {
+    public MiniGoalAdapter(GoalManager goalManager, List<Goal> items) {
         super();
         this.items = items;
 
-        goalManager.setOnGoalChangeListener(new GoalManager.OnGoalChangeListener() {
+        goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener() {
             @Override
             public void onGoalAdd(int id) {
-                Goal goal = goalManager.getGoal(id);
-                int position = getItemPosition(goal);
-                if (position  == -1) {
-                    addGoal(goal);
+                int position = getItemPosition(id);
+                if (position == -1) {
+                    addGoal(goalManager.getGoal(id));
                     notifyItemInserted(position);
                 }
             }
 
             @Override
             public void onGoalUpdate(int id) {
-                Goal goal = goalManager.getGoal(id);
-                int position = getItemPosition(goal);
+                int position = getItemPosition(id);
                 if (position != -1) {
                     notifyItemChanged(position);
                 }
@@ -51,21 +50,21 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             @Override
             public void onGoalRemove(int id) {
-                Goal goal = goalManager.getGoal(id);
-                int position = getItemPosition(goal);
+                int position = getItemPosition(id);
                 if (position != -1) {
-                    removeGoal(goal);
+                    removeGoal(goalManager.getGoal(id));
                     notifyItemRemoved(position);
                 }
             }
         });
     }
 
-    private int getItemPosition(Goal goal) {
-        for (int pos = 0 ; pos < items.size(); pos++) {
-            if (items.get(pos).getId() == goal.getId()) return pos;
-        }
-        return -1;
+    private int getItemPosition(int id) {
+        Goal goal = items.stream()
+                .filter(e -> e.getId() == id)
+                .findFirst()
+                .orElse(null);
+        return (goal == null) ? -1 : items.indexOf(goal);
     }
 
     @NonNull
@@ -88,16 +87,15 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         onBindViewHolder((MiniGoalHolder) holder, position);
     }
 
-    void addGoal(Goal goal) {
+    private int addGoal(Goal goal) {
         items.add(goal);
+        return items.indexOf(goal);
     }
 
-    void removeGoal(Goal goal) {
-        for (Goal item : items) {
-            if (item.getId() == goal.getId()) {
-                items.remove(items.indexOf(item));
-            }
-        }
+    private int removeGoal(Goal goal) {
+        int position = items.indexOf(goal);
+        items.remove(goal);
+        return position;
     }
 
     @Override
@@ -126,23 +124,23 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             if (goal instanceof LocationGoal) {
                 goalProgressBar.setVisibility(View.GONE);
-            } else if (goal instanceof CheckGoal){
+            } else if (goal instanceof CheckGoal) {
                 goalProgressBar.setVisibility(View.GONE);
 
                 CheckGoal checkGoal = (CheckGoal) goal;
 
-                if (checkGoal.getChecked()) goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                if (checkGoal.getChecked())
+                    goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
                 else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
 
                 goalImgCheckBox.setClickable(true);
                 goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(((CheckGoal) goal).getChecked())  {
+                        if (((CheckGoal) goal).getChecked()) {
                             goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
                             ((CheckGoal) goal).setChecked(false);
-                        }
-                        else {
+                        } else {
                             goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
                             ((CheckGoal) goal).setChecked(true);
                         }
@@ -156,4 +154,3 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 }
-

@@ -67,7 +67,6 @@ public class GoalManager {
         earlyStartingGoals.add(goal);
         earlyEndingGoals.add(goal);
 
-//        onGoalChangeListeners.stream().peek(listener -> listener.onGoalAdd(goal.getId()));
         onGoalChangeListeners.forEach(listener -> listener.onGoalAdd(goal.getId()));
         return goal.getId();
     }
@@ -83,7 +82,6 @@ public class GoalManager {
     }
 
     void updateGoal(int id) {
-//        onGoalChangeListeners.stream().peek(listener -> listener.onGoalUpdate(id));
         onGoalChangeListeners.forEach(listener -> {
             listener.onGoalUpdate(id);
         });
@@ -107,7 +105,6 @@ public class GoalManager {
             result = false;
         }
 
-//        onGoalChangeListeners.stream().peek(listener -> listener.onGoalRemove(id));
         onGoalChangeListeners.forEach(listener -> {
             listener.onGoalRemove(id);
         });
@@ -115,12 +112,20 @@ public class GoalManager {
     }
 
     /**
+     * Get all GoalInstances.
+     * @return a list of goals.
+     */
+    public List<Goal> getGoals() {
+        return new ArrayList<>(earlyStartingGoals);
+    }
+
+    /**
      * Get GoalInstances that matches domain and state.
      *
      * @param now    a LocalDateTime object of now.
      * @param domain a Domain enum that is used to check if instance is the same in specific domain.
-     * @param status a current state that GoalInstance should have.
-     * @return a List of GoalInstances that matches criteria.
+     * @param status a current state that goal should have.
+     * @return a List of goals that matches criteria.
      */
     public List<Goal> getGoals(LocalDateTime now, @Nullable Domain domain, @Nullable Status status) {
         if (domain == null)
@@ -131,15 +136,22 @@ public class GoalManager {
 
         DomainFilter domainFilter = new DomainFilter(now, domain);
         StatusFilter statusFilter = new StatusFilter(now, status);
+        List<Goal> domainFiltered;
 
-        Goal dummy = domainFilter.getDummy();
-        Goal bottom = earlyEndingGoals.floor(dummy);
-        Goal top = earlyStartingGoals.ceiling(dummy);
-        SortedSet<Goal> setFromBottom = earlyEndingGoals.tailSet(bottom);
-        SortedSet<Goal> setFromTop = earlyStartingGoals.headSet(top);
-        List<Goal> domainFiltered = setFromBottom.stream()
-                .filter(val -> setFromTop.contains(val))
-                .collect(Collectors.toList());
+        if(domain == Domain.ALL) {
+            domainFiltered = new ArrayList<>(earlyStartingGoals);
+        } else {
+
+
+            Goal dummy = domainFilter.getDummy();
+            Goal bottom = earlyEndingGoals.floor(dummy);
+            Goal top = earlyStartingGoals.ceiling(dummy);
+            SortedSet<Goal> setFromBottom = earlyEndingGoals.tailSet(bottom);
+            SortedSet<Goal> setFromTop = earlyStartingGoals.headSet(top);
+            domainFiltered = setFromBottom.stream()
+                    .filter(setFromTop::contains)
+                    .collect(Collectors.toList());
+        }
 
         List<Goal> statusFiltered = domainFiltered.stream().filter(statusFilter).collect(Collectors.toList());
         return statusFiltered;
@@ -290,7 +302,7 @@ public class GoalManager {
     /**
      * An event listener for changes of each goal
      */
-    public abstract static class OnGoalChangeListener {
+    public abstract class OnGoalChangeListener {
         public abstract void onGoalAdd(int id);
 
         public abstract void onGoalUpdate(int id);

@@ -38,9 +38,11 @@ import com.example.rouminder.firebase.model.GoalModel;
 import com.nex3z.togglebuttongroup.button.CircularToggle;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 
 public class GoalFragment extends Fragment {
     GoalManager goalManager;
@@ -54,9 +56,9 @@ public class GoalFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerView miniRecyclerView;
 
-    InitGoalsTask task;
-    ArrayList<Goal> bigItems;
-    ArrayList<Goal> miniItems;
+    static InitGoalsTask task;
+    List<Goal> bigItems;
+    List<Goal> miniItems;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -130,8 +132,8 @@ public class GoalFragment extends Fragment {
             initFirebaseDate();
         }
 
-        setBAdapter(bigItems);
-        setMAdapter(miniItems);
+        if (bAdapter == null) setBAdapter(bigItems);
+        if (mAdapter == null) setMAdapter(miniItems);
 
         return rootView;
     }
@@ -179,6 +181,12 @@ public class GoalFragment extends Fragment {
                 Log.i("test", goalModel.toString());
                 goalManager.addGoal(convertGoalModelToGoal(goalModel));
             });
+
+            if (goalManager.getGoal(1) == null) {
+                goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
+                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
+                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1));
+            }
         }
     }
 
@@ -218,8 +226,8 @@ public class GoalFragment extends Fragment {
         return goal;
     }
 
-    void setBAdapter(ArrayList<Goal> items) {
-        if (bAdapter == null) bAdapter = new BigGoalAdapter(goalManager, items);
+    void setBAdapter(List<Goal> items) {
+        bAdapter = new BigGoalAdapter(goalManager, items);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setAdapter(bAdapter);
     }
@@ -230,8 +238,8 @@ public class GoalFragment extends Fragment {
      *
      * @param items goals to show at mini goal recyclerView
      */
-    public void setMAdapter(ArrayList<Goal> items) {
-        if (mAdapter == null) mAdapter = new MiniGoalAdapter(goalManager, items);
+    public void setMAdapter(List<Goal> items) {
+        mAdapter = new MiniGoalAdapter(goalManager, items);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         miniRecyclerView.setAdapter(mAdapter);
     }

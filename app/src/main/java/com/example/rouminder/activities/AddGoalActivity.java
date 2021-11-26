@@ -378,15 +378,15 @@ public class AddGoalActivity extends AppCompatActivity {
             goal = new CheckGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
                     info.get("name").toString(),
-                    LocalDateTime.parse(info.get("startDatetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finishDatetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()));
         } else if (info.get("method").toString().equals("count")) {
             goal = new CountGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
                     info.get("name").toString(),
-                    LocalDateTime.parse(info.get("startDatetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finishDatetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()),
                     info.get("unit").toString());
@@ -394,8 +394,8 @@ public class AddGoalActivity extends AppCompatActivity {
             goal = new LocationGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
                     info.get("name").toString(),
-                    LocalDateTime.parse(info.get("startDatetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finishDatetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()));
         }
