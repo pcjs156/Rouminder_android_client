@@ -28,12 +28,16 @@ public class GoalModelManager {
     private final BaseModelManager baseModelManager = BaseModelManager.getInstance();
     private final DatabaseReference ref;
     public final DatabaseReference dataRef;
-    private ArrayList<GoalModel> goals = new ArrayList<>();
+    public ArrayList<GoalModel> goals = new ArrayList<>();
     private ArrayList<String> tags = new ArrayList<>();
 
     private final HashSet<ArrayAdapter> notifyAdapters = new HashSet<>();
 
+    private boolean isChanging;
+
     private GoalModelManager() {
+        isChanging = true;
+
         FirebaseDatabase db = baseModelManager.db;
         ref = db.getReference("goal");
         dataRef = ref.child("data");
@@ -41,6 +45,8 @@ public class GoalModelManager {
         dataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                isChanging = true;
+
                 HashMap<String, HashMap<String, String>> result =
                         (HashMap<String, HashMap<String, String>>) dataSnapshot.getValue();
 
@@ -49,11 +55,11 @@ public class GoalModelManager {
                 if (result != null && !result.isEmpty()) {
                     for (String id : result.keySet()) {
                         HashMap<String, String> goal = result.get(id);
-
                         String author = goal.get("uid");
                         HashMap<String, Object> _goal = (HashMap<String, Object>) goal.clone();
                         if (author.equals(BaseModelManager.uid)) {
                             goals.add(new GoalModel(_goal));
+                            Log.i("test", goals.toString());
 
                             String tag = goal.get("tag");
                             if (tag != null && !tags.contains(tag)) {
@@ -73,6 +79,8 @@ public class GoalModelManager {
 
                     notifyToAdapters();
                 }
+
+                isChanging = false;
             }
 
             @Override
@@ -80,6 +88,10 @@ public class GoalModelManager {
                 System.out.println("REALTIME_DB: 목표 연동 실패");
             }
         });
+    }
+
+    public boolean getIsChanging() {
+        return isChanging;
     }
 
     public static GoalModelManager getInstance() {
