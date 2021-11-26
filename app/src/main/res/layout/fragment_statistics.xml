@@ -28,6 +28,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textView3"
                 app:layout_constraintVertical_bias="0.489"
                 app:progress_stroke_width="20dp"
+                app:progress_text_size="20sp"
                 app:style="solid_line" />
 
             <TextView
@@ -36,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
                 android:text="평균달성률"
-                android:textSize="12pt"
+                android:textSize="28sp"
                 app:layout_constraintBottom_toTopOf="@+id/bar_chart"
                 app:layout_constraintStart_toStartOf="@+id/bar_chart" />
 
@@ -68,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="태그1"
-                android:textSize="12pt" />
+                android:textSize="28sp" />
 
             <View
                 android:id="@+id/verticalLine"
@@ -86,20 +87,21 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/textView9"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
-                        android:textSize="11pt"
-                        android:text="달성률" />
+                        android:text="달성률"
+                        android:textSize="24sp" />
 
                     <TextView
                         android:id="@+id/textView11"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="11pt"
-                        android:text="92%" />
+                        android:text="92%"
+                        android:textSize="24sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -111,15 +113,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
-                        android:textSize="11pt"
-                        android:text="총 goal 개수" />
+                        android:text="총 goal 개수"
+                        android:textSize="24sp" />
 
                     <TextView
                         android:id="@+id/textView12"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="11pt"
-                        android:text="12개" />
+                        android:text="12개"
+                        android:textSize="24sp" />
                 </LinearLayout>
             </LinearLayout>
 
