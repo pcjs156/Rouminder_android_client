@@ -35,7 +35,7 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onGoalAdd(int id) {
                 int position = getItemPosition(id);
                 if (position == -1) {
-                    addGoal(goalManager.getGoal(id));
+                    position = addGoal(goalManager.getGoal(id));
                     notifyItemInserted(position);
                 }
             }
