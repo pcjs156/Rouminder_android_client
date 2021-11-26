@@ -135,9 +135,6 @@ public class GoalFragment extends Fragment {
         if (bAdapter == null) setBAdapter(bigItems);
         if (mAdapter == null) setMAdapter(miniItems);
 
-        GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goalManager.getGoal(0));
-        goalDescribeFragment.show(getActivity().getSupportFragmentManager(),null);
-
         return rootView;
     }
 
@@ -189,6 +186,8 @@ public class GoalFragment extends Fragment {
                 goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1));
+                GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goalManager.getGoal(1));
+                goalDescribeFragment.show(getActivity().getSupportFragmentManager(), null);
             }
         }
     }
