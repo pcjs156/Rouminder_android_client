@@ -119,6 +119,9 @@ public class GoalFragment extends Fragment {
         if (bAdapter == null) setBAdapter(items);
         if (mAdapter == null) setMAdapter(items);
 
+        GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goalManager.getGoal(0));
+        goalDescribeFragment.show(getActivity().getSupportFragmentManager(),null);
+
         return rootView;
     }
 

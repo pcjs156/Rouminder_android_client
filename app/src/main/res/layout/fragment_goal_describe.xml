@@ -26,9 +26,15 @@
         android:textSize="20sp" />
 
     <Button
-        android:id="@+id/buttonConfirm"
+        android:id="@+id/buttonGoalChange"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Confirm" />
+        android:text="수정하기" />
+
+    <Button
+        android:id="@+id/buttonGoalDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="삭제하기" />
 
 </LinearLayout>
