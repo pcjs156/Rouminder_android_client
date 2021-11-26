@@ -57,8 +57,8 @@ public class GoalFragment extends Fragment {
     RecyclerView miniRecyclerView;
 
     static InitGoalsTask task;
-    List<Goal> bigItems;
-    List<Goal> miniItems;
+    static List<Goal> bigItems;
+    static List<Goal> miniItems;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -132,8 +132,8 @@ public class GoalFragment extends Fragment {
             initFirebaseDate();
         }
 
-        if (bAdapter == null) setBAdapter(bigItems);
-        if (mAdapter == null) setMAdapter(miniItems);
+        setBAdapter(bigItems);
+        setMAdapter(miniItems);
 
         return rootView;
     }
@@ -227,7 +227,7 @@ public class GoalFragment extends Fragment {
     }
 
     void setBAdapter(List<Goal> items) {
-        bAdapter = new BigGoalAdapter(goalManager, items);
+        bAdapter = new BigGoalAdapter(getActivity(), goalManager, items);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setAdapter(bAdapter);
     }

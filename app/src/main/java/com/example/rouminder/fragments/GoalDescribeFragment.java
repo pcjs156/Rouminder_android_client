@@ -1,6 +1,8 @@
 package com.example.rouminder.fragments;
 
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,8 @@ import javax.annotation.Nullable;
 
 public class GoalDescribeFragment extends DialogFragment implements View.OnClickListener {
     Goal goal;
+    View root;
+
     public GoalDescribeFragment(Goal goal) {
         this.goal = goal;
     }
@@ -23,11 +27,11 @@ public class GoalDescribeFragment extends DialogFragment implements View.OnClick
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_goal_describe, container);
-        Button buttonConfirm = (Button) v.findViewById(R.id.buttonConfirm);
-        TextView textViewName = (TextView) v.findViewById(R.id.textViewName);
-        TextView textViewTime = (TextView) v.findViewById(R.id.textViewTime);
-        TextView textViewProgress = (TextView) v.findViewById(R.id.textViewProgress);
+        root = inflater.inflate(R.layout.fragment_goal_describe, container);
+        Button buttonConfirm = (Button) root.findViewById(R.id.buttonConfirm);
+        TextView textViewName = (TextView) root.findViewById(R.id.textViewName);
+        TextView textViewTime = (TextView) root.findViewById(R.id.textViewTime);
+        TextView textViewProgress = (TextView) root.findViewById(R.id.textViewProgress);
 
         String name = "Goal Name : " + goal.getName();
         String time = "Start/End : " + goal.getStartTime().toString() + "/" + goal.getEndTime().toString();
@@ -39,7 +43,23 @@ public class GoalDescribeFragment extends DialogFragment implements View.OnClick
 
         buttonConfirm.setOnClickListener(this);
         setCancelable(false);
-        return v;
+
+        return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getRealSize(size);
+
+        int width = size.x;
+        int height = size.y;
+
+        root.getLayoutParams().width = (int) (width * 0.9);
+        root.getLayoutParams().height = (int) (height * 0.8);
     }
 
     @Override
