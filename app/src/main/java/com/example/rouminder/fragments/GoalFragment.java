@@ -239,7 +239,7 @@ public class GoalFragment extends Fragment {
      * @param items goals to show at mini goal recyclerView
      */
     public void setMAdapter(List<Goal> items) {
-        mAdapter = new MiniGoalAdapter(goalManager, items);
+        mAdapter = new MiniGoalAdapter(getActivity(), goalManager, items);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         miniRecyclerView.setAdapter(mAdapter);
     }
