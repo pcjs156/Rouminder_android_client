@@ -23,7 +23,6 @@ import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.fragments.GoalDescribeFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -120,6 +119,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public BigGoalHolder(@NonNull View itemView) {
             super(itemView);
+
             goalBox = itemView.findViewById(R.id.goalCardView);
             goalContent = itemView.findViewById(R.id.goalContent);
             goalRestTime = itemView.findViewById(R.id.goalRestTime);
