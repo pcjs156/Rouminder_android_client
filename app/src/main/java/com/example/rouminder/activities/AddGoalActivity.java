@@ -75,6 +75,8 @@ public class AddGoalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_goal);
 
+        Log.d("AddGoalActivity", "onCreate");
+
         this.uid = BaseModelManager.getInstance().getUid();
 
         LinearLayout methodLayout = (LinearLayout) findViewById(R.id.method);
