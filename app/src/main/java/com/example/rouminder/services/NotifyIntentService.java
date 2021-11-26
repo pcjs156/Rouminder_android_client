@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
 
 import com.example.rouminder.MainApplication;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.helpers.GoalNotificationHelper;
+import com.example.rouminder.helpers.GoalNotificationHelper.NotificationType;
 
 
 public class NotifyIntentService extends JobIntentService {
@@ -29,9 +31,11 @@ public class NotifyIntentService extends JobIntentService {
     protected void onHandleWork(@NonNull Intent serviceIntent) {
         Intent intent = serviceIntent.getParcelableExtra(Intent.EXTRA_INTENT);
         int id = intent.getIntExtra("goal_id", -1);
+        String typeName = intent.getStringExtra("notify_type");
+        NotificationType type = NotificationType.valueOf(typeName);
         MainApplication application = (MainApplication) getApplication();
         Goal goal = application.getGoalManager().getGoal(id);
-        application.getGoalNotificationHelper().showNotification(goal);
+        application.getGoalNotificationHelper().setNotification(goal, type);
         Log.d("notify", "handle id " + id);
         stopSelf();
     }
