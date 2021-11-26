@@ -11,18 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.rouminder.BuildConfig;
 import com.example.rouminder.R;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -31,28 +25,28 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 
 import java.util.Arrays;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback {
+public class MapsFragment extends Fragment {
     private static int AUTOCOMPLETE_REQUEST_CODE = 1;
 
     static final String apiKey = BuildConfig.API_KEY;
 
-    MapView mapView;
-    GoogleMap googleMap;
+    TextView selectedTextNameView;
 
-    Marker marker;
+    LatLng selectedLatLng = null;
+    String selectedPlaceName = null;
+
+    MapsFragment self = this;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_maps, container, false);
 
+        selectedTextNameView = (TextView) layout.findViewById(R.id.selected_place_name);
+
         if (!Places.isInitialized()) {
             Places.initialize(getActivity().getApplicationContext(), apiKey);
         }
-
-        mapView = layout.findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
 
         // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(getActivity().getApplicationContext());
@@ -71,23 +65,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                // TODO: Get info about the selected place.
-                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getLatLng());
-
                 LatLng latLng = place.getLatLng();
+                self.selectedLatLng = latLng;
 
-                // remove prev marker
-                marker.remove();
+                String address = place.getAddress();
+                self.selectedPlaceName = address;
 
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
-                markerOptions.title(place.getName());
-                markerOptions.snippet(place.getAddress());
-
-                marker = googleMap.addMarker(markerOptions);
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
-
-                Log.i("TAG", "finish");
+                selectedTextNameView.setText(address);
             }
 
             @Override
@@ -100,29 +84,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         return layout;
     }
 
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        LatLng SEOUL = new LatLng(37.56, 126.97);
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(SEOUL);
-        markerOptions.title("서울");
-        markerOptions.snippet("한국의 수도");
-
-        CameraPosition.Builder builder = new CameraPosition.Builder();
-        builder.target(SEOUL);
-        builder.zoom(10);
-        CameraPosition position = builder.build();
-
-        marker = googleMap.addMarker(markerOptions);
-        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
-
-        Log.i("tag", "onMapReady");
-
-        this.googleMap = googleMap;
-    }
-
-    public Marker getMarker() {
-        return marker;
+    public LatLng getSelectedLatLng() {
+        return selectedLatLng;
     }
 }

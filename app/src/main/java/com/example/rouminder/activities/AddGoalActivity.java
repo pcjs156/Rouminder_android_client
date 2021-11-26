@@ -264,10 +264,13 @@ public class AddGoalActivity extends AppCompatActivity {
                 break;
             case "location":
                 values.put("target_count", 1);
-                Marker selectedMarker = mapsFragment.getMarker();
-                LatLng position = selectedMarker.getPosition();
-                Double latitude = position.latitude;
-                Double longitude = position.longitude;
+                LatLng selectedLatLng = mapsFragment.getSelectedLatLng();
+                if (selectedLatLng == null) {
+                    Toast.makeText(self, "위치가 지정되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Double latitude = selectedLatLng.latitude;
+                Double longitude = selectedLatLng.longitude;
                 values.put("latitude", latitude);
                 values.put("longitude", longitude);
                 break;
