@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
@@ -19,6 +21,7 @@ import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
+import com.example.rouminder.fragments.GoalDescribeFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +29,12 @@ import java.util.List;
 
 public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     List<Goal> items;
+    FragmentActivity activity;
 
-    public BigGoalAdapter(GoalManager goalManager, List<Goal> items) {
+    public BigGoalAdapter(FragmentActivity activity, GoalManager goalManager, List<Goal> items) {
         super();
         this.items = items;
+        this.activity = activity;
 
         goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener() {
             @Override
@@ -53,7 +58,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             public void onGoalRemove(int id) {
                 int position = getItemPosition(id);
                 if (position != -1) {
-                    position = removeGoal(items.get(position));
+                    removeGoal(goalManager.getGoal(id));
                     notifyItemRemoved(position);
                 }
             }
@@ -105,6 +110,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class BigGoalHolder extends RecyclerView.ViewHolder {
+        private CardView goalBox;
         private TextView goalContent;
         private TextView goalRestTime;
         private TextView goalSubText;
@@ -114,7 +120,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public BigGoalHolder(@NonNull View itemView) {
             super(itemView);
-
+            goalBox = itemView.findViewById(R.id.goalCardView);
             goalContent = itemView.findViewById(R.id.goalContent);
             goalRestTime = itemView.findViewById(R.id.goalRestTime);
             goalSubText = itemView.findViewById(R.id.goalSubText);
@@ -153,6 +159,16 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     }
                 });
+                goalBox.setClickable(true);
+                goalBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d("TestCode", "FragmentGoalDescribe Start");
+                        GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
+                        goalDescribeFragment.show(activity.getSupportFragmentManager(),null);
+                    }
+                });
+
             } else {
                 goalImgCheckBox.setVisibility(View.GONE);
                 goalProgressBar.setMax(goal.getTarget());

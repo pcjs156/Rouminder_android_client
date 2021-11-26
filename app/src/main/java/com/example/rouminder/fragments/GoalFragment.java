@@ -232,7 +232,7 @@ public class GoalFragment extends Fragment {
     }
 
     void setBAdapter(List<Goal> items) {
-        if (bAdapter == null) bAdapter = new BigGoalAdapter(goalManager, items);
+        if (bAdapter == null) bAdapter = new BigGoalAdapter(getActivity(), goalManager, items);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setAdapter(bAdapter);
     }
