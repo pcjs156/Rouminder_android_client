@@ -79,11 +79,11 @@ public class MainApplication extends android.app.Application {
         LocalDateTime today = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
         goalManager.addGoal(new CheckGoal(goalManager, -1, "밥 먹기",
-                today.withHour(8),
-                today.withHour(12), 0));
+                LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(8),
+                LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(12), 0));
         goalManager.addGoal(new CountGoal(goalManager, -1, "물 마시기",
-                today.withHour(8).plusMinutes(1),
-                today.withHour(12).plusMinutes(1), 1, 5, "회"));
+                LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(10),
+                LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(2), 1, 5, "회"));
         goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1));

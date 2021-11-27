@@ -36,7 +36,8 @@ public class NotifyIntentService extends JobIntentService {
         MainApplication application = (MainApplication) getApplication();
         Goal goal = application.getGoalManager().getGoal(id);
         application.getGoalNotificationHelper().setNotification(goal, type);
-        Log.d("notify", "handle id " + id);
+        Log.d("notify", "id: " + id
+        + ", type: " + typeName);
         stopSelf();
     }
 

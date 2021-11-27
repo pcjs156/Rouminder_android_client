@@ -211,7 +211,7 @@ public class Goal implements Comparable<Goal> {
         return target;
     }
 
-    protected int getCurrent() {
+    public int getCurrent() {
         return current;
     }
 
