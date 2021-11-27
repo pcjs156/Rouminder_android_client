@@ -21,8 +21,6 @@ import com.example.rouminder.MainApplication;
 import com.example.rouminder.R;
 import com.example.rouminder.data.goalsystem.Goal;
 
-import org.w3c.dom.Text;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -40,8 +38,8 @@ public class GoalModifyFragment extends DialogFragment {
         EditText editTextGoalName = v.findViewById(R.id.editTextGoalName);
         Button buttonConfirm = v.findViewById(R.id.buttonConfirm);
         Button buttonCancel = v.findViewById(R.id.buttonCancel);
-        TextView textViewGoalStartTimeData = v.findViewById(R.id.textViewGoalStartTimeData);
-        TextView textViewGoalEndTimeData = v.findViewById(R.id.textViewGoalEndTimeData);
+        TextView textViewGoalStartTimeData = v.findViewById(R.id.textViewGoalStartTimeDataFront);
+        TextView textViewGoalEndTimeData = v.findViewById(R.id.textViewGoalEndTimeDataFront);
 
         Goal goal = ((MainApplication)getActivity().getApplication()).getGoalManager().getGoal(goalID);
         editTextGoalName.setText(goal.getName());
