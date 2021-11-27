@@ -3,8 +3,11 @@ package com.example.rouminder.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
 import com.example.rouminder.R;
+import com.example.rouminder.adapter.StatPerTagsAdapter;
 import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -26,18 +30,22 @@ import java.util.List;
 
 public class StatisticsFragment extends Fragment {
     private ViewGroup root;
+    private RecyclerView statPerTagsView;
+    private GoalModelManager goalModelManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        goalModelManager = GoalModelManager.getInstance();
+
         // Inflate the layout for this fragment
         root = (ViewGroup) inflater.inflate(R.layout.fragment_statistics, container, false);
-
-        GoalModelManager gManager = GoalModelManager.getInstance();
+        statPerTagsView = root.findViewById(R.id.cardPerTags);
+        statPerTagsView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        statPerTagsView.setAdapter(new StatPerTagsAdapter(goalModelManager.getStatInfos()));
 
         initCircularChart();
         initBarChart();
-        Toast.makeText(getActivity().getApplicationContext(), "rate: " + gManager.getEntireAchievementRate(), Toast.LENGTH_SHORT).show();
 
         return root;
     }

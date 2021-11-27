@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.example.rouminder.firebase.model.GoalModel;
 
+import android.util.Pair;
 import android.widget.ArrayAdapter;
 
 import com.example.rouminder.firebase.exception.ModelDoesNotExists;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 
 public class GoalModelManager {
@@ -218,7 +220,6 @@ public class GoalModelManager {
         int entireGoalCnt = goals.size();
         int achievedGoalCnt = 0;
         for (GoalModel goalModel : goals) {
-            System.out.println("HIHI " + goalModel.id + " : " + goalModel.current + "/" + goalModel.targetCount);
             if (goalModel.isAchieved())
                 achievedGoalCnt++;
         }
@@ -229,5 +230,47 @@ public class GoalModelManager {
             return 0;
         else
             return (achievedGoalCnt / ((double) entireGoalCnt)) * 100;
+    }
+
+    public ArrayList<Pair<String, HashMap<String, Object>>> getStatInfos() {
+        final String etcTag = "기타";
+
+        HashMap<String, Integer> achievementCntPerTags = new HashMap<>();
+        achievementCntPerTags.put(etcTag, 0);
+
+        HashMap<String, Integer> entireGoalCntPerTags = new HashMap<>();
+        entireGoalCntPerTags.put(etcTag, 0);
+
+        for (GoalModel goalModel : goals) {
+            String tag = goalModel.tag;
+            if (goalModel.tag == null || goalModel.tag.isEmpty())
+                tag = etcTag;
+
+            if (entireGoalCntPerTags.keySet().contains(tag)) {
+                entireGoalCntPerTags.put(tag, entireGoalCntPerTags.get(tag) + 1);
+            } else {
+                entireGoalCntPerTags.put(tag, 1);
+            }
+
+            if (!achievementCntPerTags.keySet().contains(tag))
+                achievementCntPerTags.put(tag, 0);
+
+            if (goalModel.isAchieved())
+                achievementCntPerTags.put(tag, achievementCntPerTags.get(tag) + 1);
+        }
+
+        ArrayList<Pair<String, HashMap<String, Object>>> achievementRates = new ArrayList<>();
+        for (String tag : entireGoalCntPerTags.keySet()) {
+            int achievedGoalCnt = achievementCntPerTags.get(tag);
+            int entireGoalCnt = entireGoalCntPerTags.get(tag);
+            double achievementRate = (achievedGoalCnt / ((double) entireGoalCnt)) * 100;
+
+            HashMap<String, Object> statInfo = new HashMap<>();
+            statInfo.put("achievementRate", achievementRate);
+            statInfo.put("totalGoalCnt", entireGoalCnt);
+            achievementRates.add(new Pair<>(tag, statInfo));
+        }
+
+        return achievementRates;
     }
 }
