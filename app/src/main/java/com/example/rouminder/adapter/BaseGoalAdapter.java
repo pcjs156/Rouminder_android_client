@@ -59,16 +59,15 @@ public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.
 
             @Override
             public void onDomainChanged() {
-                items = goalManager.getGoals(LocalDateTime.now(), domain, GoalManager.Status.ALL);
+                setDataset();
             }
         };
         goalManager.setOnGoalChangeListener(listener);
     }
 
     private void setDataset() {
-        notifyItemRangeRemoved(0, items.size());
         items = goalManager.getGoals(LocalDateTime.now(), domain, GoalManager.Status.ALL).stream().sorted(comparator).collect(Collectors.toList());
-        notifyItemRangeInserted(0, items.size());
+        notifyDataSetChanged();
     }
 
     private int getItemPosition(int id) {
