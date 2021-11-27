@@ -30,7 +30,7 @@ import java.util.List;
 
 public class StatisticsFragment extends Fragment {
     private ViewGroup root;
-    private RecyclerView statPerTagsView;
+    public RecyclerView statPerTagsView;
     private GoalModelManager goalModelManager;
 
     @Override
@@ -48,6 +48,12 @@ public class StatisticsFragment extends Fragment {
         initBarChart();
 
         return root;
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        statPerTagsView.setAdapter(new StatPerTagsAdapter(goalModelManager.getStatInfos()));
     }
 
     private void initCircularChart() {

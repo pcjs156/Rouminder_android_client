@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -275,7 +276,23 @@ public class GoalModelManager {
         HashMap<String, Integer> entireGoalCntPerTags = new HashMap<>();
         entireGoalCntPerTags.put(etcTag, 0);
 
+        LocalDateTime now = LocalDateTime.now();
+
         for (GoalModel goalModel : goals) {
+            LocalDateTime finishDatetime = null;
+            try {
+                finishDatetime = BaseModelManager.parseTimeStampString(goalModel.finishDatetime);
+            } catch (ParseException e) {
+                System.out.println("Parse Error 발생!!!!!1");
+                e.printStackTrace();
+                return null;
+            }
+
+            if (finishDatetime.isAfter(now)) {
+                System.out.println("FINISH DATETIME : " + finishDatetime);
+                continue;
+            }
+
             String tag = goalModel.tag;
             if (goalModel.tag == null || goalModel.tag.isEmpty())
                 tag = etcTag;
