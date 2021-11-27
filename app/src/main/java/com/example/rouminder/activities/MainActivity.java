@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
+import com.example.rouminder.firebase.exception.ModelDoesNotExists;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
@@ -29,6 +31,7 @@ import com.example.rouminder.R;
 import com.example.rouminder.fragments.StatisticsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -56,6 +59,35 @@ public class MainActivity extends AppCompatActivity {
         goalModelManager = GoalModelManager.getInstance();
         repeatPlanModelManager = RepeatPlanModelManager.getInstance();
         goalManager = ((MainApplication) getApplication()).getGoalManager();
+
+        // connect goalModel Manager and goal manager
+        goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener(){
+            @Override
+            public void onGoalAdd(int id) {
+                // firebase create를 먼저 해야지 unique id를 가져올 수 있으므로
+                // 여기는 비움.
+            }
+
+            @Override
+            public void onGoalUpdate(int id) {
+                Goal goal = goalManager.getGoal(id);
+                try {
+                    goalModelManager.update(Integer.toString(id), convertGoalToHashMap(goal));
+                } catch (ModelDoesNotExists e) {
+                    Log.d("model", "goal id, " + id + " does not exist");
+                }
+            }
+
+            @Override
+            public void onGoalRemove(int id) {
+                try {
+                    goalModelManager.delete(Integer.toString(id));
+                } catch (ModelDoesNotExists e) {
+                    e.printStackTrace();
+                    Log.d("model", "goal id, " + id + " does not exist");
+                }
+            }
+        });
 
         // firebase 연동 데이터 생성
         initFirebaseDate();
@@ -208,6 +240,31 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return goal;
+    }
+
+    private HashMap<String, Object> convertGoalToHashMap(Goal goal) {
+        HashMap<String, Object> values = new HashMap<>();
+
+        values.put("id", Integer.toString(goal.getId()));
+        values.put("name", goal.getName());
+        values.put("type", goal.getType());
+        values.put("current", goal.getCurrent());
+//        values.put("tag", goal.getTag());
+        if (goal instanceof CheckGoal) {
+            values.put("method", "check");
+        } else if (goal instanceof CountGoal) {
+            values.put("method", "count");
+        } else {
+            values.put("method", "location");
+        }
+        Color color = goal.getHighlight();
+        if (color == null) color = Color.valueOf(126,0, 0, 126);
+        values.put("highlight", String.format("#%08X", color.toArgb()));
+        values.put("target_count", goal.getTarget());
+        values.put("start_datetime", goal.getStartTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd/HH:mm:ss")));
+        values.put("finish_datetime", goal.getEndTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd/HH:mm:ss")));
+
+        return values;
     }
 
     @Override
