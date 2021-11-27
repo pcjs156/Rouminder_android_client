@@ -192,7 +192,7 @@ public class GoalFragment extends Fragment {
 
         HashMap<String, Object> info = goalModel.getInfo();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("20yy.MM.dd/HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("20yy.MM.dd HH:mm:ss");
 
         if (info.get("method").equals("check")) {
             goal = new CheckGoal(goalManager,

@@ -39,7 +39,9 @@ import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 import android.graphics.Color;
 import android.widget.Toast;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -313,8 +315,17 @@ public class AddGoalActivity extends AppCompatActivity {
         int endHour = Integer.parseInt(endTimeTokenizer.nextToken().toString());
         int endMinute = Integer.parseInt(endTimeTokenizer.nextToken().toString());
 
-        Date start = new Date(startYear, startMonth, startDay, startHour, startMinute);
-        Date end = new Date(endYear, endMonth, endDay, endHour, endMinute);
+        LocalDateTime start = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute);
+        LocalDateTime end = LocalDateTime.of(endYear, endMonth, endDay, endHour, endMinute);
+
+        if (start.isAfter(end)) {
+            Toast.makeText(self, "시작 일시는 종료 일시 이후일 수 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+//        else if (start.isBefore(LocalDateTime.now())) {
+//            Toast.makeText(self, "시작 일시는 현시점 이전일 수 없습니다.", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
         String start_datetime = BaseModelManager.getTimeStampString(start);
         String endDatetime = BaseModelManager.getTimeStampString(end);
@@ -333,7 +344,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
         HashMap<String, Object> info = goalModel.getInfo();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("20yy.MM.dd/HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("20yy.MM.dd HH:mm:ss");
 
         Log.i("test", info.get("method").toString());
 
