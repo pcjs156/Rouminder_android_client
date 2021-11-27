@@ -20,7 +20,9 @@ import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
 import com.example.rouminder.firebase.model.GoalModel;
+import com.example.rouminder.firebase.model.RepeatPlanModel;
 import com.example.rouminder.fragments.GoalFragment;
 import com.example.rouminder.fragments.ProfileFragment;
 import com.example.rouminder.R;
@@ -36,6 +38,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
     GoalManager goalManager;
     GoalModelManager goalModelManager;
+    RepeatPlanModelManager repeatPlanModelManager;
 
     GoalFragment goalFragment;
     StatisticsFragment statisticsFragment;
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         BaseModelManager.setUid(uid);
 
         goalModelManager = GoalModelManager.getInstance();
+        repeatPlanModelManager = RepeatPlanModelManager.getInstance();
         goalManager = ((MainApplication) getApplication()).getGoalManager();
 
         // firebase 연동 데이터 생성
@@ -138,6 +142,9 @@ public class MainActivity extends AppCompatActivity {
 
             while (goalModelManager.getIsChanging() == true) {
                 // wait for firebase loading
+            }
+
+            while (repeatPlanModelManager.getIsChanging() == true) {
             }
 
             handler.post(new Runnable() {

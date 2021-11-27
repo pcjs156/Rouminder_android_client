@@ -30,22 +30,20 @@ import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
 import com.example.rouminder.fragments.MapsFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.example.rouminder.firebase.model.GoalModel;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 
 import android.graphics.Color;
 import android.widget.Toast;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -71,6 +69,7 @@ public class AddGoalActivity extends AppCompatActivity {
     public static View clickedDate;
 
     public GoalModelManager goalModelManager = GoalModelManager.getInstance();
+    public RepeatPlanModelManager repeatPlanModelManager = RepeatPlanModelManager.getInstance();
     GoalManager goalManager;
 
     public String uid;
@@ -116,8 +115,8 @@ public class AddGoalActivity extends AppCompatActivity {
 //        int colors[] = {R.drawable.red, R.drawable.blue, R.drawable.green};
         Color[] colors = {
                 Color.valueOf(256, 0, 0, 256),
-                Color.valueOf(0, 256,0,256),
-                Color.valueOf(0, 0,256,256)};
+                Color.valueOf(0, 256, 0, 256),
+                Color.valueOf(0, 0, 256, 256)};
 
         SpinnerAdapter highlightsAdapter = new SpinnerAdapter(this, colors);
         highlightsSpinner = (Spinner) findViewById(R.id.spinnerHighlight);
@@ -207,8 +206,7 @@ public class AddGoalActivity extends AppCompatActivity {
             Color selectedColor = (Color) highlightsSpinner.getSelectedItem();
             highlight = String.format("#%08X", (0xFFFFFFFF & selectedColor.toArgb()));
             values.put("highlight", highlight);
-        }
-        else {
+        } else {
             Toast.makeText(self, "하이라이트가 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
             Log.d("FIELD", "highlight");
             return;
@@ -233,7 +231,7 @@ public class AddGoalActivity extends AppCompatActivity {
                 Log.d("FIELD", "type");
                 return;
         }
-        if (!type.equals("general")) {
+        if (type.equals("complex")) {
             Toast.makeText(self, "구현되지 않은 유형입니다.", Toast.LENGTH_SHORT).show();
             Log.d("FIELD", "invalid type");
             return;
@@ -292,49 +290,59 @@ public class AddGoalActivity extends AppCompatActivity {
                 break;
         }
 
-        String startDateString = startDate.getText().toString();
-        String endDateString = endDate.getText().toString();
-        String startTimeString = startTime.getText().toString();
-        String endTimeString = endTime.getText().toString();
+        if (type.equals("general")) {
+            String startDateString = startDate.getText().toString();
+            String endDateString = endDate.getText().toString();
+            String startTimeString = startTime.getText().toString();
+            String endTimeString = endTime.getText().toString();
 
-        StringTokenizer startDateTokenizer = new StringTokenizer(startDateString, ".");
-        int startYear = Integer.parseInt(startDateTokenizer.nextToken().toString());
-        int startMonth = Integer.parseInt(startDateTokenizer.nextToken().toString());
-        int startDay = Integer.parseInt(startDateTokenizer.nextToken().toString());
+            StringTokenizer startDateTokenizer = new StringTokenizer(startDateString, ".");
+            int startYear = Integer.parseInt(startDateTokenizer.nextToken().toString());
+            int startMonth = Integer.parseInt(startDateTokenizer.nextToken().toString());
+            int startDay = Integer.parseInt(startDateTokenizer.nextToken().toString());
 
-        StringTokenizer endDateTokenizer = new StringTokenizer(endDateString, ".");
-        int endYear = Integer.parseInt(endDateTokenizer.nextToken().toString());
-        int endMonth = Integer.parseInt(endDateTokenizer.nextToken().toString());
-        int endDay = Integer.parseInt(endDateTokenizer.nextToken().toString());
+            StringTokenizer endDateTokenizer = new StringTokenizer(endDateString, ".");
+            int endYear = Integer.parseInt(endDateTokenizer.nextToken().toString());
+            int endMonth = Integer.parseInt(endDateTokenizer.nextToken().toString());
+            int endDay = Integer.parseInt(endDateTokenizer.nextToken().toString());
 
-        StringTokenizer startTimeTokenizer = new StringTokenizer(startTimeString, ":");
-        int startHour = Integer.parseInt(startTimeTokenizer.nextToken().toString());
-        int startMinute = Integer.parseInt(startTimeTokenizer.nextToken().toString());
+            StringTokenizer startTimeTokenizer = new StringTokenizer(startTimeString, ":");
+            int startHour = Integer.parseInt(startTimeTokenizer.nextToken().toString());
+            int startMinute = Integer.parseInt(startTimeTokenizer.nextToken().toString());
 
-        StringTokenizer endTimeTokenizer = new StringTokenizer(endTimeString, ":");
-        int endHour = Integer.parseInt(endTimeTokenizer.nextToken().toString());
-        int endMinute = Integer.parseInt(endTimeTokenizer.nextToken().toString());
+            StringTokenizer endTimeTokenizer = new StringTokenizer(endTimeString, ":");
+            int endHour = Integer.parseInt(endTimeTokenizer.nextToken().toString());
+            int endMinute = Integer.parseInt(endTimeTokenizer.nextToken().toString());
 
-        LocalDateTime start = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute);
-        LocalDateTime end = LocalDateTime.of(endYear, endMonth, endDay, endHour, endMinute);
+            LocalDateTime start = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute);
+            LocalDateTime end = LocalDateTime.of(endYear, endMonth, endDay, endHour, endMinute);
 
-        if (start.isAfter(end)) {
-            Toast.makeText(self, "시작 일시는 종료 일시 이후일 수 없습니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+            if (start.isAfter(end)) {
+                Toast.makeText(self, "시작 일시는 종료 일시 이후일 수 없습니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
 //        else if (start.isBefore(LocalDateTime.now())) {
 //            Toast.makeText(self, "시작 일시는 현시점 이전일 수 없습니다.", Toast.LENGTH_SHORT).show();
 //            return;
 //        }
 
-        String start_datetime = BaseModelManager.getTimeStampString(start);
-        String endDatetime = BaseModelManager.getTimeStampString(end);
-        values.put("start_datetime", start_datetime);
-        values.put("finish_datetime", endDatetime);
+            String startDatetime = BaseModelManager.getTimeStampString(start);
+            String endDatetime = BaseModelManager.getTimeStampString(end);
+            values.put("start_datetime", startDatetime);
+            values.put("finish_datetime", endDatetime);
 
-        GoalModel goalModel = goalModelManager.create(values);
-        goalManager = ((MainApplication) getApplication()).getGoalManager();
-        goalManager.addGoal(convertGoalModelToGoal(goalModel));
+            GoalModel goalModel = goalModelManager.create(values);
+            goalManager = ((MainApplication) getApplication()).getGoalManager();
+            goalManager.addGoal(convertGoalModelToGoal(goalModel));
+        } else if (type.equals("repeat")) {
+            Boolean[] _weekPlan = {true, false, true, false, true, false, false};
+            ArrayList<Boolean> weekPlan = new ArrayList<>();
+            for(Boolean plan: _weekPlan) {
+                weekPlan.add(plan);
+            }
+            values.put("week_plan", weekPlan);
+            repeatPlanModelManager.create(values);
+        }
 
         finish();
     }
@@ -349,7 +357,7 @@ public class AddGoalActivity extends AppCompatActivity {
         Log.i("test", info.get("method").toString());
 
         if ((info.get("method").toString()).equals("check")) {
-            Log.i("test", "id"+info.get("id").toString());
+            Log.i("test", "id" + info.get("id").toString());
             goal = new CheckGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
                     info.get("name").toString(),
