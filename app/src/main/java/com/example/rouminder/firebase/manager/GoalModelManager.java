@@ -4,8 +4,11 @@ import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidIn
 
 import androidx.annotation.NonNull;
 
+import com.example.rouminder.MainApplication;
+import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.firebase.model.GoalModel;
 
+import android.app.Application;
 import android.util.Pair;
 import android.widget.ArrayAdapter;
 

@@ -2,6 +2,8 @@ package com.example.rouminder.data.goalsystem;
 
 import androidx.annotation.Nullable;
 
+import com.example.rouminder.firebase.exception.ModelDoesNotExists;
+
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -120,7 +122,11 @@ public class GoalManager {
         }
 
         onGoalChangeListeners.forEach(listener -> {
-            listener.onGoalRemove(id);
+            try {
+                listener.onGoalRemove(id);
+            } catch (ModelDoesNotExists modelDoesNotExists) {
+                modelDoesNotExists.printStackTrace();
+            }
         });
         return result;
     }
@@ -345,7 +351,7 @@ public class GoalManager {
 
         public abstract void onGoalUpdate(int id);
 
-        public abstract void onGoalRemove(int id);
+        public abstract void onGoalRemove(int id) throws ModelDoesNotExists;
     }
 
     /**
