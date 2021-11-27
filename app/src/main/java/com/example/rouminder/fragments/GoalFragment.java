@@ -33,7 +33,6 @@ import java.util.Comparator;
 
 public class GoalFragment extends Fragment {
     GoalManager goalManager;
-    private GoalModelManager goalModelManager;
     private Context context;
 
     ImageView btnAddGoal;
@@ -49,7 +48,6 @@ public class GoalFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(goalModelManager == null) goalModelManager = GoalModelManager.getInstance();
     }
 
     @Override

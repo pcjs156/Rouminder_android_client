@@ -161,8 +161,8 @@ public class GoalManager {
             Goal dummy = domainFilter.getDummy();
             Goal bottom = earlyEndingGoals.floor(dummy);
             Goal top = earlyStartingGoals.ceiling(dummy);
-            SortedSet<Goal> setFromBottom = earlyEndingGoals.tailSet(bottom);
-            SortedSet<Goal> setFromTop = earlyStartingGoals.headSet(top);
+            SortedSet<Goal> setFromBottom = bottom == null ? new TreeSet<>() : earlyEndingGoals.tailSet(bottom);
+            SortedSet<Goal> setFromTop = top == null ? new TreeSet<>() : earlyStartingGoals.headSet(top);
             domainFiltered = setFromBottom.stream()
                     .filter(setFromTop::contains)
                     .collect(Collectors.toList());
