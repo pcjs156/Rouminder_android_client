@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,66 +57,66 @@ public class GoalModifyFragment extends DialogFragment {
         textViewEndTimeFront.setText(goal.getEndTime().format(dateFormatter));
         textViewEndTimeBack.setText(goal.getEndTime().format(timeFormatter));
 
-        buttonGoalCancel.setOnClickListener(new View.OnClickListener() { // 취소 버튼 클릭 리스너
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
+            buttonGoalCancel.setOnClickListener(new View.OnClickListener() { // 취소 버튼 클릭 리스너
+                @Override
+                public void onClick(View view) {
+                    dismiss();
+                }
+            });
 
-        buttonGoalChange.setOnClickListener(new View.OnClickListener() { // 수정 버튼 클릭 리스너
-            @Override
-            public void onClick(View view) {
-                // GoalManager를 이용하여 데이터 수정하도록 만들기.
-                dismiss();
-            }
-        });
+            buttonGoalChange.setOnClickListener(new View.OnClickListener() { // 수정 버튼 클릭 리스너
+                @Override
+                public void onClick(View view) {
+                    // GoalManager를 이용하여 데이터 수정하도록 만들기.
+                    dismiss();
+                }
+            });
 
-        DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() { // 년월일 받는 리스너
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-                resetDate(view, year, monthOfYear + 1, dayOfMonth);
-            }
-        };
+            DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() { // 년월일 받는 리스너
+                @Override
+                public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
+                    resetDate(view, year, monthOfYear + 1, dayOfMonth);
+                }
+            };
 
-        TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() { // 시분 받는 리스너
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                resetTime(view, hour, minute);
-            }
-        };
+            TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() { // 시분 받는 리스너
+                @Override
+                public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                    resetTime(view, hour, minute);
+                }
+            };
 
-        textViewStartTimeFront.setOnClickListener(new View.OnClickListener() { // 시작 시간, 년월일
-            @Override
-            public void onClick(View view) {
-                DatePickerDialog dialog= new DatePickerDialog(context, dateListener, startTime.getYear(), startTime.getMonthValue() - 1, startTime.getDayOfMonth());
-                dialog.show();
-            }
-        });
+            textViewStartTimeFront.setOnClickListener(new View.OnClickListener() { // 시작 시간, 년월일
+                @Override
+                public void onClick(View view) {
+                        DatePickerDialog dialog = new DatePickerDialog(context, dateListener, startTime.getYear(), startTime.getMonthValue() - 1, startTime.getDayOfMonth());
+                        dialog.show();
+                }
+            });
 
-        textViewStartTimeBack.setOnClickListener(new View.OnClickListener() { // 시작 시간, 시분
-            @Override
-            public void onClick(View view) {
-                TimePickerDialog dialog = new TimePickerDialog(context, timeListener, startTime.getHour(), startTime.getMinute(), false);
-                dialog.show();
-            }
-        });
+            textViewStartTimeBack.setOnClickListener(new View.OnClickListener() { // 시작 시간, 시분
+                @Override
+                public void onClick(View view) {
+                    TimePickerDialog dialog = new TimePickerDialog(context, timeListener, startTime.getHour(), startTime.getMinute(), false);
+                    dialog.show();
+                }
+            });
 
-        textViewEndTimeFront.setOnClickListener(new View.OnClickListener() { // 마감 시간, 년월일
-            @Override
-            public void onClick(View view) {
-                DatePickerDialog dialog= new DatePickerDialog(context, dateListener, endTime.getYear(), endTime.getMonthValue() - 1, endTime.getDayOfMonth());
-                dialog.show();
-            }
-        });
+            textViewEndTimeFront.setOnClickListener(new View.OnClickListener() { // 마감 시간, 년월일
+                @Override
+                public void onClick(View view) {
+                    DatePickerDialog dialog = new DatePickerDialog(context, dateListener, endTime.getYear(), endTime.getMonthValue() - 1, endTime.getDayOfMonth());
+                    dialog.show();
+                }
+            });
 
-        textViewEndTimeBack.setOnClickListener(new View.OnClickListener() { // 마감 시간, 시분
-            @Override
-            public void onClick(View view) {
-                TimePickerDialog dialog = new TimePickerDialog(context, timeListener, endTime.getHour(), endTime.getMinute(), false);
-                dialog.show();
-            }
-        });
+            textViewEndTimeBack.setOnClickListener(new View.OnClickListener() { // 마감 시간, 시분
+                @Override
+                public void onClick(View view) {
+                    TimePickerDialog dialog = new TimePickerDialog(context, timeListener, endTime.getHour(), endTime.getMinute(), false);
+                    dialog.show();
+                }
+            });
 
         setCancelable(false);
         return view;
