@@ -164,7 +164,7 @@ public class GoalModelManager {
 
         GoalModel targetGoal = null;
         int targetIdx = -1;
-        for(int i=0; i<goals.size(); i++) {
+        for (int i = 0; i < goals.size(); i++) {
             GoalModel model = goals.get(i);
             if (model.id.equals(id)) {
                 targetGoal = model;
@@ -198,7 +198,7 @@ public class GoalModelManager {
                 break;
             }
         }
-        for(int i=0; i<goals.size(); i++) {
+        for (int i = 0; i < goals.size(); i++) {
             GoalModel model = goals.get(i);
             if (model.id.equals(id)) {
                 targetGoal = model;
@@ -214,5 +214,22 @@ public class GoalModelManager {
             goals.remove(targetIdx);
             notifyToAdapters();
         }
+    }
+
+    public double getEntireAchievementRate() {
+        int entireGoalCnt = goals.size();
+        int achievedGoalCnt = 0;
+        for (GoalModel goalModel : goals) {
+            System.out.println("HIHI " + goalModel.id + " : " + goalModel.current + "/" + goalModel.targetCount);
+            if (goalModel.isAchieved())
+                achievedGoalCnt++;
+        }
+
+        if (getIsChanging() == true)
+            return -1;
+        if (entireGoalCnt == 0)
+            return 0;
+        else
+            return (achievedGoalCnt / ((double) entireGoalCnt)) * 100;
     }
 }

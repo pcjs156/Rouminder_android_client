@@ -80,6 +80,8 @@ public class GoalModel {
             this.current = Integer.parseInt((String) currentObj);
         else if (currentObj != null && currentObj instanceof Integer)
             this.current = (Integer) currentObj;
+        else if (currentObj != null && currentObj instanceof Long)
+            this.current = ((Long) currentObj).intValue();
 
         this.tag = (String) values.get("tag");
         this.method = (String) values.get("method");
@@ -154,5 +156,14 @@ public class GoalModel {
         info.put("finish_datetime", finishDatetime);
 
         return info;
+    }
+
+    public boolean isAchieved() {
+        if (method.equals("check") || method.equals("location"))
+            return this.current == 1;
+        else if (method.equals("count"))
+            return this.current == this.targetCount;
+        else
+            return false;
     }
 }

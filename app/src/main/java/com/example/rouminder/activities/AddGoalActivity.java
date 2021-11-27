@@ -114,55 +114,6 @@ public class AddGoalActivity extends AppCompatActivity {
         highlightsSpinner = (Spinner) findViewById(R.id.spinnerHighlight);
         highlightsSpinner.setAdapter(highlightsAdapter);
 
-        // highlightsAdapter.getDropDownView()
-
-        // 현재 오류나서 잠시 주석처리
-//        LabelToggle choiceGeneral = (LabelToggle) findViewById(R.id.choiceGeneral);
-//        choiceGeneral.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ArrayList<String> categoryIds = new ArrayList<>();
-//                for (CategoryModel model : categoryModels) {
-//                    categoryIds.add(model.id);
-//                }
-//
-//                Collections.shuffle(categoryIds);
-//                if (!categoryIds.isEmpty()) {
-//                    String pickedId = categoryIds.get(0);
-//                    HashMap<String, Object> newData = new HashMap<>();
-//                    newData.put("name", "newName");
-//                    try {
-//                        categoryModelManager.update(pickedId, newData);
-//                    } catch (ModelDoesNotExists e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            }
-//        });
-//
-//        LabelToggle choiceRepeat = (LabelToggle) findViewById(R.id.choiceRepeat);
-//        choiceRepeat.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ArrayList<String> categoryIds = new ArrayList<>();
-//                for (CategoryModel model : categoryModels) {
-//                    categoryIds.add(model.id);
-//                }
-//
-//                Collections.shuffle(categoryIds);
-//                if (!categoryIds.isEmpty()) {
-//                    String pickedId = categoryIds.get(0);
-//                    try {
-//                        categoryModelManager.delete(pickedId);
-//                    } catch (ModelDoesNotExists e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            }
-//        });
-
         typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
         methodGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesMethod);
         typeGroup.setOnCheckedChangeListener(new SingleSelectToggleGroup.OnCheckedChangeListener() {

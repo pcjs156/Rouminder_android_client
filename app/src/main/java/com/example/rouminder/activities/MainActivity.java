@@ -4,18 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.rouminder.firebase.manager.BaseModelManager;
-import com.example.rouminder.firebase.manager.GoalModelManager;
-import com.example.rouminder.firebase.model.GoalModel;
 import com.example.rouminder.fragments.GoalFragment;
 import com.example.rouminder.fragments.ProfileFragment;
 import com.example.rouminder.R;
 import com.example.rouminder.fragments.StatisticsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     String uid;
@@ -44,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().add(R.id.mainLayoutContainer, goalFragment).commit();
 
         BaseModelManager.setUid(uid);
-        BaseModelManager baseModelManager = BaseModelManager.getInstance();
-
-        GoalModelManager gManager = GoalModelManager.getInstance();
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -66,5 +58,4 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
     }
-
 }
