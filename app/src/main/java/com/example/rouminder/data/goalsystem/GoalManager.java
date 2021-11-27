@@ -126,7 +126,7 @@ public class GoalManager {
     }
 
     /**
-     * Get all GoalInstances.
+     * Get all goals.
      *
      * @return a list of goals.
      */
@@ -135,12 +135,12 @@ public class GoalManager {
     }
 
     /**
-     * Get GoalInstances that matches domain and state.
+     * Get goals matching domain and state.
      *
      * @param now    a LocalDateTime object of now.
      * @param domain a Domain enum that is used to check if instance is the same in specific domain.
      * @param status a current state that goal should have.
-     * @return a List of goals that matches criteria.
+     * @return a list of goals that matches criteria.
      */
     public List<Goal> getGoals(LocalDateTime now, @Nullable Domain domain, @Nullable Status status) {
         if (domain == null)
@@ -173,6 +173,15 @@ public class GoalManager {
     }
 
     /**
+     * Get ongoing goals.
+     *
+     * @return a list of ongoing goals.
+     */
+    public List<Goal> getOngoingGoals() {
+        return new ArrayList<>(ongoingGoals);
+    }
+
+    /**
      * Renew goal statuses by a given time.
      *
      * @return true if any goal has changed.
@@ -180,17 +189,12 @@ public class GoalManager {
     public boolean renewGoals(LocalDateTime now) {
         boolean result = false;
 
-        // add to ongoing goals
-        {
-            Goal start = ongoingGoals.isEmpty() ? earlyStartingGoals.first() : earlyStartingGoals.floor(ongoingGoals.last());
-            Goal end = earlyStartingGoals.ceiling(new Goal(now, now));
-            Set<Goal> goalsToBeAdded = earlyStartingGoals.tailSet(start).headSet(end).stream().filter(g -> g.isOnProgress(now)).collect(Collectors.toSet());
-            ongoingGoals.addAll(goalsToBeAdded);
-            result = goalsToBeAdded.isEmpty();
+        TreeSet<Goal> newOngoingGoals = new TreeSet<>(getGoals(now, null, Status.ONGOING));
+        if(!newOngoingGoals.equals(ongoingGoals)) {
+            ongoingGoals.clear();
+            ongoingGoals.addAll(newOngoingGoals);
+            result = true;
         }
-
-        // remove from ongoing goals
-        ongoingGoals.removeIf(g -> g.isAfterEnd(now));
 
         return result;
     }
