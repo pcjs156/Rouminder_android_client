@@ -1,5 +1,6 @@
 package com.example.rouminder.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -7,8 +8,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleObserver;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,35 +38,46 @@ import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.model.GoalModel;
+import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 import com.nex3z.togglebuttongroup.button.CircularToggle;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
 public class GoalFragment extends Fragment {
-    GoalManager goalManager;
-    GoalModelManager goalModelManager;
+    private GoalModelManager goalModelManager;
+    private Context context;
 
     ImageView btnAddGoal;
+    SingleSelectToggleGroup domainToggleGroup;
 
     RecyclerView recyclerView;
     RecyclerView miniRecyclerView;
 
-    List<Goal> bigItems = new ArrayList<>();
-    List<Goal> miniItems = new ArrayList<>();
 
     static InitGoalsTask task;
 
-    static BigGoalAdapter bAdapter;
-    static MiniGoalAdapter mAdapter;
+    BigGoalAdapter bigGoalAdapter;
+    MiniGoalAdapter miniGoalAdapter;
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(goalModelManager == null) goalModelManager = GoalModelManager.getInstance();
+    }
+
+
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        this.context = context instanceof Activity ? context : null;
     }
 
     @Override
@@ -71,11 +85,9 @@ public class GoalFragment extends Fragment {
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_goal, container, false);
 
-        if (goalModelManager == null) goalModelManager = GoalModelManager.getInstance();
-        if (goalManager == null) goalManager = ((MainApplication) getActivity().getApplication()).getGoalManager();
-
         btnAddGoal = (ImageView) rootView.findViewById(R.id.btnAddGoal);
 
+        domainToggleGroup = (SingleSelectToggleGroup) rootView.findViewById(R.id.groupChoices);
         CircularToggle choiceDay = (CircularToggle) rootView.findViewById(R.id.choiceDay);
         CircularToggle choiceWeek = (CircularToggle) rootView.findViewById(R.id.choiceWeek);
         CircularToggle choiceMonth = (CircularToggle) rootView.findViewById(R.id.choiceMonth);
@@ -83,15 +95,23 @@ public class GoalFragment extends Fragment {
         LinearLayout weeklyCalendar = (LinearLayout) rootView.findViewById(R.id.weeklyCalendar);
         CardView monthlyCalendar = (CardView) rootView.findViewById(R.id.monthlyCalendar);
 
+        bigGoalAdapter = new BigGoalAdapter(((MainApplication)context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
+        miniGoalAdapter = new MiniGoalAdapter(((MainApplication)context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
+
         recyclerView = (RecyclerView) rootView.findViewById(R.id.viewGoal);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
+        recyclerView.setAdapter(bigGoalAdapter);
+
         miniRecyclerView = (RecyclerView) rootView.findViewById(R.id.lstMiniGoal);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
+        recyclerView.setAdapter(bigGoalAdapter);
 
         btnAddGoal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "목표 추가 창", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.getApplicationContext(), "목표 추가 창", Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(getActivity().getApplicationContext(), AddGoalActivity.class);
+                Intent intent = new Intent(context.getApplicationContext(), AddGoalActivity.class);
                 startActivity(intent);
             }
         });
@@ -99,7 +119,7 @@ public class GoalFragment extends Fragment {
         choiceDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "daily calendar", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.getApplicationContext(), "daily calendar", Toast.LENGTH_SHORT).show();
 
                 weeklyCalendar.setVisibility(View.GONE);
                 monthlyCalendar.setVisibility(View.GONE);
@@ -108,7 +128,7 @@ public class GoalFragment extends Fragment {
         choiceWeek.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "weekly calendar", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.getApplicationContext(), "weekly calendar", Toast.LENGTH_SHORT).show();
 
                 weeklyCalendar.setVisibility(View.VISIBLE);
                 monthlyCalendar.setVisibility(View.GONE);
@@ -117,7 +137,7 @@ public class GoalFragment extends Fragment {
         choiceMonth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "monthly calendar", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context.getApplicationContext(), "monthly calendar", Toast.LENGTH_SHORT).show();
 
                 weeklyCalendar.setVisibility(View.GONE);
                 monthlyCalendar.setVisibility(View.VISIBLE);
@@ -129,10 +149,31 @@ public class GoalFragment extends Fragment {
             initFirebaseDate();
         }
 
-        setBAdapter(bigItems);
-        setMAdapter(miniItems);
-
         return rootView;
+    }
+
+    private GoalManager.Domain getCheckedDomain() {
+        int id = domainToggleGroup.getCheckedId();
+        GoalManager.Domain domain;
+        if(id == R.id.choiceDay) {
+            domain = GoalManager.Domain.DAY;
+        } else if(id == R.id.choiceWeek){
+            domain = GoalManager.Domain.WEEK;
+        } else if(id == R.id.choiceMonth) {
+            domain = GoalManager.Domain.MONTH;
+        } else {
+            domain = GoalManager.Domain.ALL;
+        }
+        return domain;
+    }
+    // currently returning default comparator; by endtime
+    private Comparator<Goal> getSelectedComparator() {
+        return new Comparator<Goal>() {
+            @Override
+            public int compare(Goal g1, Goal g2) {
+                return g1.getEndTime().compareTo(g2.getEndTime());
+            }
+        };
     }
 
     private void initFirebaseDate() {
@@ -221,23 +262,5 @@ public class GoalFragment extends Fragment {
         }
 
         return goal;
-    }
-
-    void setBAdapter(List<Goal> items) {
-        if (bAdapter == null) bAdapter = new BigGoalAdapter(goalManager, items);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-        recyclerView.setAdapter(bAdapter);
-    }
-
-    /**
-     * set/reset mini goal adapter with goals
-     * when click week and monthly calendar, reset mini goal adapter
-     *
-     * @param items goals to show at mini goal recyclerView
-     */
-    public void setMAdapter(List<Goal> items) {
-        if (mAdapter == null) mAdapter = new MiniGoalAdapter(goalManager, items);
-        miniRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-        miniRecyclerView.setAdapter(mAdapter);
     }
 }
