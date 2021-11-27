@@ -36,7 +36,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             public void onGoalAdd(int id) {
                 int position = getItemPosition(id);
                 if (position  == -1) {
-                    addGoal(goalManager.getGoal(id));
+                    position = addGoal(goalManager.getGoal(id));
                     notifyItemInserted(position);
                 }
             }

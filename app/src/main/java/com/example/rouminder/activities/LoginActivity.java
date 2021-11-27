@@ -120,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             Intent mainActivityIntent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(mainActivityIntent);
+                            finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.d("FB", "Login Failed");

@@ -23,20 +23,19 @@ import com.example.rouminder.data.goalsystem.LocationGoal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MiniGoalAdapter extends RecyclerView.Adapter<MiniGoalHolder> {
+public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     List<Goal> items;
 
     public MiniGoalAdapter(GoalManager goalManager, List<Goal> items) {
         super();
-
         this.items = items;
 
         goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener() {
             @Override
             public void onGoalAdd(int id) {
                 int position = getItemPosition(id);
-                if (position  == -1) {
-                    addGoal(goalManager.getGoal(id));
+                if (position == -1) {
+                    position = addGoal(goalManager.getGoal(id));
                     notifyItemInserted(position);
                 }
             }
@@ -70,7 +69,7 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<MiniGoalHolder> {
 
     @NonNull
     @Override
-    public MiniGoalHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
 
         Context context = parent.getContext();
@@ -79,9 +78,13 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<MiniGoalHolder> {
         return new MiniGoalHolder(view);
     }
 
-    @Override
     public void onBindViewHolder(@NonNull MiniGoalHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.onBind(items.get(position));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        onBindViewHolder((MiniGoalHolder) holder, position);
     }
 
     private int addGoal(Goal goal) {
@@ -99,56 +102,55 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<MiniGoalHolder> {
     public int getItemCount() {
         return items.size();
     }
-}
 
-class MiniGoalHolder extends RecyclerView.ViewHolder {
-    TextView goalContent;
-    TextView goalSubText;
-    ImageView goalImgCheckBox;
-    CircleProgressBar goalProgressBar;
+    class MiniGoalHolder extends RecyclerView.ViewHolder {
+        TextView goalContent;
+        TextView goalSubText;
+        ImageView goalImgCheckBox;
+        CircleProgressBar goalProgressBar;
 
-    public MiniGoalHolder(@NonNull View itemView) {
-        super(itemView);
+        public MiniGoalHolder(@NonNull View itemView) {
+            super(itemView);
 
-        goalContent = itemView.findViewById(R.id.miniGoalContent);
-        goalSubText = itemView.findViewById(R.id.miniGoalSubText);
-        goalProgressBar = itemView.findViewById(R.id.miniGoalProgressBar);
-        goalImgCheckBox = itemView.findViewById(R.id.miniGoalImgCheckBox);
-    }
-
-    void onBind(Goal goal) {
-        goalContent.setText(goal.getName());
-        goalSubText.setText(goal.progressToString());
-
-        if (goal instanceof LocationGoal) {
-            goalProgressBar.setVisibility(View.GONE);
-        } else if (goal instanceof CheckGoal) {
-            goalProgressBar.setVisibility(View.GONE);
-
-            CheckGoal checkGoal = (CheckGoal) goal;
-
-            if (checkGoal.getChecked())
-                goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
-            else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
-
-            goalImgCheckBox.setClickable(true);
-            goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (((CheckGoal) goal).getChecked()) {
-                        goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
-                        ((CheckGoal) goal).setChecked(false);
-                    } else {
-                        goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
-                        ((CheckGoal) goal).setChecked(true);
-                    }
-                }
-            });
-        } else {
-            goalImgCheckBox.setVisibility(View.GONE);
-            goalProgressBar.setMax(goal.getTarget());
-            goalProgressBar.setProgress(((CountGoal) goal).getCount());
+            goalContent = itemView.findViewById(R.id.miniGoalContent);
+            goalSubText = itemView.findViewById(R.id.miniGoalSubText);
+            goalProgressBar = itemView.findViewById(R.id.miniGoalProgressBar);
+            goalImgCheckBox = itemView.findViewById(R.id.miniGoalImgCheckBox);
         }
 
+        void onBind(Goal goal) {
+            goalContent.setText(goal.getName());
+            goalSubText.setText(goal.progressToString());
+
+            if (goal instanceof LocationGoal) {
+                goalProgressBar.setVisibility(View.GONE);
+            } else if (goal instanceof CheckGoal) {
+                goalProgressBar.setVisibility(View.GONE);
+
+                CheckGoal checkGoal = (CheckGoal) goal;
+
+                if (checkGoal.getChecked())
+                    goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+
+                goalImgCheckBox.setClickable(true);
+                goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (((CheckGoal) goal).getChecked()) {
+                            goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+                            ((CheckGoal) goal).setChecked(false);
+                        } else {
+                            goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                            ((CheckGoal) goal).setChecked(true);
+                        }
+                    }
+                });
+            } else {
+                goalImgCheckBox.setVisibility(View.GONE);
+                goalProgressBar.setMax(goal.getTarget());
+                goalProgressBar.setProgress(((CountGoal) goal).getCount());
+            }
+        }
     }
 }

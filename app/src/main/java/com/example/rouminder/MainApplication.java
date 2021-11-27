@@ -71,7 +71,7 @@ public class MainApplication extends android.app.Application {
                 Log.d("goal_event", "remove " + id);
             }
         });
-        loadGoalManager();
+//        loadGoalManager();
     }
 
     private void loadGoalManager() {

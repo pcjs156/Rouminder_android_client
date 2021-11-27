@@ -30,8 +30,10 @@ public class BaseModelManager {
 
     public static String getRandomId() {
         String timeMills = Long.toString(System.currentTimeMillis());
-        int salt = (int) (Math.random() * 10000);
-        String stringSalt = String.format("%04d", salt);
+        timeMills = timeMills.substring(6);
+
+        int salt = (int) (Math.random() * 100);
+        String stringSalt = String.format("%02d", salt);
         return timeMills + stringSalt;
     }
 
