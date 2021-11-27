@@ -37,8 +37,8 @@ public class CountGoal extends Goal {
      * @param unit a unit String.
      */
     public void setUnit(String unit) {
-        update();
         this.unit = unit;
+        update();
     }
 
     /**
@@ -56,8 +56,8 @@ public class CountGoal extends Goal {
      * @param count a current count to be set; any value smaller than zero is considered zero.
      */
     public void setCount(int count) {
-        update();
         setCurrent(Math.max(count, 0));
+        update();
     }
 
     /**

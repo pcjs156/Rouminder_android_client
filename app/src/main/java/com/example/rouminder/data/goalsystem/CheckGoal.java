@@ -56,7 +56,7 @@ public class CheckGoal extends Goal {
     }
 
     public void setChecked(boolean checked) {
-        update();
         setCurrent(checked ? target : 0);
+        update();
     }
 }
