@@ -73,9 +73,9 @@ public class BigGoalAdapter extends BaseGoalAdapter {
             goalSubText.setText(goal.progressToString());
             goalTime.setText(goal.getEndTime().toString());
 
-            if (goal instanceof LocationGoal) {
+            if (goal.getType().equals(Goal.Type.LOCATION.name())) {
                 goalProgressBar.setVisibility(View.GONE);
-            } else if (goal instanceof CheckGoal) {
+            } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
                 goalProgressBar.setVisibility(View.GONE);
 
                 CheckGoal checkGoal = (CheckGoal) goal;

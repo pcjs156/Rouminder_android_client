@@ -72,9 +72,9 @@ public class MiniGoalAdapter extends BaseGoalAdapter {
             goalContent.setText(goal.getName());
             goalSubText.setText(goal.progressToString());
 
-            if (goal instanceof LocationGoal) {
+            if (goal.getType().equals(Goal.Type.LOCATION.name())) {
                 goalProgressBar.setVisibility(View.GONE);
-            } else if (goal instanceof CheckGoal) {
+            } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
                 goalProgressBar.setVisibility(View.GONE);
 
                 CheckGoal checkGoal = (CheckGoal) goal;
