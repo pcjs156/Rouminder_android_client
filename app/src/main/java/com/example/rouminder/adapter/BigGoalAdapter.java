@@ -2,7 +2,6 @@ package com.example.rouminder.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,52 +19,13 @@ import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
 
 
-public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    List<Goal> items;
+public class BigGoalAdapter extends BaseGoalAdapter {
 
-    public BigGoalAdapter(GoalManager goalManager, List<Goal> items) {
-        super();
-        this.items = items;
-
-        goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener() {
-            @Override
-            public void onGoalAdd(int id) {
-                int position = getItemPosition(id);
-                if (position  == -1) {
-                    position = addGoal(goalManager.getGoal(id));
-                    notifyItemInserted(position);
-                }
-            }
-
-            @Override
-            public void onGoalUpdate(int id) {
-                int position = getItemPosition(id);
-                if (position != -1) {
-                    notifyItemChanged(position);
-                }
-            }
-
-            @Override
-            public void onGoalRemove(int id) {
-                int position = getItemPosition(id);
-                if (position != -1) {
-                    removeGoal(goalManager.getGoal(id));
-                    notifyItemRemoved(position);
-                }
-            }
-        });
-    }
-
-    private int getItemPosition(int id) {
-        Goal goal = items.stream()
-                .filter(e -> e.getId() == id)
-                .findFirst()
-                .orElse(null);
-        return (goal == null) ? -1 : items.indexOf(goal);
+    public BigGoalAdapter(GoalManager goalManager, GoalManager.Domain domain, Comparator<Goal> comparator) {
+        super(goalManager, domain, comparator);
     }
 
     @NonNull
@@ -76,35 +36,19 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Context context = parent.getContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(R.layout.item_goal, parent, false);
-        return new BigGoalHolder(view);
+        return new ViewHolder(view);
     }
 
-    public void onBindViewHolder(@NonNull BigGoalHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.onBind(items.get(position));
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        onBindViewHolder((BigGoalHolder) holder, position);
+        onBindViewHolder((ViewHolder) holder, position);
     }
 
-    private int addGoal(Goal goal) {
-        items.add(goal);
-        return items.indexOf(goal);
-    }
-
-    private int removeGoal(Goal goal) {
-        int position = items.indexOf(goal);
-        items.remove(goal);
-        return position;
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
-
-    class BigGoalHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         private TextView goalContent;
         private TextView goalRestTime;
         private TextView goalSubText;
@@ -112,7 +56,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private ImageView goalImgCheckBox;
         private CircleProgressBar goalProgressBar;
 
-        public BigGoalHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             goalContent = itemView.findViewById(R.id.goalContent);

@@ -215,25 +215,6 @@ public class GoalManager {
     }
 
     /**
-     * Set an event listener for changes of each goal matching condition;
-     * like add, update, change.
-     *
-     * @param listener a listener to be set.
-     */
-    public void removeOnGoalMatchingConditionChangeListener(OnGoalWithCriteriaChangeListener listener) {
-        removeOnGoalChangeListener(listener.getListener());
-    }
-
-    /**
-     * Remove an event listener for changes of each goal matching condition from the list
-     *
-     * @param listener a listener to be removed.
-     */
-    public void setOnGoalMatchingConditionChangeListener(OnGoalWithCriteriaChangeListener listener) {
-        setOnGoalChangeListener(listener.getListener());
-    }
-
-    /**
      * A enum for namespacing the domain in time, such as day, month, etc.
      */
     public enum Domain {
@@ -346,47 +327,65 @@ public class GoalManager {
         public abstract void onGoalUpdate(int id);
 
         public abstract void onGoalRemove(int id);
+
+        public void remove() {
+            removeOnGoalChangeListener(this);
+        }
     }
 
     /**
      * An event listener for changes of each goal for matching criteria.
      */
-    public abstract class OnGoalWithCriteriaChangeListener {
-        private final OnGoalChangeListener listener;
+    public abstract class OnGoalWithCriteriaChangeListener extends OnGoalChangeListener{
+        private final Domain domain;
+        private final Status status;
+        private LocalDateTime previous;
 
-        OnGoalWithCriteriaChangeListener(Domain domain, Status status) {
-            this.listener = new OnGoalChangeListener() {
-                @Override
-                public void onGoalAdd(int id) {
-                    if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
-                            && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
-                        onGoalWithCriteriaAdd(id);
-                }
-
-                @Override
-                public void onGoalUpdate(int id) {
-                    if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
-                            && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
-                        onGoalWithCriteriaUpdate(id);
-                }
-
-                @Override
-                public void onGoalRemove(int id) {
-                    if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
-                            && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
-                        onGoalWithCriteriaRemove(id);
-                }
-            };
+        public OnGoalWithCriteriaChangeListener(Domain domain, Status status) {
+            this.domain = domain;
+            this.status = status;
         }
 
-        private OnGoalChangeListener getListener() {
-            return listener;
+        @Override
+        public void onGoalAdd(int id) {
+            LocalDateTime current = LocalDateTime.now();
+            if(current.getDayOfMonth() != previous.getDayOfMonth())
+                onDomainChanged();
+            previous = current;
+            if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
+                    && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
+                onGoalWithCriteriaAdd(id);
         }
+
+        @Override
+        public void onGoalUpdate(int id) {
+            LocalDateTime current = LocalDateTime.now();
+            if(current.getDayOfMonth() != previous.getDayOfMonth())
+                onDomainChanged();
+            previous = current;
+            if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
+                    && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
+                onGoalWithCriteriaUpdate(id);
+        }
+
+        @Override
+        public void onGoalRemove(int id) {
+            LocalDateTime current = LocalDateTime.now();
+            if(current.getDayOfMonth() != previous.getDayOfMonth())
+                onDomainChanged();
+            previous = current;
+            if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
+                    && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
+                onGoalWithCriteriaRemove(id);
+        }
+
 
         public abstract void onGoalWithCriteriaAdd(int id);
 
         public abstract void onGoalWithCriteriaUpdate(int id);
 
         public abstract void onGoalWithCriteriaRemove(int id);
+
+        public abstract void onDomainChanged();
     }
 }
