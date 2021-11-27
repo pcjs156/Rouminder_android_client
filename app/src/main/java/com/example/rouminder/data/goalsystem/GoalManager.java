@@ -349,7 +349,7 @@ public class GoalManager {
         @Override
         public void onGoalAdd(int id) {
             LocalDateTime current = LocalDateTime.now();
-            if(current.getDayOfMonth() != previous.getDayOfMonth())
+            if(previous != null && current.getDayOfMonth() != previous.getDayOfMonth())
                 onDomainChanged();
             previous = current;
             if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
@@ -360,7 +360,7 @@ public class GoalManager {
         @Override
         public void onGoalUpdate(int id) {
             LocalDateTime current = LocalDateTime.now();
-            if(current.getDayOfMonth() != previous.getDayOfMonth())
+            if(previous != null && current.getDayOfMonth() != previous.getDayOfMonth())
                 onDomainChanged();
             previous = current;
             if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
@@ -371,7 +371,7 @@ public class GoalManager {
         @Override
         public void onGoalRemove(int id) {
             LocalDateTime current = LocalDateTime.now();
-            if(current.getDayOfMonth() != previous.getDayOfMonth())
+            if(previous != null && current.getDayOfMonth() != previous.getDayOfMonth())
                 onDomainChanged();
             previous = current;
             if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
