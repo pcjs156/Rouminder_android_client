@@ -31,6 +31,7 @@ import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
+import com.example.rouminder.firebase.model.RepeatPlanModel;
 import com.example.rouminder.fragments.MapsFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.example.rouminder.firebase.model.GoalModel;
@@ -340,8 +341,10 @@ public class AddGoalActivity extends AppCompatActivity {
             for(Boolean plan: _weekPlan) {
                 weekPlan.add(plan);
             }
+
             values.put("week_plan", weekPlan);
-            repeatPlanModelManager.create(values);
+            RepeatPlanModel plan = repeatPlanModelManager.create(values);
+            goalModelManager.create(plan);
         }
 
         finish();

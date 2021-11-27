@@ -10,12 +10,14 @@ import android.util.Pair;
 import android.widget.ArrayAdapter;
 
 import com.example.rouminder.firebase.exception.ModelDoesNotExists;
+import com.example.rouminder.firebase.model.RepeatPlanModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -123,6 +125,39 @@ public class GoalModelManager {
         values.put("uid", BaseModelManager.uid);
         values.put("created_at", createdAt);
         values.put("modified_at", "");
+
+        ref.child("data").child(randomId).setValue(values);
+
+        GoalModel newGoal = new GoalModel(values);
+
+        return newGoal;
+    }
+
+    public GoalModel create(RepeatPlanModel plan) {
+        checkUidInitialized();
+
+        HashMap<String, Object> values = plan.getInfo();
+
+        String createdAt = baseModelManager.getTimeStampString();
+
+        String randomId = baseModelManager.getRandomId();
+
+        values.put("id", randomId);
+        values.put("uid", BaseModelManager.uid);
+        values.put("created_at", createdAt);
+        values.put("modified_at", "");
+
+        values.put("plan", plan.id);
+        values.put("current", 0);
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startDatetime = LocalDateTime.of(
+                now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 0, 0);
+        LocalDateTime finishDatetime = LocalDateTime.of(
+                now.getYear(), now.getMonthValue(), now.getDayOfMonth() + 1, 0, 0);
+
+        values.put("start_datetime", BaseModelManager.getTimeStampString(startDatetime));
+        values.put("finish_datetime", BaseModelManager.getTimeStampString(finishDatetime));
 
         ref.child("data").child(randomId).setValue(values);
 
