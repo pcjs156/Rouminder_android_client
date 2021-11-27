@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import com.example.rouminder.firebase.model.GoalModel;
 
-import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.example.rouminder.firebase.exception.ModelDoesNotExists;
@@ -59,7 +58,6 @@ public class GoalModelManager {
                         HashMap<String, Object> _goal = (HashMap<String, Object>) goal.clone();
                         if (author.equals(BaseModelManager.uid)) {
                             goals.add(new GoalModel(_goal));
-                            Log.i("test", goals.toString());
 
                             String tag = goal.get("tag");
                             if (tag != null && !tags.contains(tag)) {

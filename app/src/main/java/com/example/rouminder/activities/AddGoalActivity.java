@@ -30,6 +30,9 @@ import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.fragments.MapsFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.example.rouminder.firebase.model.GoalModel;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 
@@ -59,6 +62,8 @@ public class AddGoalActivity extends AppCompatActivity {
     private TextView startTime;
     private TextView endDate;
     private TextView endTime;
+
+    private MapsFragment mapsFragment;
 
     public static int currentType;
     public static View clickedDate;
@@ -91,6 +96,8 @@ public class AddGoalActivity extends AppCompatActivity {
         goalNameEditText = (EditText) findViewById(R.id.goalNameEditText);
         editTextUnit = (EditText) findViewById(R.id.editTextNumberSigned2);
         editTextTargetCount = (EditText) findViewById(R.id.editTextNumberSigned);
+
+        mapsFragment = (MapsFragment) getSupportFragmentManager().findFragmentById(R.id.mapFinder);
 
         resetDateTime();
 
@@ -248,18 +255,24 @@ public class AddGoalActivity extends AppCompatActivity {
                 Log.d("FIELD", "method");
                 return;
         }
-        if (method.equals("location")) {
-            Toast.makeText(self, "구현되지 않은 수행 방법입니다.", Toast.LENGTH_SHORT).show();
-            Log.d("FIELD", "invalid method");
-            return;
-        } else {
-            values.put("method", method);
-        }
+        values.put("method", method);
 
         values.put("current", 0);
         switch (method) {
             case "check":
-                values.put("target_count", 0);
+                values.put("target_count", 1);
+                break;
+            case "location":
+                values.put("target_count", 1);
+                LatLng selectedLatLng = mapsFragment.getSelectedLatLng();
+                if (selectedLatLng == null) {
+                    Toast.makeText(self, "위치가 지정되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Double latitude = selectedLatLng.latitude;
+                Double longitude = selectedLatLng.longitude;
+                values.put("latitude", latitude);
+                values.put("longitude", longitude);
                 break;
             case "count":
                 String unit = editTextUnit.getText().toString();
@@ -303,9 +316,9 @@ public class AddGoalActivity extends AppCompatActivity {
         Date start = new Date(startYear, startMonth, startDay, startHour, startMinute);
         Date end = new Date(endYear, endMonth, endDay, endHour, endMinute);
 
-        String startDatetime = BaseModelManager.getTimeStampString(start);
+        String start_datetime = BaseModelManager.getTimeStampString(start);
         String endDatetime = BaseModelManager.getTimeStampString(end);
-        values.put("start_datetime", startDatetime);
+        values.put("start_datetime", start_datetime);
         values.put("finish_datetime", endDatetime);
 
         GoalModel goalModel = goalModelManager.create(values);

@@ -249,6 +249,13 @@
                     android:name="com.example.rouminder.fragments.MapsFragment"
                     android:layout_below="@+id/mapTextView" />
 
+                <TextView
+                    android:id="@+id/selected_place_name"
+                    android:text="장소를 선택해 주세요."
+                    android:layout_below="@id/mapFinder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
             </RelativeLayout>
 
             <LinearLayout
