@@ -338,7 +338,7 @@ public class AddGoalActivity extends AppCompatActivity {
         } else if (type.equals("repeat")) {
             Boolean[] _weekPlan = {true, false, true, false, true, false, false};
             ArrayList<Boolean> weekPlan = new ArrayList<>();
-            for(Boolean plan: _weekPlan) {
+            for (Boolean plan : _weekPlan) {
                 weekPlan.add(plan);
             }
 

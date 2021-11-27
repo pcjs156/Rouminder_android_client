@@ -198,11 +198,11 @@ public class MainActivity extends AppCompatActivity {
                 goalManager.addGoal(convertGoalModelToGoal(goalModel));
             });
 
-            if (goalManager.getGoal(1) == null) {
-                goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
-                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
-                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1));
-            }
+//            if (goalManager.getGoal(1) == null) {
+//                goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
+//                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
+//                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1));
+//            }
         }
     }
 
