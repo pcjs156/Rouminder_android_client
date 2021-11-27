@@ -31,6 +31,7 @@ public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.
     public void setDomain(GoalManager.Domain domain) {
         this.domain = domain;
         setListener();
+        setDataset();
     }
 
     public void setComparator(Comparator<Goal> comparator) {

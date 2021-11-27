@@ -102,6 +102,9 @@ public class GoalFragment extends Fragment {
 
                 weeklyCalendar.setVisibility(View.GONE);
                 monthlyCalendar.setVisibility(View.GONE);
+
+                bigGoalAdapter.setDomain(getCheckedDomain());
+                miniGoalAdapter.setDomain(getCheckedDomain());
             }
         });
         choiceWeek.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +114,9 @@ public class GoalFragment extends Fragment {
 
                 weeklyCalendar.setVisibility(View.VISIBLE);
                 monthlyCalendar.setVisibility(View.GONE);
+
+                bigGoalAdapter.setDomain(getCheckedDomain());
+                miniGoalAdapter.setDomain(getCheckedDomain());
             }
         });
         choiceMonth.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +126,9 @@ public class GoalFragment extends Fragment {
 
                 weeklyCalendar.setVisibility(View.GONE);
                 monthlyCalendar.setVisibility(View.VISIBLE);
+
+                bigGoalAdapter.setDomain(getCheckedDomain());
+                miniGoalAdapter.setDomain(getCheckedDomain());
             }
         });
 
@@ -130,7 +139,7 @@ public class GoalFragment extends Fragment {
             int id = domainToggleGroup.getCheckedId();
             GoalManager.Domain domain;
             if(id == R.id.choiceDay) {
-                domain = GoalManager.Domain.DAY;
+                domain = GoalManager.Domain.ALL;
             } else if(id == R.id.choiceWeek){
                 domain = GoalManager.Domain.WEEK;
             } else if(id == R.id.choiceMonth) {
