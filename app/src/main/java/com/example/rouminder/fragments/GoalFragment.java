@@ -137,6 +137,8 @@ public class GoalFragment extends Fragment {
         setBAdapter(bigItems);
         setMAdapter(miniItems);
 
+
+
         return rootView;
     }
 

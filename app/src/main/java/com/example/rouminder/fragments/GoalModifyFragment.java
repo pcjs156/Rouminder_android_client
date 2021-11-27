@@ -16,8 +16,10 @@ import android.widget.TimePicker;
 
 import androidx.fragment.app.DialogFragment;
 
+import com.example.rouminder.MainApplication;
 import com.example.rouminder.R;
 import com.example.rouminder.data.goalsystem.Goal;
+import com.example.rouminder.data.goalsystem.GoalManager;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -67,7 +69,44 @@ public class GoalModifyFragment extends DialogFragment {
         buttonGoalChange.setOnClickListener(new View.OnClickListener() { // 수정 버튼 클릭 리스너
                 @Override
                 public void onClick(View view) {
-                    // GoalManager를 이용하여 데이터 수정하도록 만들기.
+                    Log.d("GoalModifyFragment", "Modify Start");
+                    try {
+                        //Log.d("GoalModifyFragment",textViewStartTimeFront.getText().toString());
+                        //Log.d("GoalModifyFragment",textViewStartTimeBack.getText().toString());
+                        //Log.d("GoalModifyFragment",textViewEndTimeFront.getText().toString());
+                        //Log.d("GoalModifyFragment",textViewEndTimeBack.getText().toString());
+
+                        int[] startDate = new int[3];
+                        String temp = textViewStartTimeFront.getText().toString();
+                        String[] startDateString = temp.split("\\.");
+                        for(int i=0; i < 3; i++)
+                            startDate[i] = Integer.parseInt(startDateString[i]);
+                        int[] startTime = new int[2];
+                        String[] startTimeString = textViewStartTimeBack.getText().toString().split(":");
+                        for(int i=0; i < 2; i++)
+                            startTime[i] = Integer.parseInt(startTimeString[i]);
+
+                        int[] endDate = new int[3];
+                        String[] endDateString = textViewEndTimeFront.getText().toString().split("\\.");
+                        for(int i=0; i < 3; i++)
+                            endDate[i] = Integer.parseInt(endDateString[i]);
+                        int[] endTime = new int[2];
+                        String[] endTimeString = textViewEndTimeBack.getText().toString().split(":");
+                        for(int i=0; i < 2; i++)
+                            endTime[i] = Integer.parseInt(endTimeString[i]);
+
+                        LocalDateTime newStartTime = LocalDateTime.of(startDate[0], startDate[1], startDate[2], startTime[0], startDate[1]);
+                        LocalDateTime newEndTime = LocalDateTime.of(endDate[0], endDate[1],endDate[2],endTime[0], endTime[1]);
+
+                        GoalManager goalManager = ((MainApplication)getActivity().getApplication()).getGoalManager();
+                        goalManager.getGoal(goal.getId()).setName(editTextGoalName.getText().toString());
+                        goalManager.getGoal(goal.getId()).setStartTime(newStartTime);
+                        goalManager.getGoal(goal.getId()).setEndTime(newEndTime);
+
+                    } catch(Exception e) {
+                        Log.d("GoalModifyFragment", "Modify Error");
+                        e.printStackTrace();
+                    }
                     dismiss();
                 }
             });
