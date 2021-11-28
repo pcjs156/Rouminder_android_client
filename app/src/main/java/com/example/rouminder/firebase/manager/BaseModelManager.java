@@ -12,6 +12,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.StringTokenizer;
 
 // Singleton 패턴으로 구현되어, 인스턴스에 접근하려면 항상 Manager.getInstance()를 호출해야 함
 public class BaseModelManager {
@@ -66,6 +67,15 @@ public class BaseModelManager {
 
     public static LocalDateTime parseTimeStampString(String dtString) throws ParseException {
         return LocalDateTime.parse(dtString, DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+    }
+
+    // "hh:mm" 형태의 문자열을 입력받아 0년 0월 0일 hh시 00분의 LocalDatetime을 바환
+    public static LocalDateTime parseTimeString(String timeString) {
+        StringTokenizer tokenizer = new StringTokenizer(timeString, ":");
+        int hour = Integer.parseInt(tokenizer.nextToken());
+        int min = Integer.parseInt(tokenizer.nextToken());
+        LocalDateTime ret = LocalDateTime.of(0, 0, 0, hour, min);
+        return ret;
     }
 
     public static BaseModelManager getInstance() {
