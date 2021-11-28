@@ -20,10 +20,10 @@ import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
+import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.fragments.GoalDescribeFragment;
 
 import java.util.Comparator;
-import java.util.List;
 
 public class MiniGoalAdapter extends BaseGoalAdapter {
     FragmentActivity activity;
@@ -76,6 +76,11 @@ public class MiniGoalAdapter extends BaseGoalAdapter {
 
             if (goal.getType().equals(Goal.Type.LOCATION.name())) {
                 goalProgressBar.setVisibility(View.GONE);
+
+                if (((LocationGoal) goal).getChecked())
+                    goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+
             } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
                 goalProgressBar.setVisibility(View.GONE);
 

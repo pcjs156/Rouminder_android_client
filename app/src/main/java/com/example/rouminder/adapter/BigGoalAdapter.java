@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -86,11 +87,11 @@ public class BigGoalAdapter extends BaseGoalAdapter {
                 boolean isBefore = data.getBoolean("is_before");
                 String type = data.getString("type");
 
-                if ((isExpired || isBefore) && type.equals("check")) {
-                    goalImgCheckBox.setImageResource(R.drawable.ic_baseline_block_24);
-                    goalImgCheckBox.setClickable(false);
-                    goalImgCheckBox.setEnabled(false);
-                }
+//                if ((isExpired || isBefore) && type.equals("check")) {
+//                    goalImgCheckBox.setImageResource(R.drawable.ic_baseline_block_24);
+//                    goalImgCheckBox.setClickable(false);
+//                    goalImgCheckBox.setEnabled(false);
+//                }
             }
         };
 
@@ -210,53 +211,46 @@ public class BigGoalAdapter extends BaseGoalAdapter {
             };
             timer.schedule(task, 0, 500);
 
-            if (goal instanceof LocationGoal) {
-                if (goal.getType().equals(Goal.Type.LOCATION.name())) {
-                    goalProgressBar.setVisibility(View.GONE);
+            if (goal.getType().equals(Goal.Type.CHECK.name())) {
+                goalProgressBar.setVisibility(View.GONE);
+                goalImgCheckBox.setClickable(false);
+            } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
+                goalProgressBar.setVisibility(View.GONE);
 
-                    if (((LocationGoal) goal).getChecked())
-                        goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
-                    else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+                CheckGoal checkGoal = (CheckGoal) goal;
 
-                    goalImgCheckBox.setClickable(false);
-                } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
-                    goalProgressBar.setVisibility(View.GONE);
+                if (checkGoal.getChecked())
+                    goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
 
-                    CheckGoal checkGoal = (CheckGoal) goal;
-
-                    if (checkGoal.getChecked())
-                        goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
-                    else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
-
-                    goalImgCheckBox.setClickable(true);
-                    goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (checkGoal.getChecked()) {
-                                goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
-                                checkGoal.setChecked(false);
-                            } else {
-                                goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
-                                checkGoal.setChecked(true);
-                            }
-                        }
-                    });
-                } else {
-                    goalImgCheckBox.setVisibility(View.GONE);
-                    goalProgressBar.setMax(goal.getTarget());
-                    goalProgressBar.setProgress(((CountGoal) goal).getCount());
-                }
-
-                goalBox.setClickable(true);
-                goalBox.setOnClickListener(new View.OnClickListener() {
+                goalImgCheckBox.setClickable(true);
+                goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.d("TestCode", "FragmentGoalDescribe Start");
-                        GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
-                        goalDescribeFragment.show(activity.getSupportFragmentManager(), null);
+                        if (checkGoal.getChecked()) {
+                            goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+                            checkGoal.setChecked(false);
+                        } else {
+                            goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                            checkGoal.setChecked(true);
+                        }
                     }
                 });
+            } else {
+                goalImgCheckBox.setVisibility(View.GONE);
+                goalProgressBar.setMax(goal.getTarget());
+                goalProgressBar.setProgress(((CountGoal) goal).getCount());
             }
+
+            goalBox.setClickable(true);
+            goalBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("TestCode", "FragmentGoalDescribe Start");
+                    GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
+                    goalDescribeFragment.show(activity.getSupportFragmentManager(), null);
+                }
+            });
         }
     }
 }
