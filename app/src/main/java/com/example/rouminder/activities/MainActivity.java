@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.MotionEvent;
 
 import com.example.rouminder.MainApplication;
 import com.example.rouminder.ProgressDialog;
@@ -217,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
             goalModels.forEach(goalModel -> {
                 Log.i("test", goalModel.toString());
-                goalManager.addGoal(convertGoalModelToGoal(goalModel));
+                goalManager.addGoal(GoalModelManager.convertGoalModelToGoal(goalManager,goalModel));
             });
 
 //            if (goalManager.getGoal(1) == null) {
@@ -227,50 +226,6 @@ public class MainActivity extends AppCompatActivity {
 //                        Color.valueOf(Color.parseColor("#ffff0000"))));
 //            }
         }
-    }
-
-    private Goal convertGoalModelToGoal(GoalModel goalModel) {
-        Goal goal;
-
-        HashMap<String, Object> info = goalModel.getInfo();
-
-        DateTimeFormatter formatter = BaseModelManager.getLongTimeFormatter();
-
-        if (info.get("method").equals("check")) {
-            goal = new CheckGoal(goalManager,
-                    Integer.parseInt(info.get("id").toString()),
-                    info.get("name").toString(),
-                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
-                    Integer.parseInt(info.get("current").toString()),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())),
-                    info.get("tag").toString());
-        } else if (info.get("method").equals("count")) {
-            goal = new CountGoal(goalManager,
-                    Integer.parseInt(info.get("id").toString()),
-                    info.get("name").toString(),
-                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
-                    Integer.parseInt(info.get("current").toString()),
-                    Integer.parseInt(info.get("target_count").toString()),
-                    info.get("unit").toString(),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())),
-                    info.get("tag").toString());
-        } else {
-            goal = new LocationGoal(goalManager,
-                    Integer.parseInt(info.get("id").toString()),
-                    info.get("name").toString(),
-                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
-                    Integer.parseInt(info.get("current").toString()),
-                    Integer.parseInt(info.get("target_count").toString()),
-                    Double.parseDouble(info.get("latitude").toString()),
-                    Double.parseDouble(info.get("longitude").toString()),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())),
-                    info.get("tag").toString());
-        }
-
-        return goal;
     }
 
     private HashMap<String, Object> convertGoalToHashMap(Goal goal) {

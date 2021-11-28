@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +34,8 @@ import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 import com.nex3z.togglebuttongroup.button.CircularToggle;
 
 import java.util.Comparator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GoalFragment extends Fragment {
     GoalManager goalManager;
@@ -72,6 +77,7 @@ public class GoalFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.viewGoal);
         recyclerView.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
         recyclerView.setAdapter(bigGoalAdapter);
+
 
         RecyclerView miniRecyclerView = (RecyclerView) rootView.findViewById(R.id.lstMiniGoal);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
@@ -124,6 +130,24 @@ public class GoalFragment extends Fragment {
             }
         });
 
+        Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message message) {
+                Log.d("test", "aaa");
+                bigGoalAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0);
+            }
+        };
+        new Timer().schedule(task, 0, 30 * 1000);
+
         return rootView;
     }
 
@@ -131,13 +155,13 @@ public class GoalFragment extends Fragment {
         int id = domainToggleGroup.getCheckedId();
         GoalManager.Domain domain;
         if(id == R.id.choiceDay) {
-            domain = GoalManager.Domain.ALL;
+            domain = GoalManager.Domain.DAY;
         } else if(id == R.id.choiceWeek){
             domain = GoalManager.Domain.WEEK;
         } else if(id == R.id.choiceMonth) {
             domain = GoalManager.Domain.MONTH;
         } else {
-            domain = GoalManager.Domain.ALL;
+            domain = GoalManager.Domain.DAY;
         }
         return domain;
     }

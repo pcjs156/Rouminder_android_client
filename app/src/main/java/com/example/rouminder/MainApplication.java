@@ -1,6 +1,7 @@
 package com.example.rouminder;
 
 import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.helpers.GoalNotificationHelper;
 import com.example.rouminder.receivers.RenewAlarmReceiver;
+import com.example.rouminder.receivers.RepeatPlanUpdateReceiver;
 import com.example.rouminder.services.RenewGoalService;
 
 import java.time.LocalDateTime;
@@ -106,8 +108,12 @@ public class MainApplication extends android.app.Application {
         registerReceiver(new RenewAlarmReceiver(), new IntentFilter(Intent.ACTION_TIME_TICK));
         RenewGoalService.enqueueWork(this, new Intent());
 
-        // test
-
+        {
+            Intent intent = new Intent(this, RepeatPlanUpdateReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(AlarmManager.class);
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 24 * 60 * 60 * 1000, 24 * 60 * 60 * 1000, pendingIntent);
+        }
     }
 
     public GoalManager getGoalManager() {

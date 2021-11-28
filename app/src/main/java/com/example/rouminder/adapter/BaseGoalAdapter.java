@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 ;
 
-public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class BaseGoalAdapter<V extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<V> {
     protected List<Goal> items;
     protected GoalManager goalManager;
     protected GoalManager.Domain domain;
