@@ -63,8 +63,6 @@ public class GoalFragment extends Fragment {
         choiceDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "daily calendar", Toast.LENGTH_SHORT).show();
-
                 weeklyCalendar.setVisibility(View.GONE);
                 monthlyCalendar.setVisibility(View.GONE);
             }
@@ -72,8 +70,6 @@ public class GoalFragment extends Fragment {
         choiceWeek.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "weekly calendar", Toast.LENGTH_SHORT).show();
-
                 weeklyCalendar.setVisibility(View.VISIBLE);
                 monthlyCalendar.setVisibility(View.GONE);
             }
@@ -81,8 +77,6 @@ public class GoalFragment extends Fragment {
         choiceMonth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "monthly calendar", Toast.LENGTH_SHORT).show();
-
                 weeklyCalendar.setVisibility(View.GONE);
                 monthlyCalendar.setVisibility(View.VISIBLE);
             }
