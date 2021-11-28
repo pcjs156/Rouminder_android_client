@@ -89,7 +89,7 @@ public class GoalFragment extends Fragment {
         });
 
         // adapter 설정
-        BigGoalAdapter bAdapter = new BigGoalAdapter(goalManager, goalManager.getGoals());
+        BigGoalAdapter bAdapter = new BigGoalAdapter(getActivity(), goalManager, goalManager.getGoals());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         recyclerView.setAdapter(bAdapter);
 
@@ -105,7 +105,7 @@ public class GoalFragment extends Fragment {
      * @param items goals to show at mini goal recyclerView
      */
     public void setMAdapter(List<Goal> items) {
-        MiniGoalAdapter mAdapter = new MiniGoalAdapter(goalManager, items);
+        MiniGoalAdapter mAdapter = new MiniGoalAdapter(getActivity(), goalManager, items);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         miniRecyclerView.setAdapter(mAdapter);
     }
