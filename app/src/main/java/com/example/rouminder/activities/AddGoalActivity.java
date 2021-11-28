@@ -373,7 +373,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
             values.put("week_plan", weekPlan);
             RepeatPlanModel plan = repeatPlanModelManager.create(values);
-            goalModelManager.create(plan);
+//            goalModelManager.create(plan);
         }
 
         finish();
