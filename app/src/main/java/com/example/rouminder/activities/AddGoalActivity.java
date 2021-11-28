@@ -80,8 +80,8 @@ public class AddGoalActivity extends AppCompatActivity {
     private TextView endTime;
     private TextView textViewGoalEndTime;
     private TextView textViewGoalStartTime;
-    private TextView textViewGoalEndDate;
-    private TextView textViewGoalStartDate;
+//    private TextView textViewGoalEndDate;
+//    private TextView textViewGoalStartDate;
 
 
     private MapsFragment mapsFragment;
@@ -103,6 +103,8 @@ public class AddGoalActivity extends AppCompatActivity {
         LinearLayout dateTimeLayout = (LinearLayout) findViewById(R.id.datetimeLayout);
         RelativeLayout mapLayout = (RelativeLayout) findViewById(R.id.map);
 
+        weekdayLayout.setVisibility(View.GONE);
+
         LinearLayout dateTime = findViewById(R.id.dateTimeSettingLayout);
         dateTime.setVisibility(View.GONE);
 
@@ -115,9 +117,9 @@ public class AddGoalActivity extends AppCompatActivity {
         editTextTargetCount = (EditText) findViewById(R.id.editTextNumberSigned);
 
         textViewGoalEndTime = (TextView) findViewById(R.id.textViewGoalEndTime);
-        textViewGoalStartTime = (TextView) findViewById(R.id.textViewGoalStartTime);;
-        textViewGoalEndDate = (TextView) findViewById(R.id.textViewGoalEndDate);;
-        textViewGoalStartDate = (TextView) findViewById(R.id.textViewGoalStartDate);;
+        textViewGoalStartTime = (TextView) findViewById(R.id.textViewGoalStartTime);
+//        textViewGoalEndDate = (TextView) findViewById(R.id.textViewGoalEndDate);
+//        textViewGoalStartDate = (TextView) findViewById(R.id.textViewGoalStartDate);
 
         textViewGoalEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,27 +127,24 @@ public class AddGoalActivity extends AppCompatActivity {
                 onTimeClicked(view);
             }
         });
-
         textViewGoalStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onTimeClicked(view);
             }
         });
-
-        textViewGoalEndDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onDateClicked(view);
-            }
-        });
-
-        textViewGoalStartDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onDateClicked(view);
-            }
-        });
+//        textViewGoalEndDate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                onDateClicked(view);
+//            }
+//        });
+//        textViewGoalStartDate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                onDateClicked(view);
+//            }
+//        });
 
         mapsFragment = (MapsFragment) getSupportFragmentManager().findFragmentById(R.id.mapFinder);
 

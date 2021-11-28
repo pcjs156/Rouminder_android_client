@@ -63,8 +63,8 @@ public class GoalFragment extends Fragment {
         CircularToggle choiceWeek = (CircularToggle) rootView.findViewById(R.id.choiceWeek);
         CircularToggle choiceMonth = (CircularToggle) rootView.findViewById(R.id.choiceMonth);
 
-        LinearLayout weeklyCalendar = (LinearLayout) rootView.findViewById(R.id.weeklyCalendar);
-        CardView monthlyCalendar = (CardView) rootView.findViewById(R.id.monthlyCalendar);
+//        LinearLayout weeklyCalendar = (LinearLayout) rootView.findViewById(R.id.weeklyCalendar);
+//        CardView monthlyCalendar = (CardView) rootView.findViewById(R.id.monthlyCalendar);
 
         BigGoalAdapter bigGoalAdapter = new BigGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
         MiniGoalAdapter miniGoalAdapter = new MiniGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
@@ -92,8 +92,8 @@ public class GoalFragment extends Fragment {
             public void onClick(View view) {
                 Toast.makeText(context.getApplicationContext(), "daily calendar", Toast.LENGTH_SHORT).show();
 
-                weeklyCalendar.setVisibility(View.GONE);
-                monthlyCalendar.setVisibility(View.GONE);
+//                weeklyCalendar.setVisibility(View.GONE);
+//                monthlyCalendar.setVisibility(View.GONE);
 
                 bigGoalAdapter.setDomain(getCheckedDomain());
                 miniGoalAdapter.setDomain(getCheckedDomain());
@@ -104,8 +104,8 @@ public class GoalFragment extends Fragment {
             public void onClick(View view) {
                 Toast.makeText(context.getApplicationContext(), "weekly calendar", Toast.LENGTH_SHORT).show();
 
-                weeklyCalendar.setVisibility(View.VISIBLE);
-                monthlyCalendar.setVisibility(View.GONE);
+//                weeklyCalendar.setVisibility(View.VISIBLE);
+//                monthlyCalendar.setVisibility(View.GONE);
 
                 bigGoalAdapter.setDomain(getCheckedDomain());
                 miniGoalAdapter.setDomain(getCheckedDomain());
@@ -116,8 +116,8 @@ public class GoalFragment extends Fragment {
             public void onClick(View view) {
                 Toast.makeText(context.getApplicationContext(), "monthly calendar", Toast.LENGTH_SHORT).show();
 
-                weeklyCalendar.setVisibility(View.GONE);
-                monthlyCalendar.setVisibility(View.VISIBLE);
+//                weeklyCalendar.setVisibility(View.GONE);
+//                monthlyCalendar.setVisibility(View.VISIBLE);
 
                 bigGoalAdapter.setDomain(getCheckedDomain());
                 miniGoalAdapter.setDomain(getCheckedDomain());
