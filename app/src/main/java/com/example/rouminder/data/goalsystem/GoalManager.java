@@ -82,9 +82,12 @@ public class GoalManager {
     }
 
     void updateGoal(int id) {
-        onGoalChangeListeners.forEach(listener -> {
+        for(OnGoalChangeListener listener: onGoalChangeListeners) {
             listener.onGoalUpdate(id);
-        });
+        }
+//        onGoalChangeListeners.forEach(listener -> {
+//            listener.onGoalUpdate(id);
+//        });
     }
 
     void updateGoalTime(int id, Runnable function) {

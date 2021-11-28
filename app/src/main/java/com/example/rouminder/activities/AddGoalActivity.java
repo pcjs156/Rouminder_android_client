@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -34,6 +35,7 @@ import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
 import com.example.rouminder.firebase.model.RepeatPlanModel;
 import com.example.rouminder.fragments.MapsFragment;
+import com.example.rouminder.helpers.RepeatPlanHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.example.rouminder.firebase.model.GoalModel;
 import com.nex3z.togglebuttongroup.MultiSelectToggleGroup;
@@ -59,7 +61,6 @@ public class AddGoalActivity extends AppCompatActivity {
     // manager
     private GoalModelManager goalModelManager = GoalModelManager.getInstance();
     private RepeatPlanModelManager repeatPlanModelManager = RepeatPlanModelManager.getInstance();
-    private GoalManager goalManager;
 
     // uid
     private String uid;
@@ -362,8 +363,8 @@ public class AddGoalActivity extends AppCompatActivity {
             values.put("finish_datetime", endDatetime);
 
             GoalModel goalModel = goalModelManager.create(values);
-            goalManager = ((MainApplication) getApplication()).getGoalManager();
-            goalManager.addGoal(convertGoalModelToGoal(goalModel));
+            GoalManager goalManager = ((MainApplication) getApplication()).getGoalManager();
+            goalManager.addGoal(GoalModelManager.convertGoalModelToGoal(goalManager, goalModel));
         } else if (type.equals("repeat")) {
             Boolean[] _weekPlan = {true, false, true, false, true, false, false};
             ArrayList<Boolean> weekPlan = new ArrayList<>();
@@ -373,54 +374,11 @@ public class AddGoalActivity extends AppCompatActivity {
 
             values.put("week_plan", weekPlan);
             RepeatPlanModel plan = repeatPlanModelManager.create(values);
+            RepeatPlanHelper.generateGoals(((MainApplication)getApplication()).getGoalManager(), plan);
 //            goalModelManager.create(plan, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
         }
 
         finish();
-    }
-
-    private Goal convertGoalModelToGoal(GoalModel goalModel) {
-        Goal goal;
-
-        HashMap<String, Object> info = goalModel.getInfo();
-
-        DateTimeFormatter formatter = BaseModelManager.getLongTimeFormatter();
-
-        Log.i("test", info.get("method").toString());
-
-        if ((info.get("method").toString()).equals("check")) {
-            Log.i("test", "id" + info.get("id").toString());
-            goal = new CheckGoal(goalManager,
-                    Integer.parseInt(info.get("id").toString()),
-                    info.get("name").toString(),
-                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
-                    Integer.parseInt(info.get("current").toString()),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
-        } else if (info.get("method").toString().equals("count")) {
-            goal = new CountGoal(goalManager,
-                    Integer.parseInt(info.get("id").toString()),
-                    info.get("name").toString(),
-                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
-                    Integer.parseInt(info.get("current").toString()),
-                    Integer.parseInt(info.get("target_count").toString()),
-                    info.get("unit").toString(),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
-        } else {
-            goal = new LocationGoal(goalManager,
-                    Integer.parseInt(info.get("id").toString()),
-                    info.get("name").toString(),
-                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
-                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
-                    Integer.parseInt(info.get("current").toString()),
-                    Integer.parseInt(info.get("target_count").toString()),
-                    Double.parseDouble(info.get("latitude").toString()),
-                    Double.parseDouble(info.get("longitude").toString()),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
-        }
-
-        return goal;
     }
 
     private void resetDateTime() {
