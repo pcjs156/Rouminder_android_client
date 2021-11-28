@@ -90,16 +90,16 @@ public class MainApplication extends android.app.Application {
         goalManager.addGoal(new CheckGoal(goalManager, -1, "밥 먹기",
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(2),
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(12), 0,
-                Color.valueOf(255, 0, 0, 255)));
+                Color.valueOf(255, 0, 0, 255), ""));
         goalManager.addGoal(new CountGoal(goalManager, -1, "물 마시기",
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(10),
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(3),
                 1, 5, "회",
-                Color.valueOf(255, 0, 0, 255)));
+                Color.valueOf(255, 0, 0, 255), ""));
         goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(8), 1,
-                Color.valueOf(255, 0, 0, 255)));
+                Color.valueOf(255, 0, 0, 255), ""));
     }
 
     private void initReceivers() {

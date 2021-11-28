@@ -8,8 +8,9 @@ import java.time.LocalDateTime;
 public class CountGoal extends Goal {
     private String unit;
 
-    public CountGoal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, String unit, Color highlight) {
-        super(manager, id, name, from, to, current, target, highlight);
+    public CountGoal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to,
+                     int current, int target, String unit, Color highlight, String tag) {
+        super(manager, id, name, from, to, current, target, highlight, tag);
         this.unit = unit;
     }
 

@@ -20,6 +20,7 @@ public class Goal implements Comparable<Goal> {
     private LocalDateTime endTime;
     private String name;
     private Color highlight;
+    private String tag;
     private Drawable icon;
 
 
@@ -33,7 +34,7 @@ public class Goal implements Comparable<Goal> {
      * @param current a current progress of the goal.
      * @param target  a target progress of the goal.
      */
-    public Goal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, Color highlight) {
+    public Goal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, Color highlight, String tag ) {
         this.manager = manager;
         this.id = id;
         this.name = name;
@@ -42,6 +43,7 @@ public class Goal implements Comparable<Goal> {
         this.current = current;
         this.target = target;
         this.highlight = highlight;
+        this.tag = tag;
     }
 
     /**
@@ -93,8 +95,27 @@ public class Goal implements Comparable<Goal> {
      * @param name a name to be set.
      */
     public void setName(String name) {
-        update();
         this.name = name;
+        update();
+    }
+
+    /**
+     * Get a tag of a goal.
+     *
+     * @return a tag of a goal in a String.
+     */
+    public String getTag() {
+        return tag;
+    }
+
+    /**
+     * Set a name of a goal.
+     *
+     * @param tag a tag to be set.
+     */
+    public void setTag(String tag) {
+        this.tag = tag;
+        update();
     }
 
     /**
@@ -216,6 +237,16 @@ public class Goal implements Comparable<Goal> {
      */
     public int getTarget() {
         return target;
+    }
+
+    /**
+     * Set a target for the goal.
+     *
+     * @param target an integer representing target progress to be set.
+     */
+    public void setTarget(int target) {
+        this.target = target;
+        update();
     }
 
     public int getCurrent() {
