@@ -115,8 +115,9 @@ public class AddGoalActivity extends AppCompatActivity {
         endDate = findViewById(R.id.endDate);
         endTime = findViewById(R.id.endTime);
         goalNameEditText = (EditText) findViewById(R.id.goalNameEditText);
-        editTextUnit = (EditText) findViewById(R.id.countUnit);
-        editTextTargetCount = (EditText) findViewById(R.id.countNumber);
+
+        editTextUnit = (EditText) findViewById(R.id.addCountUnit);
+        editTextTargetCount = (EditText) findViewById(R.id.addCountNumber);
 
         textViewGoalEndTime = (TextView) findViewById(R.id.textViewGoalEndTime);
         textViewGoalStartTime = (TextView) findViewById(R.id.textViewGoalStartTime);
