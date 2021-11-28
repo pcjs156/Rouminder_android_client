@@ -103,11 +103,13 @@ public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     private void removeItem(int id) {
-        int position = getItemPosition(id);
-        if (position != -1) {
-            Goal goal = goalManager.getGoal(id);
-            items.remove(goal);
-            notifyItemRemoved(position);
+        for(int i=0; i<items.size(); i++) {
+            Goal goal = items.get(i);
+            if (goal.getId() == id) {
+                items.remove(i);
+                notifyDataSetChanged();
+                return;
+            }
         }
     }
 
