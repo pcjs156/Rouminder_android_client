@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,7 +42,14 @@ public class GoalFragment extends Fragment {
     GoalManager goalManager;
     private Context context;
 
+    public static GoalFragment me;
+
     SingleSelectToggleGroup domainToggleGroup;
+
+    BigGoalAdapter bigGoalAdapter;
+
+    TextView progress;
+    TextView progressStr;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,7 +69,12 @@ public class GoalFragment extends Fragment {
 
         goalManager = ((MainApplication) getActivity().getApplication()).getGoalManager();
 
+        me = this;
+
         ImageView btnAddGoal = (ImageView) rootView.findViewById(R.id.btnAddGoal);
+
+        progress = (TextView) rootView.findViewById(R.id.entireGoalProgress);
+        progressStr = (TextView) rootView.findViewById(R.id.entireGoalProgressStr);
 
         domainToggleGroup = (SingleSelectToggleGroup) rootView.findViewById(R.id.groupChoices);
         CircularToggle choiceDay = (CircularToggle) rootView.findViewById(R.id.choiceDay);
@@ -71,7 +84,7 @@ public class GoalFragment extends Fragment {
 //        LinearLayout weeklyCalendar = (LinearLayout) rootView.findViewById(R.id.weeklyCalendar);
 //        CardView monthlyCalendar = (CardView) rootView.findViewById(R.id.monthlyCalendar);
 
-        BigGoalAdapter bigGoalAdapter = new BigGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
+        bigGoalAdapter = new BigGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
         MiniGoalAdapter miniGoalAdapter = new MiniGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.viewGoal);
@@ -174,5 +187,10 @@ public class GoalFragment extends Fragment {
                 return g1.getEndTime().compareTo(g2.getEndTime());
             }
         };
+    }
+
+    public void setProgress() {
+        progressStr.setText(bigGoalAdapter.getProgressString());
+        progress.setText(Double.toString(bigGoalAdapter.getProgress())+"%");
     }
 }

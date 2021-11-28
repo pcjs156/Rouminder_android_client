@@ -6,13 +6,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -38,8 +36,6 @@ import java.util.Comparator;
 public class BigGoalAdapter extends BaseGoalAdapter<BigGoalAdapter.ViewHolder> {
     FragmentActivity activity;
 
-
-
     public BigGoalAdapter(FragmentActivity activity, GoalManager goalManager, GoalManager.Domain domain, Comparator<Goal> comparator) {
         super(goalManager, domain, comparator);
         this.activity = activity;
@@ -60,6 +56,14 @@ public class BigGoalAdapter extends BaseGoalAdapter<BigGoalAdapter.ViewHolder> {
         holder.onBind(items.get(position));
     }
 
+    public String getProgressString() {
+        return Integer.toString(complete) + "/" + Integer.toString(inComplete+complete) + "개";
+    }
+
+    public double getProgress() {
+        return progress;
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         private CardView goalBox;
         private TextView goalContent;
@@ -70,7 +74,25 @@ public class BigGoalAdapter extends BaseGoalAdapter<BigGoalAdapter.ViewHolder> {
         private CircleProgressBar goalProgressBar;
         private TextView highlight;
 
+        private View bindView;
 
+        final Handler handler = new Handler() {
+            public void handleMessage(Message msg) {
+                Bundle data = msg.getData();
+                String restDtBody = data.getString("rest_dt_body");
+                goalRestTime.setText(restDtBody);
+
+                boolean isExpired = data.getBoolean("is_expired");
+                boolean isBefore = data.getBoolean("is_before");
+                String type = data.getString("type");
+
+                if ((isExpired || isBefore) && type.equals("check")) {
+                    goalImgCheckBox.setImageResource(R.drawable.ic_baseline_block_24);
+                    goalImgCheckBox.setClickable(false);
+                    goalImgCheckBox.setEnabled(false);
+                }
+            }
+        };
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -84,8 +106,6 @@ public class BigGoalAdapter extends BaseGoalAdapter<BigGoalAdapter.ViewHolder> {
             goalImgCheckBox = itemView.findViewById(R.id.goalImgCheckBox);
             highlight = itemView.findViewById(R.id.highlight);
         }
-
-
 
         private String getRestTimeString(Goal goal) {
             LocalDateTime now = LocalDateTime.now();

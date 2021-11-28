@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
+import com.example.rouminder.fragments.GoalFragment;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -18,6 +19,10 @@ public abstract class BaseGoalAdapter<V extends RecyclerView.ViewHolder> extends
     protected GoalManager.Domain domain;
     protected Comparator<Goal> comparator;
     protected GoalManager.OnGoalChangeListener listener;
+
+    protected double progress;
+    protected int complete;
+    protected int inComplete;
 
     public BaseGoalAdapter(GoalManager goalManager, GoalManager.Domain domain, Comparator<Goal> comparator) {
         super();
@@ -86,6 +91,9 @@ public abstract class BaseGoalAdapter<V extends RecyclerView.ViewHolder> extends
             items.sort(comparator);
             position = getItemPosition(id);
             notifyItemInserted(position);
+
+            calculateProgress();
+            GoalFragment.me.setProgress();
         }
     }
 
@@ -99,6 +107,9 @@ public abstract class BaseGoalAdapter<V extends RecyclerView.ViewHolder> extends
             } else {
                 notifyItemMoved(position, newPosition);
             }
+
+            calculateProgress();
+            GoalFragment.me.setProgress();
         }
     }
 
@@ -108,7 +119,30 @@ public abstract class BaseGoalAdapter<V extends RecyclerView.ViewHolder> extends
             Goal goal = goalManager.getGoal(id);
             items.remove(goal);
             notifyItemRemoved(position);
+
+            calculateProgress();
+            GoalFragment.me.setProgress();
         }
+    }
+
+    public void calculateProgress() {
+        complete = 0;
+        inComplete = 0;
+
+        if (items.size() == 0) {
+            progress = 0;
+            return;
+        }
+
+        items.forEach(item->{
+            if (item.isAccomplished()) {
+                complete++;
+            } else {
+                inComplete++;
+            }
+        });
+
+        progress = 100 * complete / (complete + inComplete);
     }
 
     @Override
