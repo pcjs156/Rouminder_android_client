@@ -2,8 +2,6 @@ package com.example.rouminder.data.goalsystem;
 
 import androidx.annotation.Nullable;
 
-import com.example.rouminder.firebase.exception.ModelDoesNotExists;
-
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -122,17 +120,13 @@ public class GoalManager {
         }
 
         onGoalChangeListeners.forEach(listener -> {
-            try {
-                listener.onGoalRemove(id);
-            } catch (ModelDoesNotExists modelDoesNotExists) {
-                modelDoesNotExists.printStackTrace();
-            }
+            listener.onGoalRemove(id);
         });
         return result;
     }
 
     /**
-     * Get all GoalInstances.
+     * Get all goals.
      *
      * @return a list of goals.
      */
@@ -141,12 +135,12 @@ public class GoalManager {
     }
 
     /**
-     * Get GoalInstances that matches domain and state.
+     * Get goals matching domain and state.
      *
      * @param now    a LocalDateTime object of now.
      * @param domain a Domain enum that is used to check if instance is the same in specific domain.
      * @param status a current state that goal should have.
-     * @return a List of goals that matches criteria.
+     * @return a list of goals that matches criteria.
      */
     public List<Goal> getGoals(LocalDateTime now, @Nullable Domain domain, @Nullable Status status) {
         if (domain == null)
@@ -179,6 +173,15 @@ public class GoalManager {
     }
 
     /**
+     * Get ongoing goals.
+     *
+     * @return a list of ongoing goals.
+     */
+    public List<Goal> getOngoingGoals() {
+        return new ArrayList<>(ongoingGoals);
+    }
+
+    /**
      * Renew goal statuses by a given time.
      *
      * @return true if any goal has changed.
@@ -186,17 +189,12 @@ public class GoalManager {
     public boolean renewGoals(LocalDateTime now) {
         boolean result = false;
 
-        // add to ongoing goals
-        {
-            Goal start = ongoingGoals.isEmpty() ? earlyStartingGoals.first() : earlyStartingGoals.floor(ongoingGoals.last());
-            Goal end = earlyStartingGoals.ceiling(new Goal(now, now));
-            Set<Goal> goalsToBeAdded = earlyStartingGoals.tailSet(start).headSet(end).stream().filter(g -> g.isOnProgress(now)).collect(Collectors.toSet());
-            ongoingGoals.addAll(goalsToBeAdded);
-            result = goalsToBeAdded.isEmpty();
+        TreeSet<Goal> newOngoingGoals = new TreeSet<>(getGoals(now, null, Status.ONGOING));
+        if(!newOngoingGoals.equals(ongoingGoals)) {
+            ongoingGoals.clear();
+            ongoingGoals.addAll(newOngoingGoals);
+            result = true;
         }
-
-        // remove from ongoing goals
-        ongoingGoals.removeIf(g -> g.isAfterEnd(now));
 
         return result;
     }
@@ -351,7 +349,7 @@ public class GoalManager {
 
         public abstract void onGoalUpdate(int id);
 
-        public abstract void onGoalRemove(int id) throws ModelDoesNotExists;
+        public abstract void onGoalRemove(int id);
     }
 
     /**

@@ -27,7 +27,9 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,9 +44,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GoalNotificationHelper {
-    public static String CHANNEL_ID = "rouminder_goal_notification_channel";
-    public static String GROUP_SINGLE = "com.example.rouminder.SINGLE";
-    public static String GROUP_ONGOING = "com.example.rouminder.ONGOING";
+    public static String CHANNEL_GROUP_ID = "com.example.rouminder";
+    public static String CHANNEL_ID_SINGLE = "com.example.rouminder.SINGLE";
+    public static String CHANNEL_ID_PERSISTENT = "com.example.rouminder.PERSISTENT";
+    public static String SINGLE_GROUP_DEFAULT = "com.example.rouminder.DEFAULT";
+    public static String PERSISTENT_GROUP_DEFAULT = "com.example.rouminder.DEFAULT";
     public static int GROUP_ONGOING_SUMMARY = -1;
 
     private static final int MINUTES_TO_ALERT_BEFORE_END = 5;
@@ -68,14 +72,15 @@ public class GoalNotificationHelper {
         intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, type == NotificationType.ONGOING ? CHANNEL_ID_PERSISTENT: CHANNEL_ID_SINGLE)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-        long hoursLeft = ChronoUnit.HOURS.between(LocalDateTime.now(), goal.getEndTime());
-        long minutesLeft = ChronoUnit.MINUTES.between(LocalDateTime.now(), goal.getEndTime()) % 60;
+        LocalDateTime now = LocalDateTime.now();
+        long hoursLeft = ChronoUnit.HOURS.between(now, goal.getEndTime());
+        long minutesLeft = (ChronoUnit.MINUTES.between(now, goal.getEndTime()) + (ChronoUnit.SECONDS.between(now, goal.getEndTime()) % 60 == 0 ? 0 : 1))% 60 ;
         String hoursLeftText = hoursLeft + "시간";
         String minutesLeftText = minutesLeft + "분";
         String timeLeftText = hoursLeft > 0 ? hoursLeftText + " " + minutesLeftText : minutesLeftText;
@@ -84,7 +89,8 @@ public class GoalNotificationHelper {
             case ONGOING:
                 builder.setContentTitle(context.getString(R.string.notification_ongoing_title, goal.getName()))
                         .setContentText(context.getString(R.string.notification_ongoing_content, goal.progressToString(), timeLeftText))
-                        .setGroup(GROUP_ONGOING)
+                        .setGroup(PERSISTENT_GROUP_DEFAULT)
+                        .setCategory(NotificationCompat.CATEGORY_STATUS)
                         .setAutoCancel(false)
                         .setOngoing(true)
                         .setProgress(goal.getTarget(), goal.getCurrent(), false)
@@ -94,12 +100,14 @@ public class GoalNotificationHelper {
             case AT_START:
                 builder.setContentTitle(context.getString(R.string.notification_at_start_title, goal.getName()))
                         .setContentText(context.getString(R.string.notification_at_start_content, goal.getName()))
-                        .setGroup(GROUP_SINGLE);
+                        .setGroup(SINGLE_GROUP_DEFAULT)
+                        .setCategory(NotificationCompat.CATEGORY_ALARM);
                 break;
             case BEFORE_END:
                 builder.setContentTitle(context.getString(R.string.notification_before_end_title, goal.getName()))
                     .setContentText(context.getString(R.string.notification_before_end_content, goal.getName(), timeLeftText))
-                    .setGroup(GROUP_SINGLE);
+                    .setGroup(SINGLE_GROUP_DEFAULT)
+                    .setCategory(NotificationCompat.CATEGORY_ALARM);
                 break;
             default:
                 Log.d("notify", "invalid type");
@@ -111,7 +119,7 @@ public class GoalNotificationHelper {
         if(type == NotificationType.ONGOING)
             setSummaryForOngoingNotification();
 
-        Log.d("notify", "id: " + goal.getId()
+        Log.d("notify", "[set] id: " + goal.getId()
                 + ", type: " + type.name());
     }
 
@@ -127,17 +135,17 @@ public class GoalNotificationHelper {
         String summary = context.getString(R.string.notification_ongoing_summary_title, total, accomplished);
 
         Log.d("test", summary);
-        Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID_PERSISTENT)
                 .setContentTitle("진행 중")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setStyle(new NotificationCompat.InboxStyle()
                         .setSummaryText(summary))
-                .setGroup(GROUP_ONGOING)
+                .setGroup(PERSISTENT_GROUP_DEFAULT)
                 .setGroupSummary(true)
                 .setShowWhen(false)
                 .build();
 
-        manager.notify(NotificationType.ONGOING.name(), GROUP_ONGOING_SUMMARY, notification);
+        manager.notify(NotificationType.ONGOING.name() + "_summary", GROUP_ONGOING_SUMMARY, notification);
     }
 
     public void unsetNotification(int id, NotificationType type) {
@@ -146,18 +154,28 @@ public class GoalNotificationHelper {
         if(type == NotificationType.ONGOING) {
             setSummaryForOngoingNotification();
         }
+        Log.d("notify", "[unset] id: " + id
+                + ", type: " + type.name());
     }
 
     public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = context.getString(R.string.channel_name);
             String description = context.getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
+            NotificationManager manager = context.getSystemService(NotificationManager.class);
+            NotificationChannel persistentChannel = new NotificationChannel(CHANNEL_ID_PERSISTENT, name, NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel singleChannel = new NotificationChannel(CHANNEL_ID_SINGLE, name, NotificationManager.IMPORTANCE_HIGH);
+            manager.createNotificationChannelGroup(new NotificationChannelGroup(CHANNEL_GROUP_ID, "main"));
 
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            // set descriptions
+            persistentChannel.setDescription(description);
+            singleChannel.setDescription(description);
+
+            // set notification channel group
+//            persistentChannel.setGroup(CHANNEL_GROUP_ID);
+//            singleChannel.setGroup(CHANNEL_GROUP_ID);
+
+            manager.createNotificationChannels(Arrays.asList(persistentChannel, singleChannel));
         }
     }
 
@@ -170,11 +188,13 @@ public class GoalNotificationHelper {
         LocalDateTime now = LocalDateTime.now();
         if(!goal.isAfterEnd(now))
             setAlarmAtGoalStart(goal);
-        if(!goal.isAfterEnd(now) && goal.getEndTime().minusMinutes(MINUTES_TO_ALERT_BEFORE_END).isAfter(now))
+        if(!goal.isAfterEnd(now)
+                && goal.getEndTime().minusMinutes(MINUTES_TO_ALERT_BEFORE_END + 1).isAfter(goal.getStartTime())
+                && goal.getEndTime().minusMinutes(MINUTES_TO_ALERT_BEFORE_END + 1).isAfter(now))
             setAlarmBeforeGoalEnd(goal);
-        if(goal.isOnProgress(now)) {
-            setNotification(goal, NotificationType.ONGOING);
-        }
+//        if(goal.isOnProgress(now)) {
+//            setNotification(goal, NotificationType.ONGOING);
+//        }
     }
 
     private void setAlarmAtGoalStart(Goal goal) {
@@ -185,11 +205,14 @@ public class GoalNotificationHelper {
 
 //        Instant at = goal.getStartTime()
 //                .toInstant(ZoneOffset.systemDefault().getRules().getOffset(Clock.systemDefaultZone().instant()));
-        long at = goal.getStartTime()
-                .toInstant(OffsetDateTime.now().getOffset())
+
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZonedDateTime zonedDateTime = goal.getStartTime().atZone(zoneId);
+        long at = zonedDateTime
+                .toInstant()
                 .toEpochMilli();
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        manager.set(AlarmManager.RTC_WAKEUP, at, pendingIntent);
+        manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pendingIntent);
 
         pendingIntentMap.put(goal.getId(), pendingIntent);
         Log.d("alarm", "register " + goal.getId()
@@ -202,12 +225,15 @@ public class GoalNotificationHelper {
         intent.putExtra("notify_type", NotificationType.BEFORE_END.name());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        long at = goal.getEndTime()
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZonedDateTime zonedDateTime = goal.getEndTime().atZone(zoneId);
+        long at = zonedDateTime
                 .minusMinutes(MINUTES_TO_ALERT_BEFORE_END)
-                .toInstant(OffsetDateTime.now().getOffset())
+                .toInstant()
                 .toEpochMilli();
+
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        manager.set(AlarmManager.RTC_WAKEUP, at, pendingIntent);
+        manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pendingIntent);
         pendingIntentMap.put(goal.getId(), pendingIntent);
         Log.d("alarm", "register " + goal.getId()
                 + ", type: " + NotificationType.BEFORE_END.name());
@@ -224,9 +250,8 @@ public class GoalNotificationHelper {
             pendingIntent = pendingIntentMap.remove(id);
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             manager.cancel(pendingIntent);
-            for(NotificationType type: NotificationType.values()) {
-                unsetNotification(id, type);
-            }
+            unsetNotification(id, NotificationType.AT_START);
+            unsetNotification(id, NotificationType.BEFORE_END);
 
             Log.d("alarm", "unregister " + id);
         }
