@@ -12,6 +12,10 @@ public class GoalModel {
     // 해당 목표의 소유자의 uid (foreign key)
     public String uid;
 
+    // (type이 repeat인 경우)
+    // 해당 목표를 생성한 plan의 id
+    public String plan;
+
     // 목표명
     public String name;
     // 목표의 유형 (general, repeat, complex)
@@ -46,25 +50,6 @@ public class GoalModel {
     // 수정일시
     public String modifiedAt;
 
-    public GoalModel(String id, String uid, String createdAt, String modifiedAt,
-                     String name, String type, int current, String tag, String highlight, String method,
-                     int targetCount, String unit, String startDatetime, String finishDatetime) {
-        this.id = id;
-        this.uid = uid;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-        this.name = name;
-        this.type = type;
-        this.current = current;
-        this.tag = tag;
-        this.method = method;
-        this.highlight = highlight;
-        this.targetCount = targetCount;
-        this.unit = unit;
-        this.startDatetime = startDatetime;
-        this.finishDatetime = finishDatetime;
-    }
-
     public GoalModel(HashMap<String, Object> values) {
         if (values.get("id") == null)
             this.id = BaseModelManager.getRandomId();
@@ -78,6 +63,9 @@ public class GoalModel {
 
         this.name = (String) values.get("name");
         this.type = (String) values.get("type");
+
+        if (this.type.equals("repeat"))
+            this.plan = (String) values.get("plan");
 
         Object currentObj = values.get("current");
         if (currentObj != null && currentObj instanceof String)
@@ -161,6 +149,9 @@ public class GoalModel {
         info.put("method", method);
         info.put("highlight", highlight);
         info.put("target_count", targetCount);
+
+        if (method.equals("repeat"))
+            info.put("plan", plan);
 
         if (method.equals("count"))
             info.put("unit", unit);
