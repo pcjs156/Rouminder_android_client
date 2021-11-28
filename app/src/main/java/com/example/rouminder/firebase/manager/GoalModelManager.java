@@ -4,8 +4,14 @@ import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidIn
 
 import androidx.annotation.NonNull;
 
+import com.example.rouminder.data.goalsystem.CheckGoal;
+import com.example.rouminder.data.goalsystem.CountGoal;
+import com.example.rouminder.data.goalsystem.Goal;
+import com.example.rouminder.data.goalsystem.GoalManager;
+import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.firebase.model.GoalModel;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.util.Pair;
 import android.widget.ArrayAdapter;
@@ -20,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -327,5 +334,52 @@ public class GoalModelManager {
         }
 
         return achievementRates;
+    }
+
+    public static Goal convertGoalModelToGoal(GoalManager goalManager, GoalModel goalModel) {
+        Goal goal;
+
+        HashMap<String, Object> info = goalModel.getInfo();
+
+        DateTimeFormatter formatter = BaseModelManager.getLongTimeFormatter();
+
+        Log.i("test", info.get("method").toString());
+
+        if ((info.get("method").toString()).equals("check")) {
+            Log.i("test", "id" + info.get("id").toString());
+            goal = new CheckGoal(goalManager,
+                    Integer.parseInt(info.get("id").toString()),
+                    info.get("name").toString(),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
+                    Integer.parseInt(info.get("current").toString()),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())),
+                    info.get("tag").toString());
+        } else if (info.get("method").toString().equals("count")) {
+            goal = new CountGoal(goalManager,
+                    Integer.parseInt(info.get("id").toString()),
+                    info.get("name").toString(),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
+                    Integer.parseInt(info.get("current").toString()),
+                    Integer.parseInt(info.get("target_count").toString()),
+                    info.get("unit").toString(),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())), info.get("tag")
+                    .toString());
+        } else {
+            goal = new LocationGoal(goalManager,
+                    Integer.parseInt(info.get("id").toString()),
+                    info.get("name").toString(),
+                    LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
+                    LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
+                    Integer.parseInt(info.get("current").toString()),
+                    Integer.parseInt(info.get("target_count").toString()),
+                    Double.parseDouble(info.get("latitude").toString()),
+                    Double.parseDouble(info.get("longitude").toString()),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())),
+                    info.get("tag").toString());
+        }
+
+        return goal;
     }
 }

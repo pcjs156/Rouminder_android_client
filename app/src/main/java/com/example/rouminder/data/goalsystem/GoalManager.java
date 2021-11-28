@@ -82,9 +82,12 @@ public class GoalManager {
     }
 
     void updateGoal(int id) {
-        onGoalChangeListeners.forEach(listener -> {
+        for(OnGoalChangeListener listener: onGoalChangeListeners) {
             listener.onGoalUpdate(id);
-        });
+        }
+//        onGoalChangeListeners.forEach(listener -> {
+//            listener.onGoalUpdate(id);
+//        });
     }
 
     void updateGoalTime(int id, Runnable function) {
@@ -108,6 +111,9 @@ public class GoalManager {
      * @return true if successfully remove the goal, otherwise false.
      */
     public boolean removeGoal(int id) {
+        onGoalChangeListeners.forEach(listener -> {
+            listener.onGoalRemove(id);
+        });
         boolean result;
         if (goals.get(id) != null) {
 
@@ -119,9 +125,6 @@ public class GoalManager {
             result = false;
         }
 
-        onGoalChangeListeners.forEach(listener -> {
-            listener.onGoalRemove(id);
-        });
         renewGoals(LocalDateTime.now());
         return result;
     }

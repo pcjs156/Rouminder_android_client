@@ -25,6 +25,10 @@
             android:enabled="true"
             android:exported="false">
         </receiver>
+        <receiver android:name=".receivers.RepeatPlanUpdateReceiver"
+            android:enabled="true"
+            android:exported="false">
+        </receiver>
 
         <service android:name=".services.NotifyIntentService"
             android:enabled="true"
@@ -32,6 +36,11 @@
             android:permission="android.permission.BIND_JOB_SERVICE" >
         </service>
         <service android:name=".services.RenewGoalService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+        </service>
+        <service android:name=".services.RepeatPlanUpdateHandlerService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE">

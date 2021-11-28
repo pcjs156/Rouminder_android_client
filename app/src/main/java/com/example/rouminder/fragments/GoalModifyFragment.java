@@ -120,7 +120,7 @@ public class GoalModifyFragment extends DialogFragment {
 
         if (goal.getType().equals(Goal.Type.COUNT.name())) {
             mapLayout.setVisibility(View.GONE);
-            countNumber.setText(""+((CountGoal) goal).getCount());
+            countNumber.setText(""+goal.getTarget());
             countUnit.setText(((CountGoal) goal).getUnit());
         } else if (goal.getType().equals(Goal.Type.LOCATION.name())) {
             countLayout.setVisibility(View.GONE);
