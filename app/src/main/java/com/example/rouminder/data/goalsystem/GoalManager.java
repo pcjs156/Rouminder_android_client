@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,8 +29,6 @@ public class GoalManager {
     private final List<OnGoalChangeListener> onGoalChangeListeners;
 
     public GoalManager() {
-        Set<Integer> a = new HashSet<>();
-        Goal goal;
         goals = new HashMap<>();
         earlyStartingGoals = new TreeSet<>(new Comparator<Goal>() {
             @Override
@@ -68,6 +67,7 @@ public class GoalManager {
         earlyEndingGoals.add(goal);
 
         onGoalChangeListeners.forEach(listener -> listener.onGoalAdd(goal.getId()));
+        renewGoals(LocalDateTime.now());
         return goal.getId();
     }
 
@@ -122,6 +122,7 @@ public class GoalManager {
         onGoalChangeListeners.forEach(listener -> {
             listener.onGoalRemove(id);
         });
+        renewGoals(LocalDateTime.now());
         return result;
     }
 
@@ -161,8 +162,10 @@ public class GoalManager {
             Goal dummy = domainFilter.getDummy();
             Goal bottom = earlyEndingGoals.floor(dummy);
             Goal top = earlyStartingGoals.ceiling(dummy);
-            SortedSet<Goal> setFromBottom = earlyEndingGoals.tailSet(bottom);
-            SortedSet<Goal> setFromTop = earlyStartingGoals.headSet(top);
+//            SortedSet<Goal> setFromBottom = bottom == null ? new TreeSet<>() : earlyEndingGoals.tailSet(bottom);
+//            SortedSet<Goal> setFromTop = top == null ? new TreeSet<>() : earlyStartingGoals.headSet(top);
+            SortedSet<Goal> setFromBottom = bottom == null ? earlyEndingGoals : earlyEndingGoals.tailSet(bottom);
+            SortedSet<Goal> setFromTop = top == null ? earlyStartingGoals : earlyStartingGoals.headSet(top);
             domainFiltered = setFromBottom.stream()
                     .filter(setFromTop::contains)
                     .collect(Collectors.toList());
@@ -219,25 +222,6 @@ public class GoalManager {
     }
 
     /**
-     * Set an event listener for changes of each goal matching condition;
-     * like add, update, change.
-     *
-     * @param listener a listener to be set.
-     */
-    public void removeOnGoalMatchingConditionChangeListener(OnGoalWithCriteriaChangeListener listener) {
-        removeOnGoalChangeListener(listener.getListener());
-    }
-
-    /**
-     * Remove an event listener for changes of each goal matching condition from the list
-     *
-     * @param listener a listener to be removed.
-     */
-    public void setOnGoalMatchingConditionChangeListener(OnGoalWithCriteriaChangeListener listener) {
-        setOnGoalChangeListener(listener.getListener());
-    }
-
-    /**
      * A enum for namespacing the domain in time, such as day, month, etc.
      */
     public enum Domain {
@@ -272,7 +256,9 @@ public class GoalManager {
                     end = start.plusDays(7);
                     break;
                 case MONTH:
-                    start = now.truncatedTo(ChronoUnit.MONTHS);
+                    start = now.minusMonths(1)
+                            .with(TemporalAdjusters.firstDayOfNextMonth())
+                            .truncatedTo(ChronoUnit.DAYS);
                     end = start.plusMonths(1);
                     break;
                 case ALL:
@@ -350,47 +336,65 @@ public class GoalManager {
         public abstract void onGoalUpdate(int id);
 
         public abstract void onGoalRemove(int id);
+
+        public void remove() {
+            removeOnGoalChangeListener(this);
+        }
     }
 
     /**
      * An event listener for changes of each goal for matching criteria.
      */
-    public abstract class OnGoalWithCriteriaChangeListener {
-        private final OnGoalChangeListener listener;
+    public abstract class OnGoalWithCriteriaChangeListener extends OnGoalChangeListener{
+        private final Domain domain;
+        private final Status status;
+        private LocalDateTime previous;
 
-        OnGoalWithCriteriaChangeListener(Domain domain, Status status) {
-            this.listener = new OnGoalChangeListener() {
-                @Override
-                public void onGoalAdd(int id) {
-                    if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
-                            && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
-                        onGoalWithCriteriaAdd(id);
-                }
-
-                @Override
-                public void onGoalUpdate(int id) {
-                    if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
-                            && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
-                        onGoalWithCriteriaUpdate(id);
-                }
-
-                @Override
-                public void onGoalRemove(int id) {
-                    if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
-                            && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
-                        onGoalWithCriteriaRemove(id);
-                }
-            };
+        public OnGoalWithCriteriaChangeListener(Domain domain, Status status) {
+            this.domain = domain;
+            this.status = status;
         }
 
-        private OnGoalChangeListener getListener() {
-            return listener;
+        @Override
+        public void onGoalAdd(int id) {
+            LocalDateTime current = LocalDateTime.now();
+            if(previous != null && current.getDayOfMonth() != previous.getDayOfMonth())
+                onDomainChanged();
+            previous = current;
+            if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
+                    && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
+                onGoalWithCriteriaAdd(id);
         }
+
+        @Override
+        public void onGoalUpdate(int id) {
+            LocalDateTime current = LocalDateTime.now();
+            if(previous != null && current.getDayOfMonth() != previous.getDayOfMonth())
+                onDomainChanged();
+            previous = current;
+            if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
+                    && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
+                onGoalWithCriteriaUpdate(id);
+        }
+
+        @Override
+        public void onGoalRemove(int id) {
+            LocalDateTime current = LocalDateTime.now();
+            if(previous != null && current.getDayOfMonth() != previous.getDayOfMonth())
+                onDomainChanged();
+            previous = current;
+            if (DomainFilter.test(LocalDateTime.now(), domain, getGoal(id))
+                    && StatusFilter.test(LocalDateTime.now(), status, getGoal(id)))
+                onGoalWithCriteriaRemove(id);
+        }
+
 
         public abstract void onGoalWithCriteriaAdd(int id);
 
         public abstract void onGoalWithCriteriaUpdate(int id);
 
         public abstract void onGoalWithCriteriaRemove(int id);
+
+        public abstract void onDomainChanged();
     }
 }

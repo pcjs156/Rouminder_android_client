@@ -33,52 +33,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Comparator;
 
 
-public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    List<Goal> items;
+public class BigGoalAdapter extends BaseGoalAdapter {
     FragmentActivity activity;
 
-    public BigGoalAdapter(FragmentActivity activity, GoalManager goalManager, List<Goal> items) {
-        super();
-        this.items = items;
+    public BigGoalAdapter(FragmentActivity activity, GoalManager goalManager, GoalManager.Domain domain, Comparator<Goal> comparator) {
+        super(goalManager, domain, comparator);
         this.activity = activity;
-
-        goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener() {
-            @Override
-            public void onGoalAdd(int id) {
-                int position = getItemPosition(id);
-                if (position == -1) {
-                    position = addGoal(goalManager.getGoal(id));
-                    notifyItemInserted(position);
-                }
-            }
-
-            @Override
-            public void onGoalUpdate(int id) {
-                int position = getItemPosition(id);
-                if (position != -1) {
-                    notifyItemChanged(position);
-                }
-            }
-
-            @Override
-            public void onGoalRemove(int id) {
-                int position = getItemPosition(id);
-                if (position != -1) {
-                    position = removeGoal(items.get(position));
-                    notifyItemRemoved(position);
-                }
-            }
-        });
-    }
-
-    private int getItemPosition(int id) {
-        Goal goal = items.stream()
-                .filter(e -> e.getId() == id)
-                .findFirst()
-                .orElse(null);
-        return (goal == null) ? -1 : items.indexOf(goal);
     }
 
     @NonNull
@@ -89,35 +52,19 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Context context = parent.getContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(R.layout.item_goal, parent, false);
-        return new BigGoalHolder(view);
+        return new ViewHolder(view);
     }
 
-    public void onBindViewHolder(@NonNull BigGoalHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.onBind(items.get(position));
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        onBindViewHolder((BigGoalHolder) holder, position);
+        onBindViewHolder((ViewHolder) holder, position);
     }
 
-    private int addGoal(Goal goal) {
-        items.add(goal);
-        return items.indexOf(goal);
-    }
-
-    private int removeGoal(Goal goal) {
-        int position = items.indexOf(goal);
-        items.remove(goal);
-        return position;
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
-
-    class BigGoalHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         private CardView goalBox;
         private TextView goalContent;
         private TextView goalRestTime;
@@ -149,7 +96,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         Timer timer = new Timer();
 
-        public BigGoalHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             goalBox = itemView.findViewById(R.id.goalCardView);
@@ -264,50 +211,52 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             timer.schedule(task, 0, 500);
 
             if (goal instanceof LocationGoal) {
-                goalProgressBar.setVisibility(View.GONE);
+                if (goal.getType().equals(Goal.Type.LOCATION.name())) {
+                    goalProgressBar.setVisibility(View.GONE);
 
-                if (((LocationGoal) goal).getChecked())
-                    goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
-                else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+                    if (((LocationGoal) goal).getChecked())
+                        goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                    else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
 
-                goalImgCheckBox.setClickable(false);
-            } else if (goal instanceof CheckGoal) {
-                goalProgressBar.setVisibility(View.GONE);
+                    goalImgCheckBox.setClickable(false);
+                } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
+                    goalProgressBar.setVisibility(View.GONE);
 
-                CheckGoal checkGoal = (CheckGoal) goal;
+                    CheckGoal checkGoal = (CheckGoal) goal;
 
-                if (checkGoal.getChecked())
-                    goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
-                else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+                    if (checkGoal.getChecked())
+                        goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                    else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
 
-                goalImgCheckBox.setClickable(true);
-                goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
+                    goalImgCheckBox.setClickable(true);
+                    goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (checkGoal.getChecked()) {
+                                goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+                                checkGoal.setChecked(false);
+                            } else {
+                                goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                                checkGoal.setChecked(true);
+                            }
+                        }
+                    });
+                } else {
+                    goalImgCheckBox.setVisibility(View.GONE);
+                    goalProgressBar.setMax(goal.getTarget());
+                    goalProgressBar.setProgress(((CountGoal) goal).getCount());
+                }
+
+                goalBox.setClickable(true);
+                goalBox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (checkGoal.getChecked()) {
-                            goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
-                            checkGoal.setChecked(false);
-                        } else {
-                            goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
-                            checkGoal.setChecked(true);
-                        }
+                        Log.d("TestCode", "FragmentGoalDescribe Start");
+                        GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
+                        goalDescribeFragment.show(activity.getSupportFragmentManager(), null);
                     }
                 });
-            } else {
-                goalImgCheckBox.setVisibility(View.GONE);
-                goalProgressBar.setMax(goal.getTarget());
-                goalProgressBar.setProgress(((CountGoal) goal).getCount());
             }
-
-            goalBox.setClickable(true);
-            goalBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.d("TestCode", "FragmentGoalDescribe Start");
-                    GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
-                    goalDescribeFragment.show(activity.getSupportFragmentManager(), null);
-                }
-            });
         }
     }
 }
