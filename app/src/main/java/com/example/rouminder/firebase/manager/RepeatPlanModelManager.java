@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import com.example.rouminder.firebase.exception.ModelDoesNotExists;
+import com.example.rouminder.firebase.model.GoalModel;
 import com.example.rouminder.firebase.model.RepeatPlanModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -96,9 +97,10 @@ public class RepeatPlanModelManager {
 
         ref.child("data").child(randomId).setValue(values);
 
-        RepeatPlanModel newGoal = new RepeatPlanModel(values);
+        RepeatPlanModel newPlan = new RepeatPlanModel(values);
+        plans.add(newPlan);
 
-        return newGoal;
+        return newPlan;
     }
 
     public ArrayList<RepeatPlanModel> get() {
@@ -174,8 +176,21 @@ public class RepeatPlanModelManager {
         if (targetRepeatPlanModel == null)
             throw new ModelDoesNotExists();
         else {
+            // 플랜 삭제
+            String targetPlanId = plans.get(targetIdx).id;
             dataRef.child(id).removeValue();
             plans.remove(targetIdx);
+
+            GoalModelManager goalModelManager = GoalModelManager.getInstance();
+            for (GoalModel goalModel : goalModelManager.get()) {
+                System.out.println("REPEAT : READING " + goalModel.id);
+                if (goalModel.type.equals("repeat") && goalModel.plan.equals(targetPlanId)) {
+                    HashMap<String, Object> info = goalModel.getInfo();
+                    info.put("plan", "");
+                    goalModelManager.update(goalModel.id, info);
+                }
+            }
+
             notifyToAdapters();
         }
     }
