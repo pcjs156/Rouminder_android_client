@@ -6,17 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.icu.text.DateFormat;
-import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -51,14 +49,24 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 public class AddGoalActivity extends AppCompatActivity {
-    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    // self
+    private AddGoalActivity self = this;
 
-    public Spinner highlightsSpinner;
-    public SingleSelectToggleGroup typeGroup;
-    public SingleSelectToggleGroup methodGroup;
+    // manager
+    private GoalModelManager goalModelManager = GoalModelManager.getInstance();
+    private RepeatPlanModelManager repeatPlanModelManager = RepeatPlanModelManager.getInstance();
+    private GoalManager goalManager;
+
+    // uid
+    private String uid;
+
+    // UI
+    private Spinner highlightsSpinner;
+    private SingleSelectToggleGroup typeGroup;
+    private SingleSelectToggleGroup methodGroup;
 
     private EditText goalNameEditText;
-    private MultiAutoCompleteTextView editTextTag;
+    private AutoCompleteTextView editTextTag;
     private EditText editTextTargetCount;
     private EditText editTextUnit;
     private TextView startDate;
@@ -68,16 +76,9 @@ public class AddGoalActivity extends AppCompatActivity {
 
     private MapsFragment mapsFragment;
 
-    public static int currentType;
-    public static View clickedDate;
-
-    public GoalModelManager goalModelManager = GoalModelManager.getInstance();
-    public RepeatPlanModelManager repeatPlanModelManager = RepeatPlanModelManager.getInstance();
-    GoalManager goalManager;
-
-    public String uid;
-
-    public AddGoalActivity self = this;
+    // save clicked content
+    private int currentType;
+    private View clickedView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,12 +111,9 @@ public class AddGoalActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ArrayAdapter tagsAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, goalModelManager.getTags());
-        editTextTag = (MultiAutoCompleteTextView) findViewById(R.id.editTextTag);
-        MultiAutoCompleteTextView.CommaTokenizer token = new MultiAutoCompleteTextView.CommaTokenizer();
-        editTextTag.setTokenizer(token);
+        editTextTag = (AutoCompleteTextView) findViewById(R.id.editTextTag);
         editTextTag.setAdapter(tagsAdapter);
 
-//        int colors[] = {R.drawable.red, R.drawable.blue, R.drawable.green};
         Color[] colors = {
                 Color.valueOf(256, 0, 0, 256),
                 Color.valueOf(0, 256, 0, 256),
@@ -176,9 +174,6 @@ public class AddGoalActivity extends AppCompatActivity {
                 if (currentType == R.id.choiceGeneral) dateTime.setVisibility(View.VISIBLE);
             }
         });
-
-//        add goal 완료 버튼은 showCustom을 사용하여 나중에 추가할 계획
-//        getSupportActionBar().setDisplayShowCustomEnabled();
     }
 
     @Override
@@ -403,7 +398,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
     public void onDateClicked(View view) {
         LocalDateTime cur = LocalDateTime.now();
-        clickedDate = view;
+        clickedView = view;
 
         DatePickerDialog dialog = new DatePickerDialog(this, dateListener,
                 cur.getYear(), cur.getMonthValue() - 1, cur.getDayOfMonth());
@@ -412,7 +407,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
     public void onTimeClicked(View view) {
         LocalDateTime cur = LocalDateTime.now();
-        clickedDate = view;
+        clickedView = view;
 
         TimePickerDialog dialog = new TimePickerDialog(this, timeListener, cur.getHour(), cur.getMinute(), false);
         dialog.show();
@@ -421,14 +416,14 @@ public class AddGoalActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-            resetDate(clickedDate, year, monthOfYear + 1, dayOfMonth);
+            resetDate(clickedView, year, monthOfYear + 1, dayOfMonth);
         }
     };
 
     private TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-            resetTime(clickedDate, hour, minute);
+            resetTime(clickedView, hour, minute);
         }
     };
 
