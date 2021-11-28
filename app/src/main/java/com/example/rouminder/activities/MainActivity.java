@@ -250,8 +250,8 @@ public class MainActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()),
-                    Long.parseLong(info.get("latitude").toString()),
-                    Long.parseLong(info.get("longitude").toString()),
+                    Double.parseDouble(info.get("latitude").toString()),
+                    Double.parseDouble(info.get("longitude").toString()),
                     Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         }
 
@@ -274,6 +274,8 @@ public class MainActivity extends AppCompatActivity {
             values.put("method", "count");
         } else {
             values.put("method", "location");
+            values.put("latitude", ((LocationGoal) goal).getLat());
+            values.put("longitude", ((LocationGoal) goal).getLng());
         }
         Color color = goal.getHighlight();
         if (color == null) color = Color.valueOf(126,0, 0, 126);

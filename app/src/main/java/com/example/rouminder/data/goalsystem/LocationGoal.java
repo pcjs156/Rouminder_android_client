@@ -9,8 +9,8 @@ public class LocationGoal extends Goal {
     private static String CHECKED = "완료";
     private static String UNCHECKED = "미완료";
 
-    private long lat;
-    private long lng;
+    private double lat;
+    private double lng;
 
     /**
      * A constructor for a Goal.
@@ -22,7 +22,7 @@ public class LocationGoal extends Goal {
      * @param current a current progress of the goal.
      * @param target  a target progress of the goal.
      */
-    public LocationGoal(GoalManager gm, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, long lat, long lng, Color highlight) {
+    public LocationGoal(GoalManager gm, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, double lat, double lng, Color highlight) {
         super(gm, id, name, from, to, current, target, highlight);
         this.lat = lat;
         this.lng = lng;
@@ -33,7 +33,7 @@ public class LocationGoal extends Goal {
      *
      * @return a unit String.
      */
-    public long getLat() {
+    public double getLat() {
         return lat;
     }
 
@@ -42,7 +42,7 @@ public class LocationGoal extends Goal {
      *
      * @return a unit String.
      */
-    public long getLng() {
+    public double getLng() {
         return lng;
     }
 
