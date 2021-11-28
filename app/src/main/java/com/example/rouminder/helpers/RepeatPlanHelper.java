@@ -25,7 +25,7 @@ public class RepeatPlanHelper {
         } catch (ModelDoesNotExists e) {
             e.printStackTrace();
         }
-        return goalModel != null && goalModel.plan.equals(planModel.id);
+        return goalModel != null && goalModel.type.equals("repeat") && goalModel.plan.equals(planModel.id);
     }
 
     public static void generateGoals(GoalManager goalManager, RepeatPlanModel model) {
