@@ -379,8 +379,8 @@ public class AddGoalActivity extends AppCompatActivity {
             GoalManager goalManager = ((MainApplication) getApplication()).getGoalManager();
             goalManager.addGoal(GoalModelManager.convertGoalModelToGoal(goalManager, goalModel));
         } else if (type.equals("repeat")) {
-            int[] weekIds = {R.id.monday, R.id.tuesday, R.id.wednesday,
-                    R.id.thursday, R.id.friday, R.id.saturday, R.id.sunday};
+            int[] weekIds = {R.id.sunday, R.id.monday, R.id.tuesday, R.id.wednesday,
+                                R.id.thursday, R.id.friday, R.id.saturday};
 
             ArrayList<Boolean> weekPlan = new ArrayList<>();
             Set<Integer> selectedDays = groupChoicesWeekday.getCheckedIds();
@@ -406,7 +406,7 @@ public class AddGoalActivity extends AppCompatActivity {
             values.put("start_time", textViewGoalStartTime.getText().toString());
             values.put("end_time", textViewGoalEndTime.getText().toString());
             RepeatPlanModel plan = repeatPlanModelManager.create(values);
-            RepeatPlanHelper.generateGoals(((MainApplication)getApplication()).getGoalManager(), plan);
+            RepeatPlanHelper.generateGoals(((MainApplication) getApplication()).getGoalManager(), plan);
 //            goalModelManager.create(plan, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
         }
 
