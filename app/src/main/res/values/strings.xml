@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Rouminder</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="channel_name">Rouminder</string>
+    <string name="channel_description">Rouminder reminder</string>
+
+    <string name="notification_at_start_title">%1$s 시작</string>
+    <string name="notification_at_start_content">목표 \'%1$s\'를 시작하실 시간입니다!</string>
+
+    <string name="notification_ongoing_title">%1$s</string>
+    <string name="notification_ongoing_content">%1$s, 종료 시까지 약 %2$s 전</string>
+    <string name="notification_ongoing_summary_title">%1$d개 중 %2$d개 완료</string>
+
+    <string name="notification_before_end_title">%1$s 종료 임박</string>
+    <string name="notification_before_end_content">목표 \'%1$s\'가 마감되기 %2$s 전입니다! 달성하셨다면 지금 체크를 해 주세요.</string>
 </resources>
