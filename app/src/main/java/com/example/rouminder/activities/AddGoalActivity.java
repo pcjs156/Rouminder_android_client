@@ -41,6 +41,8 @@ import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 import android.graphics.Color;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -75,6 +77,11 @@ public class AddGoalActivity extends AppCompatActivity {
     private TextView startTime;
     private TextView endDate;
     private TextView endTime;
+    private TextView textViewGoalEndTime;
+    private TextView textViewGoalStartTime;
+    private TextView textViewGoalEndDate;
+    private TextView textViewGoalStartDate;
+
 
     private MapsFragment mapsFragment;
 
@@ -105,6 +112,39 @@ public class AddGoalActivity extends AppCompatActivity {
         goalNameEditText = (EditText) findViewById(R.id.goalNameEditText);
         editTextUnit = (EditText) findViewById(R.id.editTextNumberSigned2);
         editTextTargetCount = (EditText) findViewById(R.id.editTextNumberSigned);
+
+        textViewGoalEndTime = (TextView) findViewById(R.id.textViewGoalEndTime);
+        textViewGoalStartTime = (TextView) findViewById(R.id.textViewGoalStartTime);;
+        textViewGoalEndDate = (TextView) findViewById(R.id.textViewGoalEndDate);;
+        textViewGoalStartDate = (TextView) findViewById(R.id.textViewGoalStartDate);;
+
+        textViewGoalEndTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onTimeClicked(view);
+            }
+        });
+
+        textViewGoalStartTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onTimeClicked(view);
+            }
+        });
+
+        textViewGoalEndDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onDateClicked(view);
+            }
+        });
+
+        textViewGoalStartDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onDateClicked(view);
+            }
+        });
 
         mapsFragment = (MapsFragment) getSupportFragmentManager().findFragmentById(R.id.mapFinder);
 
