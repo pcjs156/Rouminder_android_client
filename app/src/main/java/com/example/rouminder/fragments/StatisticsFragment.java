@@ -47,6 +47,8 @@ public class StatisticsFragment extends Fragment {
         initCircularChart();
         initBarChart();
 
+        Toast.makeText(getActivity().getApplicationContext(), "rate: " + goalModelManager.getEntireAchievementRate(), Toast.LENGTH_SHORT).show();
+
         return root;
     }
 

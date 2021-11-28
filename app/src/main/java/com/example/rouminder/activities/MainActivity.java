@@ -250,6 +250,8 @@ public class MainActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()),
+                    Double.parseDouble(info.get("latitude").toString()),
+                    Double.parseDouble(info.get("longitude").toString()),
                     Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         }
 

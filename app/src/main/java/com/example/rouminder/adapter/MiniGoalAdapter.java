@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
@@ -19,16 +22,19 @@ import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
+import com.example.rouminder.fragments.GoalDescribeFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     List<Goal> items;
+    FragmentActivity activity;
 
-    public MiniGoalAdapter(GoalManager goalManager, List<Goal> items) {
+    public MiniGoalAdapter(FragmentActivity activity, GoalManager goalManager, List<Goal> items) {
         super();
         this.items = items;
+        this.activity = activity;
 
         goalManager.setOnGoalChangeListener(goalManager.new OnGoalChangeListener() {
             @Override
@@ -52,7 +58,7 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onGoalRemove(int id) {
                 int position = getItemPosition(id);
                 if (position != -1) {
-                    removeGoal(goalManager.getGoal(id));
+                    position = removeGoal(items.get(position));
                     notifyItemRemoved(position);
                 }
             }
@@ -104,6 +110,7 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     class MiniGoalHolder extends RecyclerView.ViewHolder {
+        ConstraintLayout goalBox;
         TextView goalContent;
         TextView goalSubText;
         ImageView goalImgCheckBox;
@@ -112,6 +119,7 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public MiniGoalHolder(@NonNull View itemView) {
             super(itemView);
 
+            goalBox = itemView.findViewById(R.id.mini_goal);
             goalContent = itemView.findViewById(R.id.miniGoalContent);
             goalSubText = itemView.findViewById(R.id.miniGoalSubText);
             goalProgressBar = itemView.findViewById(R.id.miniGoalProgressBar);
@@ -151,6 +159,16 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 goalProgressBar.setMax(goal.getTarget());
                 goalProgressBar.setProgress(((CountGoal) goal).getCount());
             }
+
+            goalBox.setClickable(true);
+            goalBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("TestCode", "FragmentGoalDescribe Start");
+                    GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
+                    goalDescribeFragment.show(activity.getSupportFragmentManager(),null);
+                }
+            });
         }
     }
 }

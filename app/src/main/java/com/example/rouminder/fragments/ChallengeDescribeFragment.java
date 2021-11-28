@@ -1,6 +1,8 @@
 package com.example.rouminder.fragments;
 
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import javax.annotation.Nullable;
 
 public class ChallengeDescribeFragment extends DialogFragment implements View.OnClickListener {
     ChallengeItem challengeItem;
+    View root;
 
     public ChallengeDescribeFragment(ChallengeItem challengeItem) {
         this.challengeItem = challengeItem;
@@ -25,9 +28,9 @@ public class ChallengeDescribeFragment extends DialogFragment implements View.On
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_challenge_describe, container);
-        Button buttonConfirm = (Button) v.findViewById(R.id.buttonConfirm2);
-        TextView textViewChallengeName = (TextView) v.findViewById(R.id.textViewChallengeName);
+        root = inflater.inflate(R.layout.fragment_challenge_describe, container);
+        Button buttonConfirm = (Button) root.findViewById(R.id.buttonConfirm2);
+        TextView textViewChallengeName = (TextView) root.findViewById(R.id.textViewChallengeName);
 
         String name = "Goal Name : " + challengeItem.getChallengeName();
 
@@ -35,7 +38,22 @@ public class ChallengeDescribeFragment extends DialogFragment implements View.On
 
         buttonConfirm.setOnClickListener(this);
         setCancelable(false);
-        return v;
+        return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getRealSize(size);
+
+        int width = size.x;
+        int height = size.y;
+
+        root.getLayoutParams().width = (int) (width * 0.9);
+        root.getLayoutParams().height = (int) (height * 0.8);
     }
 
     @Override
