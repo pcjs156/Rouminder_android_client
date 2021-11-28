@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.icu.text.DateFormat;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -297,35 +299,14 @@ public class AddGoalActivity extends AppCompatActivity {
             String startTimeString = startTime.getText().toString();
             String endTimeString = endTime.getText().toString();
 
-            StringTokenizer startDateTokenizer = new StringTokenizer(startDateString, ".");
-            int startYear = Integer.parseInt(startDateTokenizer.nextToken().toString());
-            int startMonth = Integer.parseInt(startDateTokenizer.nextToken().toString());
-            int startDay = Integer.parseInt(startDateTokenizer.nextToken().toString());
-
-            StringTokenizer endDateTokenizer = new StringTokenizer(endDateString, ".");
-            int endYear = Integer.parseInt(endDateTokenizer.nextToken().toString());
-            int endMonth = Integer.parseInt(endDateTokenizer.nextToken().toString());
-            int endDay = Integer.parseInt(endDateTokenizer.nextToken().toString());
-
-            StringTokenizer startTimeTokenizer = new StringTokenizer(startTimeString, ":");
-            int startHour = Integer.parseInt(startTimeTokenizer.nextToken().toString());
-            int startMinute = Integer.parseInt(startTimeTokenizer.nextToken().toString());
-
-            StringTokenizer endTimeTokenizer = new StringTokenizer(endTimeString, ":");
-            int endHour = Integer.parseInt(endTimeTokenizer.nextToken().toString());
-            int endMinute = Integer.parseInt(endTimeTokenizer.nextToken().toString());
-
-            LocalDateTime start = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute);
-            LocalDateTime end = LocalDateTime.of(endYear, endMonth, endDay, endHour, endMinute);
+            DateTimeFormatter formatter = BaseModelManager.getShortTimeFormatter();
+            LocalDateTime start = LocalDateTime.parse(startDateString + " " + startTimeString, formatter);
+            LocalDateTime end = LocalDateTime.parse(endDateString + " " + endTimeString, formatter);
 
             if (start.isAfter(end)) {
                 Toast.makeText(self, "시작 일시는 종료 일시 이후일 수 없습니다.", Toast.LENGTH_SHORT).show();
                 return;
             }
-//        else if (start.isBefore(LocalDateTime.now())) {
-//            Toast.makeText(self, "시작 일시는 현시점 이전일 수 없습니다.", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
 
             String startDatetime = BaseModelManager.getTimeStampString(start);
             String endDatetime = BaseModelManager.getTimeStampString(end);
@@ -355,7 +336,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
         HashMap<String, Object> info = goalModel.getInfo();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("20yy.MM.dd HH:mm:ss");
+        DateTimeFormatter formatter = BaseModelManager.getLongTimeFormatter();
 
         Log.i("test", info.get("method").toString());
 
@@ -366,7 +347,8 @@ public class AddGoalActivity extends AppCompatActivity {
                     info.get("name").toString(),
                     LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
-                    Integer.parseInt(info.get("current").toString()));
+                    Integer.parseInt(info.get("current").toString()),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         } else if (info.get("method").toString().equals("count")) {
             goal = new CountGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -375,7 +357,8 @@ public class AddGoalActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()),
-                    info.get("unit").toString());
+                    info.get("unit").toString(),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         } else {
             goal = new LocationGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -383,7 +366,8 @@ public class AddGoalActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
-                    Integer.parseInt(info.get("target_count").toString()));
+                    Integer.parseInt(info.get("target_count").toString()),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         }
 
         return goal;

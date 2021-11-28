@@ -2,7 +2,6 @@ package com.example.rouminder.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +18,6 @@ import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
-import com.example.rouminder.firebase.exception.ModelDoesNotExists;
-import com.example.rouminder.firebase.manager.GoalModelManager;
-import com.example.rouminder.firebase.model.GoalModel;
 
 import java.util.List;
 
@@ -132,17 +128,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             goalRestTime.setText("rest Time 들어갈 자리");
             goalSubText.setText(goal.progressToString());
             goalTime.setText(goal.getEndTime().toString());
-
-            GoalModelManager goalModelManager = GoalModelManager.getInstance();
-            GoalModel model = null;
-            try {
-                model = goalModelManager.get(Integer.toString(goal.getId()));
-            } catch (ModelDoesNotExists e) {
-                e.printStackTrace();
-                System.out.println("ERROR : id가 " + goal.getId() + "인 모델이 존재하지 않습니다. in BigGoalAdapter");
-            }
-
-            highlight.setBackgroundColor(Color.parseColor(model.highlight));
+            highlight.setBackgroundColor(goal.getHighlight().toArgb());
 
             if (goal instanceof LocationGoal) {
                 goalProgressBar.setVisibility(View.GONE);

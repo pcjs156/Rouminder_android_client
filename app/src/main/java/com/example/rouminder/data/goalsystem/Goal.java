@@ -33,7 +33,7 @@ public class Goal implements Comparable<Goal> {
      * @param current a current progress of the goal.
      * @param target  a target progress of the goal.
      */
-    public Goal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target) {
+    public Goal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, Color highlight) {
         this.manager = manager;
         this.id = id;
         this.name = name;
@@ -41,6 +41,7 @@ public class Goal implements Comparable<Goal> {
         this.endTime = to;
         this.current = current;
         this.target = target;
+        this.highlight = highlight;
     }
 
     /**

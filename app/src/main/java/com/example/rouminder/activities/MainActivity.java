@@ -71,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onGoalUpdate(int id) {
                 Goal goal = goalManager.getGoal(id);
+                // test code 미리 return
+                if (goal.getId() < 1000) {
+                    return;
+                }
+
                 try {
                     goalModelManager.update(Integer.toString(id), convertGoalToHashMap(goal));
                 } catch (ModelDoesNotExists e) {
@@ -80,6 +85,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onGoalRemove(int id) {
+                // test code 미리 return
+                if (id < 1000) {
+                    return;
+                }
+
                 try {
                     goalModelManager.delete(Integer.toString(id));
                 } catch (ModelDoesNotExists e) {
@@ -198,11 +208,12 @@ public class MainActivity extends AppCompatActivity {
                 goalManager.addGoal(convertGoalModelToGoal(goalModel));
             });
 
-//            if (goalManager.getGoal(1) == null) {
-//                goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
-//                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
-//                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1));
-//            }
+            if (goalManager.getGoal(1) == null) {
+                goalManager.addGoal(new CheckGoal(goalManager, -1, "한강 가기",
+                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).minusMinutes(5),
+                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).plusMinutes(7), 1,
+                        Color.valueOf(Color.parseColor("#ffff0000"))));
+            }
         }
     }
 
@@ -211,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
 
         HashMap<String, Object> info = goalModel.getInfo();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("20yy.MM.dd HH:mm:ss");
+        DateTimeFormatter formatter = BaseModelManager.getLongTimeFormatter();
 
         if (info.get("method").equals("check")) {
             goal = new CheckGoal(goalManager,
@@ -219,7 +230,8 @@ public class MainActivity extends AppCompatActivity {
                     info.get("name").toString(),
                     LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
-                    Integer.parseInt(info.get("current").toString()));
+                    Integer.parseInt(info.get("current").toString()),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         } else if (info.get("method").equals("count")) {
             goal = new CountGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -228,7 +240,8 @@ public class MainActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()),
-                    info.get("unit").toString());
+                    info.get("unit").toString(),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         } else {
             goal = new LocationGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -236,7 +249,8 @@ public class MainActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
-                    Integer.parseInt(info.get("target_count").toString()));
+                    Integer.parseInt(info.get("target_count").toString()),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         }
 
         return goal;
@@ -244,6 +258,8 @@ public class MainActivity extends AppCompatActivity {
 
     private HashMap<String, Object> convertGoalToHashMap(Goal goal) {
         HashMap<String, Object> values = new HashMap<>();
+
+        DateTimeFormatter formatter = BaseModelManager.getLongTimeFormatter();
 
         values.put("id", Integer.toString(goal.getId()));
         values.put("name", goal.getName());
@@ -261,8 +277,8 @@ public class MainActivity extends AppCompatActivity {
         if (color == null) color = Color.valueOf(126,0, 0, 126);
         values.put("highlight", String.format("#%08X", color.toArgb()));
         values.put("target_count", goal.getTarget());
-        values.put("start_datetime", goal.getStartTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd/HH:mm:ss")));
-        values.put("finish_datetime", goal.getEndTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd/HH:mm:ss")));
+        values.put("start_datetime", goal.getStartTime().format(formatter));
+        values.put("finish_datetime", goal.getEndTime().format(formatter));
 
         return values;
     }

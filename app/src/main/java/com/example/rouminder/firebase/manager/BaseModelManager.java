@@ -10,10 +10,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 // Singleton 패턴으로 구현되어, 인스턴스에 접근하려면 항상 Manager.getInstance()를 호출해야 함
 public class BaseModelManager {
@@ -37,6 +35,14 @@ public class BaseModelManager {
         int salt = (int) (Math.random() * 100);
         String stringSalt = String.format("%02d", salt);
         return timeMills + stringSalt;
+    }
+
+    public static DateTimeFormatter getShortTimeFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
+    }
+
+    public static DateTimeFormatter getLongTimeFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
     }
 
     public static String getTimeStampString(LocalDateTime dt) {
