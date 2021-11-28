@@ -95,6 +95,8 @@ public class GoalFragment extends Fragment {
 
         setMAdapter(goalManager.getGoals());
 
+
+
         return rootView;
     }
 
