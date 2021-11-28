@@ -211,9 +211,14 @@ public class BigGoalAdapter extends BaseGoalAdapter {
             };
             timer.schedule(task, 0, 500);
 
-            if (goal.getType().equals(Goal.Type.CHECK.name())) {
+            if (goal.getType().equals(Goal.Type.LOCATION.name())) {
                 goalProgressBar.setVisibility(View.GONE);
                 goalImgCheckBox.setClickable(false);
+
+                if (((LocationGoal) goal).getChecked())
+                    goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
+                else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+
             } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
                 goalProgressBar.setVisibility(View.GONE);
 
@@ -236,7 +241,7 @@ public class BigGoalAdapter extends BaseGoalAdapter {
                         }
                     }
                 });
-            } else {
+            } else { // count
                 goalImgCheckBox.setVisibility(View.GONE);
                 goalProgressBar.setMax(goal.getTarget());
                 goalProgressBar.setProgress(((CountGoal) goal).getCount());

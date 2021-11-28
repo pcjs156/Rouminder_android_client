@@ -114,7 +114,26 @@ public class GoalDescribeFragment extends DialogFragment {
             }
         });
 
-        // test용 코드
+        if (goal instanceof CountGoal) {
+            CountGoal countGoal = (CountGoal) goal;
+            neg1.setClickable(true);
+            neg1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    countGoal.setCount(countGoal.getCount() - 1);
+                    textViewProgress.setText(goal.progressToString());
+                }
+            });
+            plus1.setClickable(true);
+            plus1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    countGoal.setCount(countGoal.getCount() + 1);
+                    textViewProgress.setText(goal.progressToString());
+                }
+            });
+        }
+
         location.setClickable(true);
         location.setOnClickListener(new View.OnClickListener() {
             @Override
