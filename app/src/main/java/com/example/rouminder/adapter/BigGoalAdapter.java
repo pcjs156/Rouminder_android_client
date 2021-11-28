@@ -2,17 +2,12 @@ package com.example.rouminder.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -31,14 +26,14 @@ import com.example.rouminder.firebase.manager.BaseModelManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Locale;
 import java.util.Comparator;
 
 
-public class BigGoalAdapter extends BaseGoalAdapter {
+public class BigGoalAdapter extends BaseGoalAdapter<BigGoalAdapter.ViewHolder> {
     FragmentActivity activity;
+
+
 
     public BigGoalAdapter(FragmentActivity activity, GoalManager goalManager, GoalManager.Domain domain, Comparator<Goal> comparator) {
         super(goalManager, domain, comparator);
@@ -47,7 +42,7 @@ public class BigGoalAdapter extends BaseGoalAdapter {
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
 
         Context context = parent.getContext();
@@ -60,11 +55,6 @@ public class BigGoalAdapter extends BaseGoalAdapter {
         holder.onBind(items.get(position));
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        onBindViewHolder((ViewHolder) holder, position);
-    }
-
     class ViewHolder extends RecyclerView.ViewHolder {
         private CardView goalBox;
         private TextView goalContent;
@@ -75,27 +65,7 @@ public class BigGoalAdapter extends BaseGoalAdapter {
         private CircleProgressBar goalProgressBar;
         private TextView highlight;
 
-        private View bindView;
 
-        final Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-                Bundle data = msg.getData();
-                String restDtBody = data.getString("rest_dt_body");
-                goalRestTime.setText(restDtBody);
-
-                boolean isExpired = data.getBoolean("is_expired");
-                boolean isBefore = data.getBoolean("is_before");
-                String type = data.getString("type");
-
-//                if ((isExpired || isBefore) && type.equals("check")) {
-//                    goalImgCheckBox.setImageResource(R.drawable.ic_baseline_block_24);
-//                    goalImgCheckBox.setClickable(false);
-//                    goalImgCheckBox.setEnabled(false);
-//                }
-            }
-        };
-
-        Timer timer = new Timer();
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -110,106 +80,44 @@ public class BigGoalAdapter extends BaseGoalAdapter {
             highlight = itemView.findViewById(R.id.highlight);
         }
 
+
+
+        private String getRestTimeString(Goal goal) {
+            LocalDateTime now = LocalDateTime.now();
+            if(goal.isAfterEnd(now))
+                return "만료";
+
+            Duration duration = goal.isBeforeStart(now) ? Duration.between(now, goal.getStartTime()) : Duration.between(now, goal.getEndTime());
+            String postfixString = goal.isBeforeStart(now) ? "시작" : "종료";
+            String timeString;
+
+            long minutes = duration.toMinutes();
+            long hours = duration.toHours();
+            long days = duration.toDays();
+
+            if(days != 0) {
+                timeString = String.format(Locale.getDefault(), "%d일 %d시간 %d분 후 ", days, hours % 24, minutes % 60);
+            } else if(hours != 0){
+                timeString = String.format(Locale.getDefault(), "%d시간 %d분 후 ", hours % 24, minutes % 60);
+            } else if(minutes != 0){
+                timeString = String.format(Locale.getDefault(), "%d분 후 ",  minutes % 60);
+            } else {
+                timeString = "곧 ";
+            }
+
+            Log.d("string", timeString + postfixString);
+
+            return timeString + postfixString;
+        }
+
         void onBind(Goal goal) {
             goalContent.setText(goal.getName());
             goalSubText.setText(goal.progressToString());
             goalTime.setText(BaseModelManager.getTimeStampString(goal.getEndTime()));
             highlight.setBackgroundColor(goal.getHighlight().toArgb());
 
-            TimerTask task = new TimerTask() {
-                private String getRestTimeString(LocalDateTime now, LocalDateTime start, LocalDateTime end) {
-                    String body = "";
 
-                    Duration duration;
-                    Long durationSeconds;
-                    long days, hours, minutes, seconds;
-
-                    if (now.isAfter(end)) {
-                        body = "만료";
-                    } else if (now.isBefore(start)) {
-                        duration = Duration.between(now, start);
-
-                        durationSeconds = duration.getSeconds();
-
-                        hours = durationSeconds / (60 * 60);
-                        days = hours / 24;
-                        hours -= 24 * days;
-
-                        minutes = ((durationSeconds % (60 * 60)) / 60);
-                        seconds = durationSeconds % 60;
-
-                        if (days != 0)
-                            body += (days + "일 ");
-                        if (hours != 0)
-                            body += (hours + "시간 ");
-                        if (minutes != 0)
-                            body += (minutes + "분 ");
-
-                        if (days == 0 && hours == 0 && minutes == 0 && seconds > 0)
-                            body = (durationSeconds % 60) + "초 후 시작";
-                        else {
-                            if (days == 0 && hours == 0 && minutes == 0)
-                                body = "만료";
-                            else
-                                body += "후 시작";
-                        }
-                    } else {
-                        duration = Duration.between(now, end);
-
-                        durationSeconds = duration.getSeconds();
-
-                        hours = durationSeconds / (60 * 60);
-                        days = hours / 24;
-                        hours -= 24 * days;
-
-                        minutes = ((durationSeconds % (60 * 60)) / 60);
-                        seconds = durationSeconds % 60;
-
-                        if (days != 0)
-                            body += (days + "일 ");
-                        if (hours != 0)
-                            body += (hours + "시간 ");
-                        if (minutes != 0)
-                            body += (minutes + "분 ");
-
-                        if (days == 0 && hours == 0 && minutes == 0 && seconds > 0)
-                            body = (durationSeconds % 60) + "초 후 종료";
-                        else {
-                            if (days == 0 && hours == 0 && minutes == 0)
-                                body = "만료";
-                            else
-                                body += "후 종료";
-                        }
-                    }
-
-                    return body;
-                }
-
-                @Override
-                public void run() {
-                    Message msg = handler.obtainMessage();
-                    Bundle data = new Bundle();
-
-                    if (goal instanceof CheckGoal)
-                        data.putString("type", "check");
-                    else if (goal instanceof CountGoal)
-                        data.putString("type", "count");
-                    else
-                        data.putString("type", "location");
-
-                    LocalDateTime start = goal.getStartTime();
-                    LocalDateTime end = goal.getEndTime();
-                    LocalDateTime now = LocalDateTime.now();
-                    String restDtBody = getRestTimeString(now, start, end);
-                    data.putString("rest_dt_body", restDtBody);
-                    data.putBoolean("is_expired", now.isAfter(end));
-                    data.putBoolean("is_before", now.isBefore(start));
-
-                    msg.setData(data);
-                    handler.sendMessage(msg);
-                }
-            };
-            timer.schedule(task, 0, 500);
+            goalRestTime.setText(getRestTimeString(goal));
 
             if (goal.getType().equals(Goal.Type.LOCATION.name())) {
                 goalProgressBar.setVisibility(View.GONE);
@@ -228,7 +136,7 @@ public class BigGoalAdapter extends BaseGoalAdapter {
                     goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
                 else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
 
-                goalImgCheckBox.setClickable(true);
+                goalImgCheckBox.setClickable(checkGoal.isOnProgress(LocalDateTime.now()));
                 goalImgCheckBox.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -247,7 +155,7 @@ public class BigGoalAdapter extends BaseGoalAdapter {
                 goalProgressBar.setProgress(((CountGoal) goal).getCount());
             }
 
-            goalBox.setClickable(true);
+            goalBox.setClickable(!goal.isAfterEnd(LocalDateTime.now()));
             goalBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

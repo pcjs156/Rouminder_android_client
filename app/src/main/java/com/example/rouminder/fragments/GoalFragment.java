@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +33,8 @@ import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 import com.nex3z.togglebuttongroup.button.CircularToggle;
 
 import java.util.Comparator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GoalFragment extends Fragment {
     GoalManager goalManager;
@@ -71,6 +76,7 @@ public class GoalFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.viewGoal);
         recyclerView.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
         recyclerView.setAdapter(bigGoalAdapter);
+
 
         RecyclerView miniRecyclerView = (RecyclerView) rootView.findViewById(R.id.lstMiniGoal);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
@@ -122,6 +128,24 @@ public class GoalFragment extends Fragment {
                 miniGoalAdapter.setDomain(getCheckedDomain());
             }
         });
+
+        Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message message) {
+                Log.d("test", "aaa");
+                bigGoalAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0);
+            }
+        };
+        new Timer().schedule(task, 0, 30 * 1000);
 
         return rootView;
     }
