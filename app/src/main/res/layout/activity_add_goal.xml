@@ -61,7 +61,7 @@
                     android:text="태그 : "
                     android:textSize="18sp" />
 
-                <MultiAutoCompleteTextView
+                <AutoCompleteTextView
                     android:id="@+id/editTextTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -90,22 +90,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toTopOf="@+id/lstMiniGoal"
-                    app:layout_constraintEnd_toEndOf="@+id/lstMiniGoal" >
+                    app:layout_constraintEnd_toEndOf="@+id/lstMiniGoal">
 
                     <com.nex3z.togglebuttongroup.button.LabelToggle
                         android:id="@+id/choiceGeneral"
-                        android:layout_width="120dp"
+                        android:layout_width="185dp"
                         android:layout_height="wrap_content"
-                        android:text="일반형"
                         android:layout_marginRight="10dp"
+                        android:text="일반형"
                         android:textSize="16sp" />
 
                     <com.nex3z.togglebuttongroup.button.LabelToggle
                         android:id="@+id/choiceRepeat"
-                        android:layout_width="120dp"
+                        android:layout_width="185dp"
                         android:layout_height="wrap_content"
                         android:text="반복형"
-                        android:layout_marginRight="10dp"
                         android:textSize="16sp" />
 
                     <com.nex3z.togglebuttongroup.button.LabelToggle
@@ -113,7 +112,8 @@
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
                         android:text="복합형"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:visibility="gone" />
 
                 </com.nex3z.togglebuttongroup.SingleSelectToggleGroup>
 
@@ -248,6 +248,13 @@
                     android:layout_height="wrap_content"
                     android:name="com.example.rouminder.fragments.MapsFragment"
                     android:layout_below="@+id/mapTextView" />
+
+                <TextView
+                    android:id="@+id/selected_place_name"
+                    android:text="장소를 선택해 주세요."
+                    android:layout_below="@id/mapFinder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
             </RelativeLayout>
 

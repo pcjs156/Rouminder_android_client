@@ -10,8 +10,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 // Singleton 패턴으로 구현되어, 인스턴스에 접근하려면 항상 Manager.getInstance()를 호출해야 함
 public class BaseModelManager {
@@ -37,31 +37,35 @@ public class BaseModelManager {
         return timeMills + stringSalt;
     }
 
-    public static String getTimeStampString(Date dt) {
-        SimpleDateFormat format = new SimpleDateFormat("20yy.MM.dd/HH:mm:ss");
-        return format.format(dt);
+    public static DateTimeFormatter getShortTimeFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
+    }
+
+    public static DateTimeFormatter getLongTimeFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
+    }
+
+    public static String getTimeStampString(LocalDateTime dt) {
+        return dt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
     }
 
     public static String getTimeStampString() {
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         return getTimeStampString(now);
     }
 
     public static String getTimeStampString(int year, int month, int day, int hour, int minute) {
-        Date dt = new Date(year, month, day, hour, minute);
+        LocalDateTime dt = LocalDateTime.of(year, month, day, hour, minute);
         return getTimeStampString(dt);
     }
 
     public static String getTimeStampString(int year, int month, int day) {
-        Date dt = new Date(year, month, day, 0, 0);
+        LocalDateTime dt = LocalDateTime.of(year, month, day, 0, 0);
         return getTimeStampString(dt);
     }
 
-    public static Date parseTimeStampString(String dtString) throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd/HH:mm:ss");
-        Date ret = null;
-        ret = format.parse(dtString);
-        return ret;
+    public static LocalDateTime parseTimeStampString(String dtString) throws ParseException {
+        return LocalDateTime.parse(dtString, DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
     }
 
     public static BaseModelManager getInstance() {

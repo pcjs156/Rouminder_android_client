@@ -116,6 +116,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private TextView goalTime;
         private ImageView goalImgCheckBox;
         private CircleProgressBar goalProgressBar;
+        private TextView highlight;
 
         public BigGoalHolder(@NonNull View itemView) {
             super(itemView);
@@ -127,6 +128,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             goalTime = itemView.findViewById(R.id.goalTime);
             goalProgressBar = itemView.findViewById(R.id.progressBar);
             goalImgCheckBox = itemView.findViewById(R.id.goalImgCheckBox);
+            highlight = itemView.findViewById(R.id.highlight);
         }
 
         void onBind(Goal goal) {
@@ -134,6 +136,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             goalRestTime.setText("rest Time 들어갈 자리");
             goalSubText.setText(goal.progressToString());
             goalTime.setText(goal.getEndTime().toString());
+            highlight.setBackgroundColor(goal.getHighlight().toArgb());
 
             if (goal instanceof LocationGoal) {
                 goalProgressBar.setVisibility(View.GONE);
@@ -159,21 +162,23 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     }
                 });
-                goalBox.setClickable(true);
-                goalBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.d("TestCode", "FragmentGoalDescribe Start");
-                        GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
-                        goalDescribeFragment.show(activity.getSupportFragmentManager(),null);
-                    }
-                });
+
 
             } else {
                 goalImgCheckBox.setVisibility(View.GONE);
                 goalProgressBar.setMax(goal.getTarget());
                 goalProgressBar.setProgress(((CountGoal) goal).getCount());
             }
+
+            goalBox.setClickable(true);
+            goalBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("TestCode", "FragmentGoalDescribe Start");
+                    GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
+                    goalDescribeFragment.show(activity.getSupportFragmentManager(),null);
+                }
+            });
         }
     }
 }

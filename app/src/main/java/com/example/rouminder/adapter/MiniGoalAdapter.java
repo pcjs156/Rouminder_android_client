@@ -154,20 +154,21 @@ public class MiniGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         }
                     }
                 });
-                goalBox.setClickable(true);
-                goalBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.d("TestCode", "FragmentGoalDescribe Start");
-                        GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
-                        goalDescribeFragment.show(activity.getSupportFragmentManager(),null);
-                    }
-                });
             } else {
                 goalImgCheckBox.setVisibility(View.GONE);
                 goalProgressBar.setMax(goal.getTarget());
                 goalProgressBar.setProgress(((CountGoal) goal).getCount());
             }
+
+            goalBox.setClickable(true);
+            goalBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("TestCode", "FragmentGoalDescribe Start");
+                    GoalDescribeFragment goalDescribeFragment = new GoalDescribeFragment(goal);
+                    goalDescribeFragment.show(activity.getSupportFragmentManager(),null);
+                }
+            });
         }
     }
 }

@@ -1,14 +1,15 @@
 package com.example.rouminder.data.goalsystem;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 
 import java.time.LocalDateTime;
 
 public class CountGoal extends Goal {
     private String unit;
 
-    public CountGoal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, String unit) {
-        super(manager, id, name, from, to, current, target);
+    public CountGoal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, String unit, Color highlight) {
+        super(manager, id, name, from, to, current, target, highlight);
         this.unit = unit;
     }
 
@@ -37,8 +38,8 @@ public class CountGoal extends Goal {
      * @param unit a unit String.
      */
     public void setUnit(String unit) {
-        update();
         this.unit = unit;
+        update();
     }
 
     /**
@@ -56,8 +57,8 @@ public class CountGoal extends Goal {
      * @param count a current count to be set; any value smaller than zero is considered zero.
      */
     public void setCount(int count) {
-        update();
         setCurrent(Math.max(count, 0));
+        update();
     }
 
     /**

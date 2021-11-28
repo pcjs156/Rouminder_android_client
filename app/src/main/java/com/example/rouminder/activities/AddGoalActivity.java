@@ -11,10 +11,10 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,6 +30,10 @@ import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
+import com.example.rouminder.firebase.model.RepeatPlanModel;
+import com.example.rouminder.fragments.MapsFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.example.rouminder.firebase.model.GoalModel;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 
@@ -37,22 +41,32 @@ import android.graphics.Color;
 import android.widget.Toast;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
 public class AddGoalActivity extends AppCompatActivity {
-    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+    // self
+    private AddGoalActivity self = this;
 
-    public Spinner highlightsSpinner;
-    public SingleSelectToggleGroup typeGroup;
-    public SingleSelectToggleGroup methodGroup;
+    // manager
+    private GoalModelManager goalModelManager = GoalModelManager.getInstance();
+    private RepeatPlanModelManager repeatPlanModelManager = RepeatPlanModelManager.getInstance();
+    private GoalManager goalManager;
+
+    // uid
+    private String uid;
+
+    // UI
+    private Spinner highlightsSpinner;
+    private SingleSelectToggleGroup typeGroup;
+    private SingleSelectToggleGroup methodGroup;
 
     private EditText goalNameEditText;
-    private MultiAutoCompleteTextView editTextTag;
+    private AutoCompleteTextView editTextTag;
     private EditText editTextTargetCount;
     private EditText editTextUnit;
     private TextView startDate;
@@ -60,15 +74,11 @@ public class AddGoalActivity extends AppCompatActivity {
     private TextView endDate;
     private TextView endTime;
 
-    public static int currentType;
-    public static View clickedDate;
+    private MapsFragment mapsFragment;
 
-    public GoalModelManager goalModelManager = GoalModelManager.getInstance();
-    GoalManager goalManager;
-
-    public String uid;
-
-    public AddGoalActivity self = this;
+    // save clicked content
+    private int currentType;
+    private View clickedView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +104,8 @@ public class AddGoalActivity extends AppCompatActivity {
         editTextUnit = (EditText) findViewById(R.id.editTextNumberSigned2);
         editTextTargetCount = (EditText) findViewById(R.id.editTextNumberSigned);
 
+        mapsFragment = (MapsFragment) getSupportFragmentManager().findFragmentById(R.id.mapFinder);
+
         resetDateTime();
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -101,69 +113,17 @@ public class AddGoalActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ArrayAdapter tagsAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, goalModelManager.getTags());
-        editTextTag = (MultiAutoCompleteTextView) findViewById(R.id.editTextTag);
-        MultiAutoCompleteTextView.CommaTokenizer token = new MultiAutoCompleteTextView.CommaTokenizer();
-        editTextTag.setTokenizer(token);
+        editTextTag = (AutoCompleteTextView) findViewById(R.id.editTextTag);
         editTextTag.setAdapter(tagsAdapter);
 
-//        int colors[] = {R.drawable.red, R.drawable.blue, R.drawable.green};
         Color[] colors = {
                 Color.valueOf(256, 0, 0, 256),
-                Color.valueOf(0, 256,0,256),
-                Color.valueOf(0, 0,256,256)};
+                Color.valueOf(0, 256, 0, 256),
+                Color.valueOf(0, 0, 256, 256)};
 
         SpinnerAdapter highlightsAdapter = new SpinnerAdapter(this, colors);
         highlightsSpinner = (Spinner) findViewById(R.id.spinnerHighlight);
         highlightsSpinner.setAdapter(highlightsAdapter);
-
-        // highlightsAdapter.getDropDownView()
-
-        // 현재 오류나서 잠시 주석처리
-//        LabelToggle choiceGeneral = (LabelToggle) findViewById(R.id.choiceGeneral);
-//        choiceGeneral.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ArrayList<String> categoryIds = new ArrayList<>();
-//                for (CategoryModel model : categoryModels) {
-//                    categoryIds.add(model.id);
-//                }
-//
-//                Collections.shuffle(categoryIds);
-//                if (!categoryIds.isEmpty()) {
-//                    String pickedId = categoryIds.get(0);
-//                    HashMap<String, Object> newData = new HashMap<>();
-//                    newData.put("name", "newName");
-//                    try {
-//                        categoryModelManager.update(pickedId, newData);
-//                    } catch (ModelDoesNotExists e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            }
-//        });
-//
-//        LabelToggle choiceRepeat = (LabelToggle) findViewById(R.id.choiceRepeat);
-//        choiceRepeat.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ArrayList<String> categoryIds = new ArrayList<>();
-//                for (CategoryModel model : categoryModels) {
-//                    categoryIds.add(model.id);
-//                }
-//
-//                Collections.shuffle(categoryIds);
-//                if (!categoryIds.isEmpty()) {
-//                    String pickedId = categoryIds.get(0);
-//                    try {
-//                        categoryModelManager.delete(pickedId);
-//                    } catch (ModelDoesNotExists e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(getApplicationContext(), "해당 모델이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            }
-//        });
 
         typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
         methodGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesMethod);
@@ -216,9 +176,6 @@ public class AddGoalActivity extends AppCompatActivity {
                 if (currentType == R.id.choiceGeneral) dateTime.setVisibility(View.VISIBLE);
             }
         });
-
-//        add goal 완료 버튼은 showCustom을 사용하여 나중에 추가할 계획
-//        getSupportActionBar().setDisplayShowCustomEnabled();
     }
 
     @Override
@@ -249,8 +206,7 @@ public class AddGoalActivity extends AppCompatActivity {
             Color selectedColor = (Color) highlightsSpinner.getSelectedItem();
             highlight = String.format("#%08X", (0xFFFFFFFF & selectedColor.toArgb()));
             values.put("highlight", highlight);
-        }
-        else {
+        } else {
             Toast.makeText(self, "하이라이트가 입력되지 않았습니다.", Toast.LENGTH_SHORT).show();
             Log.d("FIELD", "highlight");
             return;
@@ -275,7 +231,7 @@ public class AddGoalActivity extends AppCompatActivity {
                 Log.d("FIELD", "type");
                 return;
         }
-        if (!type.equals("general")) {
+        if (type.equals("complex")) {
             Toast.makeText(self, "구현되지 않은 유형입니다.", Toast.LENGTH_SHORT).show();
             Log.d("FIELD", "invalid type");
             return;
@@ -299,18 +255,24 @@ public class AddGoalActivity extends AppCompatActivity {
                 Log.d("FIELD", "method");
                 return;
         }
-        if (method.equals("location")) {
-            Toast.makeText(self, "구현되지 않은 수행 방법입니다.", Toast.LENGTH_SHORT).show();
-            Log.d("FIELD", "invalid method");
-            return;
-        } else {
-            values.put("method", method);
-        }
+        values.put("method", method);
 
         values.put("current", 0);
         switch (method) {
             case "check":
-                values.put("target_count", 0);
+                values.put("target_count", 1);
+                break;
+            case "location":
+                values.put("target_count", 1);
+                LatLng selectedLatLng = mapsFragment.getSelectedLatLng();
+                if (selectedLatLng == null) {
+                    Toast.makeText(self, "위치가 지정되지 않았습니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Double latitude = selectedLatLng.latitude;
+                Double longitude = selectedLatLng.longitude;
+                values.put("latitude", latitude);
+                values.put("longitude", longitude);
                 break;
             case "count":
                 String unit = editTextUnit.getText().toString();
@@ -328,40 +290,40 @@ public class AddGoalActivity extends AppCompatActivity {
                 break;
         }
 
-        String startDateString = startDate.getText().toString();
-        String endDateString = endDate.getText().toString();
-        String startTimeString = startTime.getText().toString();
-        String endTimeString = endTime.getText().toString();
+        if (type.equals("general")) {
+            String startDateString = startDate.getText().toString();
+            String endDateString = endDate.getText().toString();
+            String startTimeString = startTime.getText().toString();
+            String endTimeString = endTime.getText().toString();
 
-        StringTokenizer startDateTokenizer = new StringTokenizer(startDateString, ".");
-        int startYear = Integer.parseInt(startDateTokenizer.nextToken().toString());
-        int startMonth = Integer.parseInt(startDateTokenizer.nextToken().toString());
-        int startDay = Integer.parseInt(startDateTokenizer.nextToken().toString());
+            DateTimeFormatter formatter = BaseModelManager.getShortTimeFormatter();
+            LocalDateTime start = LocalDateTime.parse(startDateString + " " + startTimeString, formatter);
+            LocalDateTime end = LocalDateTime.parse(endDateString + " " + endTimeString, formatter);
 
-        StringTokenizer endDateTokenizer = new StringTokenizer(endDateString, ".");
-        int endYear = Integer.parseInt(endDateTokenizer.nextToken().toString());
-        int endMonth = Integer.parseInt(endDateTokenizer.nextToken().toString());
-        int endDay = Integer.parseInt(endDateTokenizer.nextToken().toString());
+            if (start.isAfter(end)) {
+                Toast.makeText(self, "시작 일시는 종료 일시 이후일 수 없습니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        StringTokenizer startTimeTokenizer = new StringTokenizer(startTimeString, ":");
-        int startHour = Integer.parseInt(startTimeTokenizer.nextToken().toString());
-        int startMinute = Integer.parseInt(startTimeTokenizer.nextToken().toString());
+            String startDatetime = BaseModelManager.getTimeStampString(start);
+            String endDatetime = BaseModelManager.getTimeStampString(end);
+            values.put("start_datetime", startDatetime);
+            values.put("finish_datetime", endDatetime);
 
-        StringTokenizer endTimeTokenizer = new StringTokenizer(endTimeString, ":");
-        int endHour = Integer.parseInt(endTimeTokenizer.nextToken().toString());
-        int endMinute = Integer.parseInt(endTimeTokenizer.nextToken().toString());
+            GoalModel goalModel = goalModelManager.create(values);
+            goalManager = ((MainApplication) getApplication()).getGoalManager();
+            goalManager.addGoal(convertGoalModelToGoal(goalModel));
+        } else if (type.equals("repeat")) {
+            Boolean[] _weekPlan = {true, false, true, false, true, false, false};
+            ArrayList<Boolean> weekPlan = new ArrayList<>();
+            for (Boolean plan : _weekPlan) {
+                weekPlan.add(plan);
+            }
 
-        Date start = new Date(startYear, startMonth, startDay, startHour, startMinute);
-        Date end = new Date(endYear, endMonth, endDay, endHour, endMinute);
-
-        String startDatetime = BaseModelManager.getTimeStampString(start);
-        String endDatetime = BaseModelManager.getTimeStampString(end);
-        values.put("start_datetime", startDatetime);
-        values.put("finish_datetime", endDatetime);
-
-        GoalModel goalModel = goalModelManager.create(values);
-        goalManager = ((MainApplication) getApplication()).getGoalManager();
-        goalManager.addGoal(convertGoalModelToGoal(goalModel));
+            values.put("week_plan", weekPlan);
+            RepeatPlanModel plan = repeatPlanModelManager.create(values);
+            goalModelManager.create(plan);
+        }
 
         finish();
     }
@@ -371,18 +333,19 @@ public class AddGoalActivity extends AppCompatActivity {
 
         HashMap<String, Object> info = goalModel.getInfo();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("20yy.MM.dd/HH:mm:ss");
+        DateTimeFormatter formatter = BaseModelManager.getLongTimeFormatter();
 
         Log.i("test", info.get("method").toString());
 
         if ((info.get("method").toString()).equals("check")) {
-            Log.i("test", "id"+info.get("id").toString());
+            Log.i("test", "id" + info.get("id").toString());
             goal = new CheckGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
                     info.get("name").toString(),
                     LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
-                    Integer.parseInt(info.get("current").toString()));
+                    Integer.parseInt(info.get("current").toString()),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         } else if (info.get("method").toString().equals("count")) {
             goal = new CountGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -391,7 +354,8 @@ public class AddGoalActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()),
-                    info.get("unit").toString());
+                    info.get("unit").toString(),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         } else {
             goal = new LocationGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -399,7 +363,8 @@ public class AddGoalActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
-                    Integer.parseInt(info.get("target_count").toString()));
+                    Integer.parseInt(info.get("target_count").toString()),
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
         }
 
         return goal;
@@ -435,7 +400,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
     public void onDateClicked(View view) {
         LocalDateTime cur = LocalDateTime.now();
-        clickedDate = view;
+        clickedView = view;
 
         DatePickerDialog dialog = new DatePickerDialog(this, dateListener,
                 cur.getYear(), cur.getMonthValue() - 1, cur.getDayOfMonth());
@@ -444,7 +409,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
     public void onTimeClicked(View view) {
         LocalDateTime cur = LocalDateTime.now();
-        clickedDate = view;
+        clickedView = view;
 
         TimePickerDialog dialog = new TimePickerDialog(this, timeListener, cur.getHour(), cur.getMinute(), false);
         dialog.show();
@@ -453,14 +418,14 @@ public class AddGoalActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-            resetDate(clickedDate, year, monthOfYear + 1, dayOfMonth);
+            resetDate(clickedView, year, monthOfYear + 1, dayOfMonth);
         }
     };
 
     private TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-            resetTime(clickedDate, hour, minute);
+            resetTime(clickedView, hour, minute);
         }
     };
 

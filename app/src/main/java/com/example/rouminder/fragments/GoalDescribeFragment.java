@@ -1,13 +1,18 @@
 package com.example.rouminder.fragments;
 
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
@@ -31,20 +36,30 @@ public class GoalDescribeFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_goal_describe, container);
-        Button buttonGoalChange = (Button) root.findViewById(R.id.buttonGoalChange);
-        Button buttonGoalDelete = (Button) root.findViewById(R.id.buttonGoalDelete);
+
+        // radius 조정을 위한 코드
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        ImageView buttonClose = (ImageView) root.findViewById(R.id.buttonClose);
+        TextView buttonGoalChange = (TextView) root.findViewById(R.id.buttonGoalChange);
+        TextView buttonGoalDelete = (TextView) root.findViewById(R.id.buttonGoalDelete);
         TextView textViewName = (TextView) root.findViewById(R.id.textViewName);
         TextView textViewTime = (TextView) root.findViewById(R.id.textViewTime);
+        TextView textViewEndTime = (TextView) root.findViewById(R.id.textViewEndTime);
         TextView textViewProgress = (TextView) root.findViewById(R.id.textViewProgress);
 
-        String name = "Goal Name : " + goal.getName();
-        String time = "Start/End : " + goal.getStartTime().toString() + "/" + goal.getEndTime().toString();
-        String progress = "Current/Target : " + goal.currentToString() + "/" + goal.targetToString();
+        textViewName.setText(goal.getName());
+        textViewTime.setText(goal.getStartTime().toString());
+        textViewEndTime.setText(goal.getEndTime().toString());
+        textViewProgress.setText(goal.progressToString());
 
-        textViewName.setText(name);
-        textViewTime.setText(time);
-        textViewProgress.setText(progress);
-
+        buttonClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
         buttonGoalChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,7 +69,6 @@ public class GoalDescribeFragment extends DialogFragment {
                 //dismiss();
             }
         });
-
         buttonGoalDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -33,7 +33,7 @@ public class Goal implements Comparable<Goal> {
      * @param current a current progress of the goal.
      * @param target  a target progress of the goal.
      */
-    public Goal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target) {
+    public Goal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, int target, Color highlight) {
         this.manager = manager;
         this.id = id;
         this.name = name;
@@ -41,6 +41,7 @@ public class Goal implements Comparable<Goal> {
         this.endTime = to;
         this.current = current;
         this.target = target;
+        this.highlight = highlight;
     }
 
     /**
@@ -111,8 +112,11 @@ public class Goal implements Comparable<Goal> {
      * @param startTime a time to be set.
      */
     public void setStartTime(LocalDateTime startTime) {
-        update();
-        this.startTime = startTime;
+        Runnable r = () -> {this.startTime = startTime;};
+        if(manager != null)
+            manager.updateGoalTime(getId(), r);
+        else
+            r.run();
     }
 
     /**
@@ -130,8 +134,11 @@ public class Goal implements Comparable<Goal> {
      * @param endTime a time to be set.
      */
     public void setEndTime(LocalDateTime endTime) {
-        update();
-        this.endTime = endTime;
+        Runnable r = () -> {this.endTime = endTime;};
+        if(manager != null)
+            manager.updateGoalTime(getId(), r);
+        else
+            r.run();
     }
 
     /**
@@ -179,8 +186,8 @@ public class Goal implements Comparable<Goal> {
      * @param icon a Drawable object to be set.
      */
     public void setIcon(Drawable icon) {
-        update();
         this.icon = icon;
+        update();
     }
 
     /**
@@ -198,8 +205,8 @@ public class Goal implements Comparable<Goal> {
      * @param highlight a Color object to be set.
      */
     public void setHighlight(Color highlight) {
-        update();
         this.highlight = highlight;
+        update();
     }
 
     /**
@@ -211,13 +218,13 @@ public class Goal implements Comparable<Goal> {
         return target;
     }
 
-    protected int getCurrent() {
+    public int getCurrent() {
         return current;
     }
 
     protected void setCurrent(int current) {
-        update();
         this.current = current;
+        update();
     }
 
     /**
