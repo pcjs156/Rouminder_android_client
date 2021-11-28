@@ -97,19 +97,19 @@ public class GoalManager {
             Set<Goal> set = earlyStartingGoals.get(goal.getStartTime());
             set.remove(goal);
             if(set.isEmpty())
-                earlyStartingGoals.remove(set);
+                earlyStartingGoals.remove(goal.getStartTime(), set);
         }
         if(earlyEndingGoals.containsKey(goal.getEndTime())) {
             Set<Goal> set = earlyEndingGoals.get(goal.getEndTime());
             set.remove(goal);
             if(set.isEmpty())
-                earlyEndingGoals.remove(set);
+                earlyEndingGoals.remove(goal.getEndTime(), set);
         }
         if(ongoingGoals.containsKey(goal.getStartTime())) {
             Set<Goal> set = ongoingGoals.get(goal.getStartTime());
             set.remove(goal);
             if(set.isEmpty())
-                ongoingGoals.remove(set);
+                ongoingGoals.remove(goal.getStartTime(), set);
         }
 
         function.run();
@@ -144,13 +144,13 @@ public class GoalManager {
                 Set<Goal> set = earlyStartingGoals.get(goal.getStartTime());
                 set.remove(goal);
                 if(set.isEmpty())
-                    earlyStartingGoals.remove(set);
+                    earlyStartingGoals.remove(goal.getStartTime(), set);
             }
             if(earlyEndingGoals.containsKey(goal.getEndTime())) {
                 Set<Goal> set = earlyEndingGoals.get(goal.getEndTime());
                 set.remove(goal);
                 if(set.isEmpty())
-                    earlyEndingGoals.remove(set);
+                    earlyEndingGoals.remove(goal.getEndTime(), set);
             }
             result = true;
         } else {
@@ -216,8 +216,10 @@ public class GoalManager {
             });
             domainFiltered = setFromBottom.stream()
                     .filter(setFromTop::contains)
+                    .filter(domainFilter)
                     .collect(Collectors.toList());
         }
+//        domainFiltered = goals.values().stream().filter(domainFilter).collect(Collectors.toList());
 
         List<Goal> statusFiltered = domainFiltered.stream().filter(statusFilter).collect(Collectors.toList());
 
@@ -315,7 +317,7 @@ public class GoalManager {
                     end = start.plusDays(1);
                     break;
                 case WEEK:
-                    start = now.truncatedTo(ChronoUnit.DAYS).with(DayOfWeek.MONDAY);
+                    start = now.truncatedTo(ChronoUnit.DAYS).minusWeeks(1).with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
                     end = start.plusDays(7);
                     break;
                 case MONTH:
