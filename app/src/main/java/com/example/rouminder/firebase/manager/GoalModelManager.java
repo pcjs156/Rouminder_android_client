@@ -135,7 +135,7 @@ public class GoalModelManager {
         return newGoal;
     }
 
-    public GoalModel create(RepeatPlanModel plan) {
+    public GoalModel create(RepeatPlanModel plan, LocalDateTime startDatetime, LocalDateTime finishDatetime) {
         checkUidInitialized();
 
         HashMap<String, Object> values = plan.getInfo();
@@ -151,12 +151,6 @@ public class GoalModelManager {
 
         values.put("plan", plan.id);
         values.put("current", 0);
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startDatetime = LocalDateTime.of(
-                now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 0, 0);
-        LocalDateTime finishDatetime = LocalDateTime.of(
-                now.getYear(), now.getMonthValue(), now.getDayOfMonth() + 1, 0, 0);
 
         values.put("start_datetime", BaseModelManager.getTimeStampString(startDatetime));
         values.put("finish_datetime", BaseModelManager.getTimeStampString(finishDatetime));
