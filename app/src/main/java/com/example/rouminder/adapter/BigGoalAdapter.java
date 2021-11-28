@@ -91,7 +91,6 @@ public class BigGoalAdapter extends BaseGoalAdapter {
                     goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
                 else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
 
-                goalImgCheckBox.setClickable(false);
             } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
                 goalProgressBar.setVisibility(View.GONE);
 
