@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.CountGoal;
+import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.helpers.GoalNotificationHelper;
 import com.example.rouminder.receivers.RenewAlarmReceiver;
@@ -74,7 +75,9 @@ public class MainApplication extends android.app.Application {
 
             @Override
             public void onGoalRemove(int id) {
-                Log.d("goal_event", "remove " + id+ " " + goalManager.getGoal(id).getName());
+                Goal goal = goalManager.getGoal(id);
+                if (goal != null)
+                    Log.d("goal_event", "remove " + id+ " " + goalManager.getGoal(id).getName());
             }
         });
 //        loadGoalManager();

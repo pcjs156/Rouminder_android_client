@@ -144,6 +144,7 @@ public class BigGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (((LocationGoal) goal).getChecked())
                     goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
                 else goalImgCheckBox.setImageResource(R.drawable.checkbox_off_background);
+
                 goalImgCheckBox.setClickable(false);
             } else if (goal instanceof CheckGoal) {
                 goalProgressBar.setVisibility(View.GONE);
