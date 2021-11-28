@@ -28,7 +28,6 @@ import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
-import com.example.rouminder.firebase.exception.ModelDoesNotExists;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
@@ -42,15 +41,12 @@ import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 import android.graphics.Color;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 public class AddGoalActivity extends AppCompatActivity {
     // self
@@ -113,8 +109,8 @@ public class AddGoalActivity extends AppCompatActivity {
         endDate = findViewById(R.id.endDate);
         endTime = findViewById(R.id.endTime);
         goalNameEditText = (EditText) findViewById(R.id.goalNameEditText);
-        editTextUnit = (EditText) findViewById(R.id.editTextNumberSigned2);
-        editTextTargetCount = (EditText) findViewById(R.id.editTextNumberSigned);
+        editTextUnit = (EditText) findViewById(R.id.countUnit);
+        editTextTargetCount = (EditText) findViewById(R.id.countNumber);
 
         textViewGoalEndTime = (TextView) findViewById(R.id.textViewGoalEndTime);
         textViewGoalStartTime = (TextView) findViewById(R.id.textViewGoalStartTime);
@@ -396,7 +392,7 @@ public class AddGoalActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())), info.get("tag").toString());
         } else if (info.get("method").toString().equals("count")) {
             goal = new CountGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -406,7 +402,7 @@ public class AddGoalActivity extends AppCompatActivity {
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()),
                     info.get("unit").toString(),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())), info.get("tag").toString());
         } else {
             goal = new LocationGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -417,7 +413,7 @@ public class AddGoalActivity extends AppCompatActivity {
                     Integer.parseInt(info.get("target_count").toString()),
                     Double.parseDouble(info.get("latitude").toString()),
                     Double.parseDouble(info.get("longitude").toString()),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())), info.get("tag").toString());
         }
 
         return goal;

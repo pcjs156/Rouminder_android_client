@@ -241,7 +241,7 @@
                     android:textSize="18sp" />
 
                 <EditText
-                    android:id="@+id/editTextNumberSigned"
+                    android:id="@+id/countNumber"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -258,7 +258,7 @@
                     android:textSize="18sp" />
 
                 <EditText
-                    android:id="@+id/editTextNumberSigned2"
+                    android:id="@+id/countUnit"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -286,7 +286,7 @@
                 android:textSize="18sp" />
 
             <fragment
-                android:id="@+id/mapFinder"
+                android:id="@+id/modifyMapFinder"
                 android:name="com.example.rouminder.fragments.MapsFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -296,8 +296,8 @@
                 android:id="@+id/selected_place_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/mapFinder"
-                android:text="장소를 선택해 주세요." />
+                android:layout_below="@id/modifyMapFinder"
+                android:text="검색창이 빈칸이면 주소가 수정되지 않습니다. " />
 
         </RelativeLayout>
 

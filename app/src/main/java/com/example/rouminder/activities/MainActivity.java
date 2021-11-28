@@ -242,7 +242,8 @@ public class MainActivity extends AppCompatActivity {
                     LocalDateTime.parse(info.get("start_datetime").toString(), formatter),
                     LocalDateTime.parse(info.get("finish_datetime").toString(), formatter),
                     Integer.parseInt(info.get("current").toString()),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())),
+                    info.get("tag").toString());
         } else if (info.get("method").equals("count")) {
             goal = new CountGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -252,7 +253,8 @@ public class MainActivity extends AppCompatActivity {
                     Integer.parseInt(info.get("current").toString()),
                     Integer.parseInt(info.get("target_count").toString()),
                     info.get("unit").toString(),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())),
+                    info.get("tag").toString());
         } else {
             goal = new LocationGoal(goalManager,
                     Integer.parseInt(info.get("id").toString()),
@@ -263,7 +265,8 @@ public class MainActivity extends AppCompatActivity {
                     Integer.parseInt(info.get("target_count").toString()),
                     Double.parseDouble(info.get("latitude").toString()),
                     Double.parseDouble(info.get("longitude").toString()),
-                    Color.valueOf(Color.parseColor(info.get("highlight").toString())));
+                    Color.valueOf(Color.parseColor(info.get("highlight").toString())),
+                    info.get("tag").toString());
         }
 
         return goal;
@@ -278,14 +281,18 @@ public class MainActivity extends AppCompatActivity {
         values.put("name", goal.getName());
         values.put("type", goal.getType());
         values.put("current", goal.getCurrent());
-//        values.put("tag", goal.getTag());
+        values.put("tag", goal.getTag());
+
         if (goal instanceof CheckGoal) {
             values.put("method", "check");
         } else if (goal instanceof CountGoal) {
             values.put("method", "count");
         } else {
             values.put("method", "location");
+            values.put("latitude", ((LocationGoal) goal).getLat());
+            values.put("longitude", ((LocationGoal) goal).getLng());
         }
+
         Color color = goal.getHighlight();
         if (color == null) color = Color.valueOf(126,0, 0, 126);
         values.put("highlight", String.format("#%08X", color.toArgb()));
