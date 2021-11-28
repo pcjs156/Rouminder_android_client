@@ -317,6 +317,10 @@ public class GoalModelManager {
         for (String tag : entireGoalCntPerTags.keySet()) {
             int achievedGoalCnt = achievementCntPerTags.get(tag);
             int entireGoalCnt = entireGoalCntPerTags.get(tag);
+
+            if (entireGoalCnt == 0)
+                continue;
+
             double achievementRate = (achievedGoalCnt / ((double) entireGoalCnt)) * 100;
 
             HashMap<String, Object> statInfo = new HashMap<>();
