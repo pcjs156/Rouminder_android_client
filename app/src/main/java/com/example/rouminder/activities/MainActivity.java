@@ -2,11 +2,15 @@ package com.example.rouminder.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -24,14 +28,12 @@ import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
 import com.example.rouminder.firebase.model.GoalModel;
-import com.example.rouminder.firebase.model.RepeatPlanModel;
 import com.example.rouminder.fragments.GoalFragment;
 import com.example.rouminder.fragments.ProfileFragment;
 import com.example.rouminder.R;
 import com.example.rouminder.fragments.StatisticsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -109,6 +111,15 @@ public class MainActivity extends AppCompatActivity {
         goalFragment = new GoalFragment();
         statisticsFragment = new StatisticsFragment();
         profileFragment = new ProfileFragment();
+
+        // 위치 권한 설정 메시지
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1); //위치권한 탐색 허용 관련 내용
+            }
+        }
 
         //첫 화면 띄우기
         fm.beginTransaction().add(R.id.mainLayoutContainer, goalFragment, "goal").commit();
