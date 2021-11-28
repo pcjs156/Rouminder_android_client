@@ -130,13 +130,13 @@ public class GoalFragment extends Fragment {
         int id = domainToggleGroup.getCheckedId();
         GoalManager.Domain domain;
         if(id == R.id.choiceDay) {
-            domain = GoalManager.Domain.ALL;
+            domain = GoalManager.Domain.DAY;
         } else if(id == R.id.choiceWeek){
             domain = GoalManager.Domain.WEEK;
         } else if(id == R.id.choiceMonth) {
             domain = GoalManager.Domain.MONTH;
         } else {
-            domain = GoalManager.Domain.ALL;
+            domain = GoalManager.Domain.DAY;
         }
         return domain;
     }
