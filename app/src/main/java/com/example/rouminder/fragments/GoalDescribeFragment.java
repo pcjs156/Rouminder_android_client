@@ -19,6 +19,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.rouminder.MainApplication;
 import com.example.rouminder.R;
+import com.example.rouminder.data.goalsystem.CheckGoal;
+import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 
@@ -54,6 +56,19 @@ public class GoalDescribeFragment extends DialogFragment {
         textViewEndTime.setText(goal.getEndTime().toString());
         textViewProgress.setText(goal.progressToString());
 
+        ImageView neg1 = (ImageView) root.findViewById(R.id.neg1);
+        ImageView plus1 = (ImageView) root.findViewById(R.id.plus1);
+        TextView location = (TextView) root.findViewById(R.id.location);
+
+        if (goal instanceof CheckGoal) {
+
+        } else if (goal instanceof CountGoal) {
+            neg1.setVisibility(View.VISIBLE);
+            plus1.setVisibility(View.VISIBLE);
+        } else {
+            location.setVisibility(View.VISIBLE);
+        }
+
         buttonClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,20 +81,19 @@ public class GoalDescribeFragment extends DialogFragment {
                 Log.d("GoalDescribeFragment", "Change");
                 GoalModifyFragment goalModifyFragment = new GoalModifyFragment(goal);
                 goalModifyFragment.show(getActivity().getSupportFragmentManager(), null);
-                //dismiss();
+                dismiss();
             }
         });
         buttonGoalDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Log.d("GoalDescribeFragment", "Delete Button Clicked");
                 GoalManager goalManager = ((MainApplication) getActivity().getApplication()).getGoalManager();
                 int id = goal.getId();
                 Log.d("GoalDescribeFragment", Integer.toString(id));
                 goalManager.removeGoal(id);
                 Log.d("GoalDescribeFragment", goalManager.getGoals().toString());
-                //dismiss();
+                dismiss();
             }
         });
 
