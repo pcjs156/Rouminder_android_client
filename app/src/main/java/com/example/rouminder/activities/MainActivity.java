@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import com.example.rouminder.MainApplication;
 import com.example.rouminder.ProgressDialog;

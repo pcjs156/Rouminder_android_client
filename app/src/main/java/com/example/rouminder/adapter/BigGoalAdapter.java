@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
 import com.example.rouminder.R;
+import com.example.rouminder.activities.MainActivity;
 import com.example.rouminder.data.goalsystem.CheckGoal;
 import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
@@ -31,6 +33,7 @@ import com.example.rouminder.firebase.manager.BaseModelManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -87,11 +90,11 @@ public class BigGoalAdapter extends BaseGoalAdapter {
                 boolean isBefore = data.getBoolean("is_before");
                 String type = data.getString("type");
 
-//                if ((isExpired || isBefore) && type.equals("check")) {
-//                    goalImgCheckBox.setImageResource(R.drawable.ic_baseline_block_24);
-//                    goalImgCheckBox.setClickable(false);
-//                    goalImgCheckBox.setEnabled(false);
-//                }
+                if ((isExpired || isBefore) && type.equals("check")) {
+                    goalImgCheckBox.setImageResource(R.drawable.ic_baseline_block_24);
+                    goalImgCheckBox.setClickable(false);
+                    goalImgCheckBox.setEnabled(false);
+                }
             }
         };
 
@@ -146,7 +149,7 @@ public class BigGoalAdapter extends BaseGoalAdapter {
                             body += (minutes + "분 ");
 
                         if (days == 0 && hours == 0 && minutes == 0 && seconds > 0)
-                            body = (durationSeconds % 60) + "초 후 시작";
+                            body = "1분 이내 시작";
                         else {
                             if (days == 0 && hours == 0 && minutes == 0)
                                 body = "만료";
@@ -173,7 +176,7 @@ public class BigGoalAdapter extends BaseGoalAdapter {
                             body += (minutes + "분 ");
 
                         if (days == 0 && hours == 0 && minutes == 0 && seconds > 0)
-                            body = (durationSeconds % 60) + "초 후 종료";
+                            body = "1분 이내 종료";
                         else {
                             if (days == 0 && hours == 0 && minutes == 0)
                                 body = "만료";
@@ -209,7 +212,7 @@ public class BigGoalAdapter extends BaseGoalAdapter {
                     handler.sendMessage(msg);
                 }
             };
-            timer.schedule(task, 0, 500);
+            timer.schedule(task, 0, 60 * 1000);
 
             if (goal.getType().equals(Goal.Type.LOCATION.name())) {
                 goalProgressBar.setVisibility(View.GONE);
