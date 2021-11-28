@@ -37,6 +37,9 @@ public abstract class BaseGoalAdapter<V extends RecyclerView.ViewHolder> extends
         this.domain = domain;
         setListener();
         setDataset();
+
+        calculateProgress();
+        GoalFragment.me.setProgress();
     }
 
     public void setComparator(Comparator<Goal> comparator) {

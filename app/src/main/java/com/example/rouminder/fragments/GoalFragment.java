@@ -87,6 +87,8 @@ public class GoalFragment extends Fragment {
         bigGoalAdapter = new BigGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
         MiniGoalAdapter miniGoalAdapter = new MiniGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
 
+        setProgress();
+
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.viewGoal);
         recyclerView.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
         recyclerView.setAdapter(bigGoalAdapter);
@@ -151,7 +153,6 @@ public class GoalFragment extends Fragment {
                 return false;
             }
         });
-
 
         TimerTask task = new TimerTask() {
             @Override
