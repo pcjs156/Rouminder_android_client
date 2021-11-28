@@ -4,11 +4,9 @@ import static com.example.rouminder.firebase.manager.BaseModelManager.checkUidIn
 
 import androidx.annotation.NonNull;
 
-import com.example.rouminder.MainApplication;
-import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.firebase.model.GoalModel;
 
-import android.app.Application;
+import android.util.Log;
 import android.util.Pair;
 import android.widget.ArrayAdapter;
 
@@ -200,6 +198,10 @@ public class GoalModelManager {
     public GoalModel update(String id, HashMap<String, Object> newValues) throws ModelDoesNotExists {
         checkUidInitialized();
 
+        if (id.length() != 9) {
+            id = String.format("%09d", Integer.parseInt(id));
+        }
+
         GoalModel targetGoal = null;
         int targetIdx = -1;
         for (int i = 0; i < goals.size(); i++) {
@@ -228,14 +230,14 @@ public class GoalModelManager {
     public void delete(String id) throws ModelDoesNotExists {
         checkUidInitialized();
 
+        if (id.length() != 9) {
+            id = String.format("%09d", Integer.parseInt(id));
+        }
+
+        Log.i("model", "delete " + id);
         GoalModel targetGoal = null;
         int targetIdx = -1;
-        for (GoalModel model : goals) {
-            if (model.id.equals(id)) {
-                targetGoal = model;
-                break;
-            }
-        }
+
         for (int i = 0; i < goals.size(); i++) {
             GoalModel model = goals.get(i);
             if (model.id.equals(id)) {
