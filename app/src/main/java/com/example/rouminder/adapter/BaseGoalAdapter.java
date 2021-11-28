@@ -48,7 +48,7 @@ public abstract class BaseGoalAdapter<V extends RecyclerView.ViewHolder> extends
 
     private void setListener() {
         if(listener != null)
-            listener.remove();
+            goalManager.removeOnGoalChangeListener(listener);
         listener = goalManager.new OnGoalWithCriteriaChangeListener(domain, GoalManager.Status.ALL) {
             @Override
             public void onGoalWithCriteriaAdd(int id) {

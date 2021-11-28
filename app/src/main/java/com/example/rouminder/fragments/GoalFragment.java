@@ -1,5 +1,7 @@
 package com.example.rouminder.fragments;
 
+import static com.example.rouminder.data.goalsystem.GoalManager.*;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -47,6 +49,7 @@ public class GoalFragment extends Fragment {
     SingleSelectToggleGroup domainToggleGroup;
 
     BigGoalAdapter bigGoalAdapter;
+    MiniGoalAdapter miniGoalAdapter;
 
     TextView progress;
     TextView progressStr;
@@ -85,7 +88,7 @@ public class GoalFragment extends Fragment {
 //        CardView monthlyCalendar = (CardView) rootView.findViewById(R.id.monthlyCalendar);
 
         bigGoalAdapter = new BigGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
-        MiniGoalAdapter miniGoalAdapter = new MiniGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
+        miniGoalAdapter = new MiniGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
 
         setProgress();
 
@@ -116,8 +119,8 @@ public class GoalFragment extends Fragment {
 //                weeklyCalendar.setVisibility(View.GONE);
 //                monthlyCalendar.setVisibility(View.GONE);
 
-                bigGoalAdapter.setDomain(getCheckedDomain());
-                miniGoalAdapter.setDomain(getCheckedDomain());
+                bigGoalAdapter.setDomain(Domain.DAY);
+                miniGoalAdapter.setDomain(Domain.DAY);
             }
         });
         choiceWeek.setOnClickListener(new View.OnClickListener() {
@@ -128,8 +131,8 @@ public class GoalFragment extends Fragment {
 //                weeklyCalendar.setVisibility(View.VISIBLE);
 //                monthlyCalendar.setVisibility(View.GONE);
 
-                bigGoalAdapter.setDomain(getCheckedDomain());
-                miniGoalAdapter.setDomain(getCheckedDomain());
+                bigGoalAdapter.setDomain(Domain.WEEK);
+                miniGoalAdapter.setDomain(Domain.WEEK);
             }
         });
         choiceMonth.setOnClickListener(new View.OnClickListener() {
@@ -140,8 +143,8 @@ public class GoalFragment extends Fragment {
 //                weeklyCalendar.setVisibility(View.GONE);
 //                monthlyCalendar.setVisibility(View.VISIBLE);
 
-                bigGoalAdapter.setDomain(getCheckedDomain());
-                miniGoalAdapter.setDomain(getCheckedDomain());
+                bigGoalAdapter.setDomain(Domain.MONTH);
+                miniGoalAdapter.setDomain(Domain.MONTH);
             }
         });
 
@@ -165,17 +168,17 @@ public class GoalFragment extends Fragment {
         return rootView;
     }
 
-    private GoalManager.Domain getCheckedDomain() {
+    private Domain getCheckedDomain() {
         int id = domainToggleGroup.getCheckedId();
-        GoalManager.Domain domain;
+        Domain domain;
         if(id == R.id.choiceDay) {
-            domain = GoalManager.Domain.DAY;
+            domain = Domain.DAY;
         } else if(id == R.id.choiceWeek){
-            domain = GoalManager.Domain.WEEK;
+            domain = Domain.WEEK;
         } else if(id == R.id.choiceMonth) {
-            domain = GoalManager.Domain.MONTH;
+            domain = Domain.MONTH;
         } else {
-            domain = GoalManager.Domain.DAY;
+            domain = Domain.DAY;
         }
         return domain;
     }
