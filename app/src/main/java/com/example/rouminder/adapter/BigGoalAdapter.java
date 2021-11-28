@@ -141,11 +141,11 @@ public class BigGoalAdapter extends BaseGoalAdapter<BigGoalAdapter.ViewHolder> {
             goalTime.setText(BaseModelManager.getTimeStampString(goal.getEndTime()));
             highlight.setBackgroundColor(goal.getHighlight().toArgb());
 
-
             goalRestTime.setText(getRestTimeString(goal));
 
             if (goal.getType().equals(Goal.Type.LOCATION.name())) {
                 goalProgressBar.setVisibility(View.GONE);
+                goalImgCheckBox.setVisibility(View.VISIBLE);
                 goalImgCheckBox.setClickable(false);
 
                 if (((LocationGoal) goal).getChecked())
@@ -154,6 +154,7 @@ public class BigGoalAdapter extends BaseGoalAdapter<BigGoalAdapter.ViewHolder> {
 
             } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
                 goalProgressBar.setVisibility(View.GONE);
+                goalImgCheckBox.setVisibility(View.VISIBLE);
 
                 CheckGoal checkGoal = (CheckGoal) goal;
 
@@ -176,6 +177,7 @@ public class BigGoalAdapter extends BaseGoalAdapter<BigGoalAdapter.ViewHolder> {
                 });
             } else { // count
                 goalImgCheckBox.setVisibility(View.GONE);
+                goalProgressBar.setVisibility(View.VISIBLE);
                 goalProgressBar.setMax(goal.getTarget());
                 goalProgressBar.setProgress(((CountGoal) goal).getCount());
             }

@@ -71,6 +71,7 @@ public class MiniGoalAdapter extends BaseGoalAdapter<MiniGoalAdapter.ViewHolder>
 
             if (goal.getType().equals(Goal.Type.LOCATION.name())) {
                 goalProgressBar.setVisibility(View.GONE);
+                goalImgCheckBox.setVisibility(View.VISIBLE);
 
                 if (((LocationGoal) goal).getChecked())
                     goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
@@ -78,6 +79,7 @@ public class MiniGoalAdapter extends BaseGoalAdapter<MiniGoalAdapter.ViewHolder>
 
             } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
                 goalProgressBar.setVisibility(View.GONE);
+                goalImgCheckBox.setVisibility(View.VISIBLE);
 
                 CheckGoal checkGoal = (CheckGoal) goal;
 
@@ -109,6 +111,7 @@ public class MiniGoalAdapter extends BaseGoalAdapter<MiniGoalAdapter.ViewHolder>
                 });
             } else {
                 goalImgCheckBox.setVisibility(View.GONE);
+                goalProgressBar.setVisibility(View.VISIBLE);
                 goalProgressBar.setMax(goal.getTarget());
                 goalProgressBar.setProgress(((CountGoal) goal).getCount());
             }
