@@ -35,6 +35,7 @@ import com.example.rouminder.firebase.model.RepeatPlanModel;
 import com.example.rouminder.fragments.MapsFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.example.rouminder.firebase.model.GoalModel;
+import com.nex3z.togglebuttongroup.MultiSelectToggleGroup;
 import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 
 import android.graphics.Color;
@@ -64,6 +65,7 @@ public class AddGoalActivity extends AppCompatActivity {
     private Spinner highlightsSpinner;
     private SingleSelectToggleGroup typeGroup;
     private SingleSelectToggleGroup methodGroup;
+    private MultiSelectToggleGroup weekGroup;
 
     private EditText goalNameEditText;
     private AutoCompleteTextView editTextTag;
@@ -89,6 +91,8 @@ public class AddGoalActivity extends AppCompatActivity {
 
         LinearLayout methodLayout = (LinearLayout) findViewById(R.id.method);
         LinearLayout countLayout = (LinearLayout) findViewById(R.id.count);
+        LinearLayout weekdayLayout = (LinearLayout) findViewById(R.id.weekdayLayout);
+        LinearLayout dateTimeLayout = (LinearLayout) findViewById(R.id.datetimeLayout);
         RelativeLayout mapLayout = (RelativeLayout) findViewById(R.id.map);
 
         LinearLayout dateTime = findViewById(R.id.dateTimeSettingLayout);
@@ -125,6 +129,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
         typeGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesTypes);
         methodGroup = (SingleSelectToggleGroup) findViewById(R.id.groupChoicesMethod);
+        weekGroup = (MultiSelectToggleGroup) findViewById(R.id.groupChoicesWeekday);
         typeGroup.setOnCheckedChangeListener(new SingleSelectToggleGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SingleSelectToggleGroup group, int checkedId) {
@@ -134,6 +139,9 @@ public class AddGoalActivity extends AppCompatActivity {
                     dateTime.setVisibility(View.GONE);
                     countLayout.setVisibility(View.GONE);
                     mapLayout.setVisibility(View.GONE);
+                    //weekGroup.setVisibility(View.GONE);
+                    weekdayLayout.setVisibility(View.GONE);
+                    dateTimeLayout.setVisibility(View.GONE);
 
                     methodGroup.clearCheck();
 
@@ -144,8 +152,13 @@ public class AddGoalActivity extends AppCompatActivity {
                     mapLayout.setVisibility(View.GONE);
 
                     methodGroup.clearCheck();
+                    weekGroup.clearCheck();
 
                     methodLayout.setVisibility(View.VISIBLE);
+                    weekdayLayout.setVisibility(View.VISIBLE);
+                    dateTimeLayout.setVisibility(View.VISIBLE);
+                    //weekGroup.setVisibility(View.VISIBLE);
+
                 } else if (checkedId == R.id.choiceComplex) {
                     countLayout.setVisibility(View.GONE);
                     mapLayout.setVisibility(View.GONE);
