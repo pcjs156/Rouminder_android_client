@@ -28,6 +28,7 @@ import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.data.goalsystem.LocationGoal;
+import com.example.rouminder.firebase.exception.ModelDoesNotExists;
 import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
@@ -320,7 +321,7 @@ public class AddGoalActivity extends AppCompatActivity {
 
             values.put("week_plan", weekPlan);
             RepeatPlanModel plan = repeatPlanModelManager.create(values);
-//            goalModelManager.create(plan);
+//            goalModelManager.create(plan, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
         }
 
         finish();

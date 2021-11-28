@@ -158,6 +158,7 @@ public class GoalModelManager {
         ref.child("data").child(randomId).setValue(values);
 
         GoalModel newGoal = new GoalModel(values);
+        goals.add(newGoal);
 
         return newGoal;
     }
