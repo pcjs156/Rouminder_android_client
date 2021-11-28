@@ -31,7 +31,7 @@ public class MapsFragment extends Fragment {
 
     static final String apiKey = BuildConfig.API_KEY;
 
-    LatLng selectedLatLng = null;
+    public static LatLng selectedLatLng = null;
 
     MapsFragment self = this;
 
@@ -67,7 +67,11 @@ public class MapsFragment extends Fragment {
                 String address = place.getAddress();
 
                 TextView addressTextView = (TextView) getActivity().findViewById(R.id.selected_place_name);
-                addressTextView.setText(address);
+                try {
+                    addressTextView.setText(address);
+                } catch (Exception e) {
+                    // pass
+                }
             }
 
             @Override
@@ -80,7 +84,7 @@ public class MapsFragment extends Fragment {
         return layout;
     }
 
-    public LatLng getSelectedLatLng() {
+    public static LatLng getSelectedLatLng() {
         return selectedLatLng;
     }
 }
