@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
 import com.example.rouminder.firebase.exception.ModelDoesNotExists;
+import com.example.rouminder.firebase.manager.BaseModelManager;
 import com.example.rouminder.firebase.manager.GoalModelManager;
 import com.example.rouminder.firebase.manager.RepeatPlanModelManager;
 import com.example.rouminder.firebase.model.GoalModel;
@@ -16,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RepeatPlanHelper {
-    private RepeatPlanHelper() {}
+    private RepeatPlanHelper() {
+    }
 
     private static boolean doesGoalHaveMatchingPlan(Goal goal, RepeatPlanModel planModel) {
         GoalModel goalModel = null;
@@ -32,25 +34,28 @@ public class RepeatPlanHelper {
         GoalModelManager goalModelManager = GoalModelManager.getInstance();
         // get last ending goal with given plan
         LocalDateTime from = goalManager.getGoals().stream()
-                .filter(g-> doesGoalHaveMatchingPlan(g, model))
+                .filter(g -> doesGoalHaveMatchingPlan(g, model))
                 .map(Goal::getEndTime)
                 .max(LocalDateTime::compareTo)
                 .orElse(LocalDateTime.now());
         LocalDateTime to = LocalDateTime.now().plusMonths(1);
+        LocalDateTime startTime = BaseModelManager.parseTimeString(model.startTime);
+        LocalDateTime endTime = BaseModelManager.parseTimeString(model.endTime);
 
         List<Pair<LocalDateTime, LocalDateTime>> periods = new ArrayList<>();
 
         // get a list of possible periods
         // DayOfWeek: Monday(1) ~ Sunday(7)
         // dayOfWeek: Sunday(0) ~ Saturday(6)
-        for(LocalDateTime current = from.truncatedTo(ChronoUnit.DAYS); current.isBefore(to); current = current.plusDays(1)) {
+        for (LocalDateTime current = from.truncatedTo(ChronoUnit.DAYS); current.isBefore(to); current = current.plusDays(1)) {
             int dayOfWeek = current.getDayOfWeek().getValue() % 7;
-            if(model.weekPlan.get(dayOfWeek))
-                periods.add(new Pair<>(current, current.plusDays(1)));
+            if (model.weekPlan.get(dayOfWeek))
+                periods.add(new Pair<>(current.withHour(startTime.getHour()).withMinute(startTime.getMinute()),
+                        current.withHour(endTime.getHour()).withMinute(endTime.getMinute())));
         }
 
         List<Goal> goal = new ArrayList<>();
-        periods.stream().map(p -> goalModelManager.create(model, p.first, p.second))
+        periods.stream().map(p -> goalModelManager.create(model,p.first,p.second))
                 .forEach(m -> goalManager.addGoal(GoalModelManager.convertGoalModelToGoal(goalManager, m)));
     }
 
@@ -61,7 +66,7 @@ public class RepeatPlanHelper {
                 .forEach(g -> goalManager.removeGoal(g.getId()));
         try {
             RepeatPlanModelManager.getInstance().delete(model.id);
-        } catch(ModelDoesNotExists e) {
+        } catch (ModelDoesNotExists e) {
             e.printStackTrace();
         }
     }

@@ -74,7 +74,7 @@ public class BaseModelManager {
         StringTokenizer tokenizer = new StringTokenizer(timeString, ":");
         int hour = Integer.parseInt(tokenizer.nextToken());
         int min = Integer.parseInt(tokenizer.nextToken());
-        LocalDateTime ret = LocalDateTime.of(0, 0, 0, hour, min);
+        LocalDateTime ret = LocalDateTime.of(0, 1, 1, hour, min);
         return ret;
     }
 
