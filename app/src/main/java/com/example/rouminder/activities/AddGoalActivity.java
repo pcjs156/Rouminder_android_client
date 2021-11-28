@@ -52,6 +52,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class AddGoalActivity extends AppCompatActivity {
@@ -82,6 +83,7 @@ public class AddGoalActivity extends AppCompatActivity {
     private TextView endTime;
     private TextView textViewGoalEndTime;
     private TextView textViewGoalStartTime;
+    private MultiSelectToggleGroup groupChoicesWeekday;
 //    private TextView textViewGoalEndDate;
 //    private TextView textViewGoalStartDate;
 
@@ -104,6 +106,7 @@ public class AddGoalActivity extends AppCompatActivity {
         LinearLayout weekdayLayout = (LinearLayout) findViewById(R.id.weekdayLayout);
         LinearLayout dateTimeLayout = (LinearLayout) findViewById(R.id.datetimeLayout);
         RelativeLayout mapLayout = (RelativeLayout) findViewById(R.id.map);
+        groupChoicesWeekday = (MultiSelectToggleGroup) findViewById(R.id.groupChoicesWeekday);
 
         weekdayLayout.setVisibility(View.GONE);
 
@@ -121,6 +124,14 @@ public class AddGoalActivity extends AppCompatActivity {
 
         textViewGoalEndTime = (TextView) findViewById(R.id.textViewGoalEndTime);
         textViewGoalStartTime = (TextView) findViewById(R.id.textViewGoalStartTime);
+
+        LocalDateTime now = LocalDateTime.now();
+        int hour = now.getHour();
+        int min = now.getMinute();
+        String timeString = String.format("%02d:%02d", hour, min);
+        textViewGoalStartTime.setText(timeString);
+        textViewGoalEndTime.setText(timeString);
+
 //        textViewGoalEndDate = (TextView) findViewById(R.id.textViewGoalEndDate);
 //        textViewGoalStartDate = (TextView) findViewById(R.id.textViewGoalStartDate);
 
@@ -368,13 +379,32 @@ public class AddGoalActivity extends AppCompatActivity {
             GoalManager goalManager = ((MainApplication) getApplication()).getGoalManager();
             goalManager.addGoal(GoalModelManager.convertGoalModelToGoal(goalManager, goalModel));
         } else if (type.equals("repeat")) {
-            Boolean[] _weekPlan = {true, false, true, false, true, false, false};
+            int[] weekIds = {R.id.monday, R.id.tuesday, R.id.wednesday,
+                    R.id.thursday, R.id.friday, R.id.saturday, R.id.sunday};
+
             ArrayList<Boolean> weekPlan = new ArrayList<>();
-            for (Boolean plan : _weekPlan) {
-                weekPlan.add(plan);
+            Set<Integer> selectedDays = groupChoicesWeekday.getCheckedIds();
+            boolean selectAtLeastOne = false;
+            for (int i = 0; i < weekIds.length; i++) {
+                int weekId = weekIds[i];
+                boolean selected = selectedDays.contains(weekId);
+                if (selected) {
+                    weekPlan.add(true);
+                    selectAtLeastOne = true;
+                } else {
+                    weekPlan.add(false);
+                }
             }
 
-            values.put("week_plan", weekPlan);
+            if (!selectAtLeastOne) {
+                Toast.makeText(getApplicationContext(), "적어도 하루는 선택해야 합니다.", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                values.put("week_plan", weekPlan);
+            }
+
+            values.put("start_time", textViewGoalStartTime.getText().toString());
+            values.put("end_time", textViewGoalEndTime.getText().toString());
             RepeatPlanModel plan = repeatPlanModelManager.create(values);
             RepeatPlanHelper.generateGoals(((MainApplication)getApplication()).getGoalManager(), plan);
 //            goalModelManager.create(plan, LocalDateTime.now(), LocalDateTime.now().plusDays(1));

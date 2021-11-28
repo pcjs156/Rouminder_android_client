@@ -17,6 +17,11 @@ public class RepeatPlanModel {
     // 일정 생성 계획
     public ArrayList<Boolean> weekPlan;
 
+    // 시작 시각
+    public String startTime;
+    // 종료 시각
+    public String endTime;
+
     // 플랜으로 생성될 목표명
     public String name;
     // 플랜으로 생성될 목표의 유형 (general, repeat, complex)
@@ -54,6 +59,9 @@ public class RepeatPlanModel {
 
         this.createdAt = (String) values.getOrDefault("created_at", BaseModelManager.getTimeStampString());
         this.modifiedAt = (String) values.getOrDefault("modified_at", "");
+
+        this.startTime = (String) values.get("start_time");
+        this.endTime = (String) values.get("end_time");
 
         this.name = (String) values.get("name");
 
