@@ -1,6 +1,22 @@
 # Rouminder_android_client
 KMUSW 2021 Mobile programming Team project
 
+![image_main](static/images/example_main.png)
+> 기본 화면
+
+&nbsp;
+
+![image_add](static/images/example_add_goal.png)
+> 목표 추가 화면
+
+
+&nbsp;
+
+![image_notification_popup](static/images/example_notification_popup.png) ![image_notification_popup](static/images/example_notification.png)
+> 목표 알림
+
+&nbsp;
+
 ## 프로젝트 실행 방법
 1. 프로젝트 다운로드
 2. 프로젝트 실행
