@@ -1,15 +1,21 @@
 package com.example.rouminder.fragments;
 
+import static com.example.rouminder.data.goalsystem.GoalManager.*;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,12 +37,22 @@ import com.nex3z.togglebuttongroup.SingleSelectToggleGroup;
 import com.nex3z.togglebuttongroup.button.CircularToggle;
 
 import java.util.Comparator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GoalFragment extends Fragment {
     GoalManager goalManager;
     private Context context;
 
+    public static GoalFragment me;
+
     SingleSelectToggleGroup domainToggleGroup;
+
+    BigGoalAdapter bigGoalAdapter;
+    MiniGoalAdapter miniGoalAdapter;
+
+    TextView progress;
+    TextView progressStr;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,7 +72,12 @@ public class GoalFragment extends Fragment {
 
         goalManager = ((MainApplication) getActivity().getApplication()).getGoalManager();
 
+        me = this;
+
         ImageView btnAddGoal = (ImageView) rootView.findViewById(R.id.btnAddGoal);
+
+        progress = (TextView) rootView.findViewById(R.id.entireGoalProgress);
+        progressStr = (TextView) rootView.findViewById(R.id.entireGoalProgressStr);
 
         domainToggleGroup = (SingleSelectToggleGroup) rootView.findViewById(R.id.groupChoices);
         CircularToggle choiceDay = (CircularToggle) rootView.findViewById(R.id.choiceDay);
@@ -66,12 +87,15 @@ public class GoalFragment extends Fragment {
 //        LinearLayout weeklyCalendar = (LinearLayout) rootView.findViewById(R.id.weeklyCalendar);
 //        CardView monthlyCalendar = (CardView) rootView.findViewById(R.id.monthlyCalendar);
 
-        BigGoalAdapter bigGoalAdapter = new BigGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
-        MiniGoalAdapter miniGoalAdapter = new MiniGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
+        bigGoalAdapter = new BigGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
+        miniGoalAdapter = new MiniGoalAdapter(getActivity(), ((MainApplication) context.getApplicationContext()).getGoalManager(), getCheckedDomain(), getSelectedComparator());
+
+        setProgress();
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.viewGoal);
         recyclerView.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
         recyclerView.setAdapter(bigGoalAdapter);
+
 
         RecyclerView miniRecyclerView = (RecyclerView) rootView.findViewById(R.id.lstMiniGoal);
         miniRecyclerView.setLayoutManager(new LinearLayoutManager(context.getApplicationContext()));
@@ -95,8 +119,8 @@ public class GoalFragment extends Fragment {
 //                weeklyCalendar.setVisibility(View.GONE);
 //                monthlyCalendar.setVisibility(View.GONE);
 
-                bigGoalAdapter.setDomain(getCheckedDomain());
-                miniGoalAdapter.setDomain(getCheckedDomain());
+                bigGoalAdapter.setDomain(Domain.DAY);
+                miniGoalAdapter.setDomain(Domain.DAY);
             }
         });
         choiceWeek.setOnClickListener(new View.OnClickListener() {
@@ -107,8 +131,8 @@ public class GoalFragment extends Fragment {
 //                weeklyCalendar.setVisibility(View.VISIBLE);
 //                monthlyCalendar.setVisibility(View.GONE);
 
-                bigGoalAdapter.setDomain(getCheckedDomain());
-                miniGoalAdapter.setDomain(getCheckedDomain());
+                bigGoalAdapter.setDomain(Domain.WEEK);
+                miniGoalAdapter.setDomain(Domain.WEEK);
             }
         });
         choiceMonth.setOnClickListener(new View.OnClickListener() {
@@ -119,25 +143,42 @@ public class GoalFragment extends Fragment {
 //                weeklyCalendar.setVisibility(View.GONE);
 //                monthlyCalendar.setVisibility(View.VISIBLE);
 
-                bigGoalAdapter.setDomain(getCheckedDomain());
-                miniGoalAdapter.setDomain(getCheckedDomain());
+                bigGoalAdapter.setDomain(Domain.MONTH);
+                miniGoalAdapter.setDomain(Domain.MONTH);
             }
         });
+
+        Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message message) {
+                Log.d("test", "aaa");
+                bigGoalAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0);
+            }
+        };
+        new Timer().schedule(task, 0, 30 * 1000);
 
         return rootView;
     }
 
-    private GoalManager.Domain getCheckedDomain() {
+    private Domain getCheckedDomain() {
         int id = domainToggleGroup.getCheckedId();
-        GoalManager.Domain domain;
+        Domain domain;
         if(id == R.id.choiceDay) {
-            domain = GoalManager.Domain.ALL;
+            domain = Domain.DAY;
         } else if(id == R.id.choiceWeek){
-            domain = GoalManager.Domain.WEEK;
+            domain = Domain.WEEK;
         } else if(id == R.id.choiceMonth) {
-            domain = GoalManager.Domain.MONTH;
+            domain = Domain.MONTH;
         } else {
-            domain = GoalManager.Domain.ALL;
+            domain = Domain.DAY;
         }
         return domain;
     }
@@ -150,5 +191,10 @@ public class GoalFragment extends Fragment {
                 return g1.getEndTime().compareTo(g2.getEndTime());
             }
         };
+    }
+
+    public void setProgress() {
+        progressStr.setText(bigGoalAdapter.getProgressString());
+        progress.setText(Double.toString(bigGoalAdapter.getProgress())+"%");
     }
 }

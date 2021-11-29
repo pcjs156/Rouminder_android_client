@@ -140,7 +140,10 @@ public class GoalDescribeFragment extends DialogFragment {
             public void onClick(View view) {
                 boolean result = locationCheck();
 
-                if (result) ((LocationGoal) goal).setChecked(true);
+                if (result) {
+                    ((LocationGoal) goal).setChecked(true);
+                    dismiss();
+                }
                 else Toast.makeText(context, "거리가 너무 멉니다", Toast.LENGTH_SHORT).show();
             }
         });

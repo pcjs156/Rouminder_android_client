@@ -47,8 +47,6 @@ public class StatisticsFragment extends Fragment {
         initCircularChart();
         initBarChart();
 
-        Toast.makeText(getActivity().getApplicationContext(), "rate: " + goalModelManager.getEntireAchievementRate(), Toast.LENGTH_SHORT).show();
-
         return root;
     }
 
@@ -63,7 +61,7 @@ public class StatisticsFragment extends Fragment {
         circleBar.setMax(100);
 
         // 평균 달성률 설정(%)
-        circleBar.setProgress(60);
+        circleBar.setProgress((int) goalModelManager.getEntireAchievementRate());
     }
 
     private void initBarChart() {

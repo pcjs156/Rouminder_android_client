@@ -1,5 +1,7 @@
 package com.example.rouminder.data.goalsystem;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import java.time.DayOfWeek;
@@ -8,46 +10,37 @@ import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GoalManager {
     private static final Period timeToExpire = Period.ofMonths(1);
     private static int MAX_ID = 0;
     public final HashMap<Integer, Goal> goals;
-    private final TreeSet<Goal> earlyStartingGoals;
-    private final TreeSet<Goal> earlyEndingGoals;
-    private final TreeSet<Goal> ongoingGoals;
+    private final TreeMap<LocalDateTime, Set<Goal>> earlyStartingGoals;
+    private final TreeMap<LocalDateTime, Set<Goal>> earlyEndingGoals;
+    private final TreeMap<LocalDateTime, Set<Goal>> ongoingGoals;
 
     private final List<OnGoalChangeListener> onGoalChangeListeners;
 
     public GoalManager() {
         goals = new HashMap<>();
-        earlyStartingGoals = new TreeSet<>(new Comparator<Goal>() {
-            @Override
-            public int compare(Goal g1, Goal g2) {
-                return g1.getStartTime().compareTo(g2.getStartTime());
-            }
-        });
-        earlyEndingGoals = new TreeSet<>(new Comparator<Goal>() {
-            @Override
-            public int compare(Goal g1, Goal g2) {
-                return g1.getEndTime().compareTo(g2.getEndTime());
-            }
-        });
-        ongoingGoals = new TreeSet<>(new Comparator<Goal>() {
-            @Override
-            public int compare(Goal g1, Goal g2) {
-                return g1.getStartTime().compareTo(g2.getStartTime());
-            }
-        });
+        earlyStartingGoals = new TreeMap<>();
+        earlyEndingGoals = new TreeMap<>();
+        ongoingGoals = new TreeMap<>();
         onGoalChangeListeners = new ArrayList<>();
     }
 
@@ -63,11 +56,19 @@ public class GoalManager {
         }
 
         goals.put(goal.getId(), goal);
-        earlyStartingGoals.add(goal);
-        earlyEndingGoals.add(goal);
+
+        if(earlyStartingGoals.containsKey(goal.getStartTime()))
+            earlyStartingGoals.get(goal.getStartTime()).add(goal);
+        else
+            earlyStartingGoals.put(goal.getStartTime(), new HashSet<>(Collections.singletonList(goal)));
+        if(earlyEndingGoals.containsKey(goal.getEndTime()))
+            earlyEndingGoals.get(goal.getEndTime()).add(goal);
+        else
+            earlyEndingGoals.put(goal.getStartTime(), new HashSet<>(Collections.singletonList(goal)));
 
         onGoalChangeListeners.forEach(listener -> listener.onGoalAdd(goal.getId()));
         renewGoals(LocalDateTime.now());
+        Log.d("after_add", goals.size() + " " + earlyStartingGoals.values().size() + " " + earlyEndingGoals.values().size());
         return goal.getId();
     }
 
@@ -82,21 +83,45 @@ public class GoalManager {
     }
 
     void updateGoal(int id) {
-        onGoalChangeListeners.forEach(listener -> {
+        for(OnGoalChangeListener listener: onGoalChangeListeners) {
             listener.onGoalUpdate(id);
-        });
+        }
+//        onGoalChangeListeners.forEach(listener -> {
+//            listener.onGoalUpdate(id);
+//        });
     }
 
     void updateGoalTime(int id, Runnable function) {
         Goal goal = getGoal(id);
-        earlyStartingGoals.remove(goal);
-        earlyEndingGoals.remove(goal);
-        ongoingGoals.remove(goal);
+        if(earlyStartingGoals.containsKey(goal.getStartTime())) {
+            Set<Goal> set = earlyStartingGoals.get(goal.getStartTime());
+            set.remove(goal);
+            if(set.isEmpty())
+                earlyStartingGoals.remove(goal.getStartTime(), set);
+        }
+        if(earlyEndingGoals.containsKey(goal.getEndTime())) {
+            Set<Goal> set = earlyEndingGoals.get(goal.getEndTime());
+            set.remove(goal);
+            if(set.isEmpty())
+                earlyEndingGoals.remove(goal.getEndTime(), set);
+        }
+        if(ongoingGoals.containsKey(goal.getStartTime())) {
+            Set<Goal> set = ongoingGoals.get(goal.getStartTime());
+            set.remove(goal);
+            if(set.isEmpty())
+                ongoingGoals.remove(goal.getStartTime(), set);
+        }
 
         function.run();
 
-        earlyStartingGoals.add(goal);
-        earlyEndingGoals.add(goal);
+        if(earlyStartingGoals.containsKey(goal.getStartTime()))
+            earlyStartingGoals.get(goal.getStartTime()).add(goal);
+        else
+            earlyStartingGoals.put(goal.getStartTime(), new HashSet<>(Collections.singletonList(goal)));
+        if(earlyEndingGoals.containsKey(goal.getEndTime()))
+            earlyEndingGoals.get(goal.getEndTime()).add(goal);
+        else
+            earlyEndingGoals.put(goal.getStartTime(), new HashSet<>(Collections.singletonList(goal)));
         renewGoals(LocalDateTime.now());
         updateGoal(id);
     }
@@ -108,20 +133,30 @@ public class GoalManager {
      * @return true if successfully remove the goal, otherwise false.
      */
     public boolean removeGoal(int id) {
+        onGoalChangeListeners.forEach(listener -> {
+            listener.onGoalRemove(id);
+        });
         boolean result;
         if (goals.get(id) != null) {
 
             Goal goal = goals.remove(id);
-            earlyStartingGoals.remove(goal);
-            earlyEndingGoals.remove(goal);
+            if(earlyStartingGoals.containsKey(goal.getStartTime())) {
+                Set<Goal> set = earlyStartingGoals.get(goal.getStartTime());
+                set.remove(goal);
+                if(set.isEmpty())
+                    earlyStartingGoals.remove(goal.getStartTime(), set);
+            }
+            if(earlyEndingGoals.containsKey(goal.getEndTime())) {
+                Set<Goal> set = earlyEndingGoals.get(goal.getEndTime());
+                set.remove(goal);
+                if(set.isEmpty())
+                    earlyEndingGoals.remove(goal.getEndTime(), set);
+            }
             result = true;
         } else {
             result = false;
         }
 
-        onGoalChangeListeners.forEach(listener -> {
-            listener.onGoalRemove(id);
-        });
         renewGoals(LocalDateTime.now());
         return result;
     }
@@ -132,7 +167,7 @@ public class GoalManager {
      * @return a list of goals.
      */
     public List<Goal> getGoals() {
-        return new ArrayList<>(earlyStartingGoals);
+        return new ArrayList<>(goals.values());
     }
 
     /**
@@ -144,6 +179,7 @@ public class GoalManager {
      * @return a list of goals that matches criteria.
      */
     public List<Goal> getGoals(LocalDateTime now, @Nullable Domain domain, @Nullable Status status) {
+
         if (domain == null)
             domain = Domain.ALL;
 
@@ -155,23 +191,40 @@ public class GoalManager {
         List<Goal> domainFiltered;
 
         if (domain == Domain.ALL) {
-            domainFiltered = new ArrayList<>(earlyStartingGoals);
+            domainFiltered = new ArrayList<>(goals.values());
         } else {
-
-
+//            domainFiltered = earlyStartingGoals.stream().filter(domainFilter).collect(Collectors.toList());
             Goal dummy = domainFilter.getDummy();
-            Goal bottom = earlyEndingGoals.floor(dummy);
-            Goal top = earlyStartingGoals.ceiling(dummy);
-//            SortedSet<Goal> setFromBottom = bottom == null ? new TreeSet<>() : earlyEndingGoals.tailSet(bottom);
-//            SortedSet<Goal> setFromTop = top == null ? new TreeSet<>() : earlyStartingGoals.headSet(top);
-            SortedSet<Goal> setFromBottom = bottom == null ? earlyEndingGoals : earlyEndingGoals.tailSet(bottom);
-            SortedSet<Goal> setFromTop = top == null ? earlyStartingGoals : earlyStartingGoals.headSet(top);
+            LocalDateTime bottom = earlyEndingGoals.floorKey(dummy.getEndTime());
+            LocalDateTime top = earlyStartingGoals.ceilingKey(dummy.getStartTime());
+//            SortedSet<Goal> setFromBottom = (bottom == null) ? new TreeSet<>() : earlyEndingGoals.tailSet(bottom);
+//            SortedSet<Goal> setFromTop = (top == null) ? new TreeSet<>() : earlyStartingGoals.headSet(top);
+//            SortedSet<Goal> setFromBottom = bottom == null ? earlyEndingGoals : earlyEndingGoals.tailSet(bottom);
+//            SortedSet<Goal> setFromTop = top == null ? earlyStartingGoals : earlyStartingGoals.headSet(top);
+//            domainFiltered = setFromBottom.stream()
+//                    .filter(setFromTop::contains)
+//                    .collect(Collectors.toList());
+            SortedMap<LocalDateTime, Set<Goal>> mapFromBottom = bottom == null ? earlyEndingGoals : earlyEndingGoals.tailMap(bottom, true);
+            SortedMap<LocalDateTime, Set<Goal>> mapFromTop = top == null ? earlyStartingGoals : earlyStartingGoals.headMap(top, true);
+            Set<Goal> setFromBottom = mapFromBottom.values().stream().reduce(new HashSet<>(), (total, set) -> {
+                total.addAll(set);
+                return total;
+            });
+            Set<Goal> setFromTop = mapFromTop.values().stream().reduce(new HashSet<>(), (total, set) -> {
+                total.addAll(set);
+                return total;
+            });
             domainFiltered = setFromBottom.stream()
                     .filter(setFromTop::contains)
+                    .filter(domainFilter)
                     .collect(Collectors.toList());
         }
+//        domainFiltered = goals.values().stream().filter(domainFilter).collect(Collectors.toList());
 
         List<Goal> statusFiltered = domainFiltered.stream().filter(statusFilter).collect(Collectors.toList());
+
+        Log.d("filter_result", goals.size() + " " + earlyStartingGoals.values().size() + " " + earlyEndingGoals.values().size()
+                + " " + domainFiltered.size() + " " + statusFiltered.size());
         return statusFiltered;
     }
 
@@ -181,7 +234,10 @@ public class GoalManager {
      * @return a list of ongoing goals.
      */
     public List<Goal> getOngoingGoals() {
-        return new ArrayList<>(ongoingGoals);
+        return new ArrayList<>(ongoingGoals.values().stream().reduce(new HashSet<>(), (total, set) -> {
+            total.addAll(set);
+            return total;
+        }));
     }
 
     /**
@@ -192,10 +248,19 @@ public class GoalManager {
     public boolean renewGoals(LocalDateTime now) {
         boolean result = false;
 
-        TreeSet<Goal> newOngoingGoals = new TreeSet<>(getGoals(now, null, Status.ONGOING));
+
+        TreeMap<LocalDateTime, Set<Goal>> newOngoingGoals = new TreeMap<>();
+        getGoals(now, null, Status.ONGOING).forEach(g -> {
+            if(newOngoingGoals.containsKey(g.getStartTime()))
+                newOngoingGoals.get(g.getStartTime()).add(g);
+            else
+                newOngoingGoals.put(g.getStartTime(), new HashSet<>(Collections.singletonList(g)));
+        });
+
         if(!newOngoingGoals.equals(ongoingGoals)) {
             ongoingGoals.clear();
-            ongoingGoals.addAll(newOngoingGoals);
+
+            ongoingGoals.putAll(newOngoingGoals);
             result = true;
         }
 
@@ -252,7 +317,7 @@ public class GoalManager {
                     end = start.plusDays(1);
                     break;
                 case WEEK:
-                    start = now.truncatedTo(ChronoUnit.DAYS).with(DayOfWeek.MONDAY);
+                    start = now.truncatedTo(ChronoUnit.DAYS).minusWeeks(1).with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
                     end = start.plusDays(7);
                     break;
                 case MONTH:
@@ -266,6 +331,9 @@ public class GoalManager {
                     start = null;
                     end = null;
                     break;
+            }
+            if(start != null && end != null) {
+                Log.d("domainfilter", start.toString() + " " + end.toString());
             }
         }
 

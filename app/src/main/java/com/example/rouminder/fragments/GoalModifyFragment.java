@@ -13,19 +13,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
-import com.example.rouminder.MainApplication;
 import com.example.rouminder.R;
+import com.example.rouminder.adapter.SpinnerAdapter;
+import com.example.rouminder.data.goalsystem.CountGoal;
 import com.example.rouminder.data.goalsystem.Goal;
-import com.example.rouminder.data.goalsystem.GoalManager;
+import com.example.rouminder.data.goalsystem.LocationGoal;
 import com.example.rouminder.firebase.manager.BaseModelManager;
+import com.example.rouminder.firebase.manager.GoalModelManager;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,6 +65,15 @@ public class GoalModifyFragment extends DialogFragment {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
+        LinearLayout repeatLayout = (LinearLayout) view.findViewById(R.id.repeatLayout);
+        LinearLayout countLayout = (LinearLayout) view.findViewById(R.id.count);
+        RelativeLayout mapLayout = (RelativeLayout) view.findViewById(R.id.map);
+        LinearLayout timeLayout = (LinearLayout) view.findViewById(R.id.timeLayout);
+
+//        MapsFragment mapsFragment = (MapsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.modifyMapFinder);
+        // 위 코드가 오류가 나서 어떻게든 돌리기 위해 static 멤버를 선언했습니다..
+        MapsFragment.selectedLatLng = null;
+
         TextView buttonGoalChange = (TextView) view.findViewById(R.id.buttonGoalModify); // 수정 버튼
         ImageView buttonGoalCancel = (ImageView) view.findViewById(R.id.buttonClose); // 취소 버튼
 
@@ -64,43 +82,105 @@ public class GoalModifyFragment extends DialogFragment {
         TextView textViewEndTimeFront = (TextView) view.findViewById(R.id.textViewEndTimeFront); // 마감 시간, 년월일
         TextView textViewEndTimeBack = (TextView) view.findViewById(R.id.textViewEndTimeBack); // 마감 시간, 시분
         EditText editTextGoalName = view.findViewById(R.id.editTextGoalName); // 골 이름
+        EditText countNumber = (EditText) view.findViewById(R.id.countNumber);
+        EditText countUnit = (EditText) view.findViewById(R.id.countUnit);
 
+        // set tag adapter and color adapter
+        ArrayAdapter tagsAdapter = new ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, GoalModelManager.getInstance().getTags());
+        AutoCompleteTextView editTextTag = (AutoCompleteTextView) view.findViewById(R.id.editTextTag);
+        editTextTag.setAdapter(tagsAdapter);
+
+        Color[] colors = {
+                Color.valueOf(256, 0, 0, 256),
+                Color.valueOf(0, 256, 0, 256),
+                Color.valueOf(0, 0, 256, 256)};
+
+        SpinnerAdapter highlightsAdapter = new SpinnerAdapter(context, colors);
+        Spinner highlightsSpinner = (Spinner) view.findViewById(R.id.spinnerHighlight);
+        highlightsSpinner.setAdapter(highlightsAdapter);
+
+        // set Text
         editTextGoalName.setText(goal.getName());
+        editTextTag.setText(goal.getTag());
+        Log.i("goal", "highlight position : " + highlightsAdapter.findItemPosition(goal.getHighlight()));
+        highlightsSpinner.setSelection(highlightsAdapter.findItemPosition(goal.getHighlight()));
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        textViewStartTimeFront.setText(goal.getStartTime().format(dateFormatter));
-        textViewStartTimeBack.setText(goal.getStartTime().format(timeFormatter));
-        textViewEndTimeFront.setText(goal.getEndTime().format(dateFormatter));
-        textViewEndTimeBack.setText(goal.getEndTime().format(timeFormatter));
+        if (true) { // if goal general
+            repeatLayout.setVisibility(View.GONE);
+            textViewStartTimeFront.setText(goal.getStartTime().format(dateFormatter));
+            textViewStartTimeBack.setText(goal.getStartTime().format(timeFormatter));
+            textViewEndTimeFront.setText(goal.getEndTime().format(dateFormatter));
+            textViewEndTimeBack.setText(goal.getEndTime().format(timeFormatter));
+        } else { // if goal repeat
+            timeLayout.setVisibility(View.GONE);
+        }
 
-        buttonGoalChange.setOnClickListener(new View.OnClickListener() { // 수정 버튼 클릭 리스너
-                @Override
-                public void onClick(View view) {
-                    Log.d("GoalModifyFragment", "Modify Start");
-                    try {
-                        String startDate = textViewStartTimeFront.getText().toString();
-                        String startTime = textViewStartTimeBack.getText().toString();
-                        String endDate = textViewEndTimeFront.getText().toString();
-                        String endTime = textViewEndTimeBack.getText().toString();
+        if (goal.getType().equals(Goal.Type.COUNT.name())) {
+            mapLayout.setVisibility(View.GONE);
+            countNumber.setText(""+goal.getTarget());
+            countUnit.setText(((CountGoal) goal).getUnit());
+        } else if (goal.getType().equals(Goal.Type.LOCATION.name())) {
+            countLayout.setVisibility(View.GONE);
+        } else { // check goal
+            mapLayout.setVisibility(View.GONE);
+            countLayout.setVisibility(View.GONE);
+        }
 
-                        DateTimeFormatter formatter = BaseModelManager.getShortTimeFormatter();
-                        LocalDateTime start = LocalDateTime.parse(startDate+ " " + startTime, formatter);
-                        LocalDateTime end = LocalDateTime.parse(endDate + " " + endTime, formatter);
+        // button click 구현
+        buttonGoalChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("GoalModifyFragment", "Modify Start");
 
-                        GoalManager goalManager = ((MainApplication)getActivity().getApplication()).getGoalManager();
-                        goalManager.getGoal(goal.getId()).setName(editTextGoalName.getText().toString());
-                        goalManager.getGoal(goal.getId()).setStartTime(start);
-                        goalManager.getGoal(goal.getId()).setEndTime(end);
+                // modify
+                goal.setName(editTextGoalName.getText().toString());
+                goal.setTag(editTextTag.getText().toString());
+                goal.setHighlight((Color) highlightsSpinner.getSelectedItem());
 
-                    } catch(Exception e) {
-                        Log.d("GoalModifyFragment", "Modify Error");
-                        e.printStackTrace();
-                    }
-                    dismiss();
+                if (true) { // if goal general
+                    String startDate = textViewStartTimeFront.getText().toString();
+                    String startTime = textViewStartTimeBack.getText().toString();
+                    String endDate = textViewEndTimeFront.getText().toString();
+                    String endTime = textViewEndTimeBack.getText().toString();
+
+                    DateTimeFormatter formatter = BaseModelManager.getShortTimeFormatter();
+                    LocalDateTime start = LocalDateTime.parse(startDate+ " " + startTime, formatter);
+                    LocalDateTime end = LocalDateTime.parse(endDate + " " + endTime, formatter);
+
+                    // update
+                    goal.setStartTime(start);
+                    goal.setEndTime(end);
+                } else { // if goal repeat
+                    timeLayout.setVisibility(View.GONE);
                 }
-            });
+
+                if (goal.getType().equals(Goal.Type.COUNT.name())) {
+                    if (countNumber.getText().toString().contains("-") |
+                            countNumber.getText().toString().contains(",") |
+                            countNumber.getText().toString().contains(".")) {
+                        Toast.makeText(context, "숫자에는 특수문자가 들어갈 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        goal.setTarget(Integer.parseInt(countNumber.getText().toString()));
+                        ((CountGoal) goal).setUnit(countUnit.getText().toString());
+                    }
+                } else if (goal.getType().equals(Goal.Type.LOCATION.name())) {
+                    Log.i("test", "location equals");
+                    LatLng location = MapsFragment.getSelectedLatLng();
+
+                    if (location != null) {
+                        Log.i("test", "location latitude : " + location.latitude);
+                        Log.i("test", "location longitude : " + location.longitude);
+                        ((LocationGoal) goal).setLat(location.latitude);
+                        ((LocationGoal) goal).setLng(location.longitude);
+                    }
+                }
+
+                dismiss();
+            }
+        });
         buttonGoalCancel.setOnClickListener(new View.OnClickListener() { // 취소 버튼 클릭 리스너
             @Override
             public void onClick(View view) {

@@ -64,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:completionThreshold="3"
+                    android:completionThreshold="0"
                     android:textSize="16sp"/>
 
             </LinearLayout>
@@ -176,7 +176,7 @@
                         android:text="금" />
 
                     <com.nex3z.togglebuttongroup.button.CircularToggle
-                        android:id="@+id/staurday"
+                        android:id="@+id/saturday"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="토" />
@@ -365,7 +365,7 @@
                         android:textSize="18sp" />
 
                     <EditText
-                        android:id="@+id/editTextNumberSigned"
+                        android:id="@+id/addCountNumber"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -382,7 +382,7 @@
                         android:textSize="18sp" />
 
                     <EditText
-                        android:id="@+id/editTextNumberSigned2"
+                        android:id="@+id/addCountUnit"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

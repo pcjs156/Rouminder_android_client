@@ -25,7 +25,7 @@ import com.example.rouminder.fragments.GoalDescribeFragment;
 
 import java.util.Comparator;
 
-public class MiniGoalAdapter extends BaseGoalAdapter {
+public class MiniGoalAdapter extends BaseGoalAdapter<MiniGoalAdapter.ViewHolder> {
     FragmentActivity activity;
 
     public MiniGoalAdapter(FragmentActivity activity, GoalManager goalManager, GoalManager.Domain domain, Comparator<Goal> comparator) {
@@ -35,7 +35,7 @@ public class MiniGoalAdapter extends BaseGoalAdapter {
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MiniGoalAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
 
         Context context = parent.getContext();
@@ -46,11 +46,6 @@ public class MiniGoalAdapter extends BaseGoalAdapter {
 
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.onBind(items.get(position));
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        onBindViewHolder((ViewHolder) holder, position);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -76,6 +71,7 @@ public class MiniGoalAdapter extends BaseGoalAdapter {
 
             if (goal.getType().equals(Goal.Type.LOCATION.name())) {
                 goalProgressBar.setVisibility(View.GONE);
+                goalImgCheckBox.setVisibility(View.VISIBLE);
 
                 if (((LocationGoal) goal).getChecked())
                     goalImgCheckBox.setImageResource(R.drawable.checkbox_on_background);
@@ -83,6 +79,7 @@ public class MiniGoalAdapter extends BaseGoalAdapter {
 
             } else if (goal.getType().equals(Goal.Type.CHECK.name())) {
                 goalProgressBar.setVisibility(View.GONE);
+                goalImgCheckBox.setVisibility(View.VISIBLE);
 
                 CheckGoal checkGoal = (CheckGoal) goal;
 
@@ -114,6 +111,7 @@ public class MiniGoalAdapter extends BaseGoalAdapter {
                 });
             } else {
                 goalImgCheckBox.setVisibility(View.GONE);
+                goalProgressBar.setVisibility(View.VISIBLE);
                 goalProgressBar.setMax(goal.getTarget());
                 goalProgressBar.setProgress(((CountGoal) goal).getCount());
             }

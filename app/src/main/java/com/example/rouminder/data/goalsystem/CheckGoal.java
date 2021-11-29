@@ -8,8 +8,9 @@ public class CheckGoal extends Goal {
     private static String CHECKED = "완료";
     private static String UNCHECKED = "미완료";
 
-    public CheckGoal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to, int current, Color highlight) {
-        super(manager, id, name, from, to, current, 1, highlight);
+    public CheckGoal(GoalManager manager, int id, String name, LocalDateTime from, LocalDateTime to,
+                     int current, Color highlight, String tag) {
+        super(manager, id, name, from, to, current, 1, highlight, tag);
     }
 
     /**

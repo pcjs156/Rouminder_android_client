@@ -28,6 +28,15 @@ public class SpinnerAdapter extends BaseAdapter {
         return 0;
     }
 
+    public int findItemPosition(Color color) {
+        for (int i = 0; i < colors.length ; i++) {
+            if (colors[i].equals(color)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     @Override
     public Object getItem(int position){
         return colors[position];

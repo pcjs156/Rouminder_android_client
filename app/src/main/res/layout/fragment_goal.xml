@@ -57,19 +57,19 @@
             </com.nex3z.togglebuttongroup.SingleSelectToggleGroup>
 
             <TextView
-                android:id="@+id/textView21"
+                android:id="@+id/entireGoalProgressStr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="1/3개"
                 android:textSize="10pt"
-                app:layout_constraintBottom_toTopOf="@+id/textView22"
-                app:layout_constraintEnd_toEndOf="@+id/textView22"
-                app:layout_constraintStart_toStartOf="@+id/textView22"
+                app:layout_constraintBottom_toTopOf="@+id/entireGoalProgress"
+                app:layout_constraintEnd_toEndOf="@+id/entireGoalProgress"
+                app:layout_constraintStart_toStartOf="@+id/entireGoalProgress"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView22"
+                android:id="@+id/entireGoalProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
@@ -365,7 +365,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:clickable="true"
-                        android:src="@android:drawable/ic_menu_more" />
+                        android:src="@android:drawable/ic_menu_more"
+                        tools:visibility="gone" />
 
                 </LinearLayout>
 

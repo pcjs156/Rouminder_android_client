@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rouminder.data.goalsystem.Goal;
 import com.example.rouminder.data.goalsystem.GoalManager;
+import com.example.rouminder.fragments.GoalFragment;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -12,12 +13,16 @@ import java.util.stream.Collectors;
 
 ;
 
-public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class BaseGoalAdapter<V extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<V> {
     protected List<Goal> items;
     protected GoalManager goalManager;
     protected GoalManager.Domain domain;
     protected Comparator<Goal> comparator;
     protected GoalManager.OnGoalChangeListener listener;
+
+    protected double progress;
+    protected int complete;
+    protected int inComplete;
 
     public BaseGoalAdapter(GoalManager goalManager, GoalManager.Domain domain, Comparator<Goal> comparator) {
         super();
@@ -32,6 +37,9 @@ public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.
         this.domain = domain;
         setListener();
         setDataset();
+
+        calculateProgress();
+        GoalFragment.me.setProgress();
     }
 
     public void setComparator(Comparator<Goal> comparator) {
@@ -40,7 +48,7 @@ public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private void setListener() {
         if(listener != null)
-            listener.remove();
+            goalManager.removeOnGoalChangeListener(listener);
         listener = goalManager.new OnGoalWithCriteriaChangeListener(domain, GoalManager.Status.ALL) {
             @Override
             public void onGoalWithCriteriaAdd(int id) {
@@ -86,6 +94,9 @@ public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.
             items.sort(comparator);
             position = getItemPosition(id);
             notifyItemInserted(position);
+
+            calculateProgress();
+            GoalFragment.me.setProgress();
         }
     }
 
@@ -99,6 +110,9 @@ public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.
             } else {
                 notifyItemMoved(position, newPosition);
             }
+
+            calculateProgress();
+            GoalFragment.me.setProgress();
         }
     }
 
@@ -108,7 +122,30 @@ public abstract class BaseGoalAdapter extends RecyclerView.Adapter<RecyclerView.
             Goal goal = goalManager.getGoal(id);
             items.remove(goal);
             notifyItemRemoved(position);
+
+            calculateProgress();
+            GoalFragment.me.setProgress();
         }
+    }
+
+    public void calculateProgress() {
+        complete = 0;
+        inComplete = 0;
+
+        if (items.size() == 0) {
+            progress = 0;
+            return;
+        }
+
+        items.forEach(item->{
+            if (item.isAccomplished()) {
+                complete++;
+            } else {
+                inComplete++;
+            }
+        });
+
+        progress = 100 * complete / (complete + inComplete);
     }
 
     @Override
